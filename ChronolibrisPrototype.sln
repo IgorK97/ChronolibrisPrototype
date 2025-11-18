@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronolibrisPrototype", "ChronolibrisPrototype\ChronolibrisPrototype.csproj", "{BF383E6C-18BB-4693-92B2-38BC6D0BCD2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Domain", "Chronolibris.Domain\Chronolibris.Domain.csproj", "{A9826F1D-D726-4C07-B697-090273FC7F4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Application", "Chronolibris.Application\Chronolibris.Application.csproj", "{AE7B4E23-AF3B-48E3-9DFC-3D2A1580AC20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Infrastructure", "Chronolibris.Infrastructure\Chronolibris.Infrastructure.csproj", "{07C66C69-B445-400E-9C5B-7347E56D63AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF383E6C-18BB-4693-92B2-38BC6D0BCD2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF383E6C-18BB-4693-92B2-38BC6D0BCD2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF383E6C-18BB-4693-92B2-38BC6D0BCD2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF383E6C-18BB-4693-92B2-38BC6D0BCD2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9826F1D-D726-4C07-B697-090273FC7F4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9826F1D-D726-4C07-B697-090273FC7F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9826F1D-D726-4C07-B697-090273FC7F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9826F1D-D726-4C07-B697-090273FC7F4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE7B4E23-AF3B-48E3-9DFC-3D2A1580AC20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE7B4E23-AF3B-48E3-9DFC-3D2A1580AC20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE7B4E23-AF3B-48E3-9DFC-3D2A1580AC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE7B4E23-AF3B-48E3-9DFC-3D2A1580AC20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15465580-1932-4A66-8D06-4C3A71454598}
+	EndGlobalSection
+EndGlobal
