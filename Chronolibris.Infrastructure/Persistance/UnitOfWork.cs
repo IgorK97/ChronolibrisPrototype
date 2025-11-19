@@ -15,6 +15,7 @@ namespace Chronolibris.Infrastructure.Persistance
         private readonly ApplicationDbContext _context;
 
         public IBookRepository Books { get; }
+        public IBookmarkRepository Bookmarks { get; }
         public IGenericRepository<Person> Persons { get; }
         public IGenericRepository<Content> Contents { get; }
         public IGenericRepository<Review> Reviews { get; }
@@ -22,12 +23,14 @@ namespace Chronolibris.Infrastructure.Persistance
 
 
         public UnitOfWork(ApplicationDbContext context, IBookRepository bookRepository,
+            IBookmarkRepository bookmarks,
             IGenericRepository<Person> personRepository, IGenericRepository<Content> contentRepository,
             IGenericRepository<Review> reviewRepository, IGenericRepository<Publisher> publisherRepository)
         {
             _context = context;
 
             Books = bookRepository;
+            Bookmarks = bookmarks;
             Persons = personRepository;
             Contents = contentRepository;
             Reviews = reviewRepository;

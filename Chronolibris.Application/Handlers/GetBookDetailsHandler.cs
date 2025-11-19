@@ -57,7 +57,8 @@ namespace Chronolibris.Application.Handlers
                 Country = book.Country.Name,
                 Language = book.Language.Name,
                 Participants = participantsGrouped,
-                CoverUri = _cdnService.GetCoverUrl(book.CoverPath),
+                //CoverUri = _cdnService.GetCoverUrl(book.CoverPath),
+                CoverUri = book.CoverPath,
             };
 
             return dto;
