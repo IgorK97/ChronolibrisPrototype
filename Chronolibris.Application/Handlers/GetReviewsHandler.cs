@@ -34,7 +34,7 @@ namespace Chronolibris.Application.Handlers
                     Score = r.Score,
                     Title = r.Title,
                     CreatedAt = r.CreatedAt,
-                }).ToList(); // i should fix this code (1 - where, 2 - mapping)
+                }).ToList(); // i should fix this code later (1 - where, 2 - mapping)
         }
     }
 

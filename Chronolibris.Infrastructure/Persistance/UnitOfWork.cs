@@ -16,16 +16,20 @@ namespace Chronolibris.Infrastructure.Persistance
 
         public IBookRepository Books { get; }
         public IBookmarkRepository Bookmarks { get; }
+        public IReviewsRatingRepository ReviewsRatings { get; }
+        public IReviewRepository Reviews { get; }
         public IGenericRepository<Person> Persons { get; }
         public IGenericRepository<Content> Contents { get; }
-        public IGenericRepository<Review> Reviews { get; }
+        //public IGenericRepository<Review> Reviews { get; }
         public IGenericRepository<Publisher> Publishers { get; }
+        //public IGenericRepository<ReviewsRating> ReviewsRatings { get; }
 
 
         public UnitOfWork(ApplicationDbContext context, IBookRepository bookRepository,
             IBookmarkRepository bookmarks,
             IGenericRepository<Person> personRepository, IGenericRepository<Content> contentRepository,
-            IGenericRepository<Review> reviewRepository, IGenericRepository<Publisher> publisherRepository)
+            IGenericRepository<Publisher> publisherRepository,
+            IReviewsRatingRepository reviewsRatings, IReviewRepository reviewRepository)
         {
             _context = context;
 
@@ -35,7 +39,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Contents = contentRepository;
             Reviews = reviewRepository;
             Publishers = publisherRepository;
-
+            ReviewsRatings = reviewsRatings;
         }
 
         public async Task<int> SaveChangesAsync() =>

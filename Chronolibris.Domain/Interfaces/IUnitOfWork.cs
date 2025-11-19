@@ -11,9 +11,12 @@ namespace Chronolibris.Domain.Interfaces
     {
         IBookRepository Books { get; }
         IBookmarkRepository Bookmarks { get; }
+        IReviewsRatingRepository ReviewsRatings { get; }
+        IReviewRepository Reviews { get; }
+
         IGenericRepository<Person> Persons { get; }
         IGenericRepository<Content> Contents { get; }
-        IGenericRepository<Review> Reviews { get; }
+        //IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Publisher> Publishers { get; }
 
         Task<int> SaveChangesAsync();

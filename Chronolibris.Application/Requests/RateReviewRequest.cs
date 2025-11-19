@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Application.DTOs;
 using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public class CreateReviewRequest : IRequest<long>
+    public class RateReviewRequest : IRequest<ReviewDTO?>
     {
-        public long BookId { get; set; }
+        public long ReviewId { get; set; }
         public long UserId { get; set; }
-        public string? Title { get; set; }
-        public string? Description { get; set; }
         public short Score { get; set; }
-        public string? UserName { get; set; }
     }
 }

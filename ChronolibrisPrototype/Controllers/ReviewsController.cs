@@ -25,12 +25,18 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateReview(ReviewRequest command)
+        public async Task<IActionResult> CreateReview(CreateReviewRequest command)
         {
             
-            var reviewId = await _mediator.Send(new CreateReviewRequest(command));
-
+            var reviewId = await _mediator.Send(command);
             return Ok(reviewId);
+        }
+
+        [HttpPost("rate")]
+        public async Task<IActionResult> RateReview(RateReviewRequest request)
+        {
+            var result = await _mediator.Send(request);
+            return Ok(result);
         }
     }
 }

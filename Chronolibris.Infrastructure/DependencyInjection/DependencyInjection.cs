@@ -31,11 +31,14 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             });
 
             services.AddScoped<IGenericRepository<Content>, GenericRepository<Content>>();
-            services.AddScoped<IGenericRepository<Review>, GenericRepository<Review>>();
+            //services.AddScoped<IGenericRepository<Review>, GenericRepository<Review>>();
             services.AddScoped<IGenericRepository<Person>, GenericRepository<Person>>();
             services.AddScoped<IGenericRepository<Publisher>, GenericRepository<Publisher>>();
 
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IBookmarkRepository, BookmarkRepository>();
+            services.AddScoped<IReviewsRatingRepository,  ReviewsRatingRepository>();
+            services.AddScoped<IReviewRepository,  ReviewRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;

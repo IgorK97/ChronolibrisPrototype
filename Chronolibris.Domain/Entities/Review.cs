@@ -15,7 +15,7 @@ namespace Chronolibris.Domain.Entities
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required short Score { get; set; }
-        public required decimal AverageRating { get; set; }
+        public required long AverageRating { get; set; }
         public required long LikesCount { get; set; }
         public required long DislikesCount { get; set; }
         public required DateTime CreatedAt { get; set; }

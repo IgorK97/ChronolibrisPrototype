@@ -35,9 +35,9 @@ namespace Chronolibris.Infrastructure.Migrations
 
             migrationBuilder.Sql(@"
                 ALTER TABLE books
-                ALTER COLUMN some_column
+                ALTER COLUMN year
                 TYPE bigint
-                USING some_column::bigint;
+                USING year::bigint;
             ");
 
             migrationBuilder.AlterColumn<long>(

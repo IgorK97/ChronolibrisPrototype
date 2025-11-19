@@ -23,17 +23,17 @@ namespace Chronolibris.Application.Handlers
         {
             var review = new Review
             {
-                BookId = request.data.BookId,
-                UserId = request.data.UserId,
-                Title = request.data.Title,
-                Description = request.data.Description,
-                Score = request.data.Score,
+                BookId = request.BookId,
+                UserId = request.UserId,
+                Title = request.Title ?? "",
+                Description = request.Description ?? "",
+                Score = request.Score,
                 CreatedAt = DateTime.UtcNow,
                 AverageRating = 0,
                 DislikesCount = 0,
                 Id = 0,
                 LikesCount = 0,
-                Name = request.data.Name,
+                Name = request.UserName ?? "",
             };
 
             await _unitOfWork.Reviews.AddAsync(review);

@@ -19,5 +19,6 @@ namespace Chronolibris.Application.DTOs
         public required long LikesCount { get; set; }
         public required long DislikesCount { get; set; }
         public required DateTime CreatedAt { get; set; }
+        public bool? UserVote { get; set; }
     }
 }
