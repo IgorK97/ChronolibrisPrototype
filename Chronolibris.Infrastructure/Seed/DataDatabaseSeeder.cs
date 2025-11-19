@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic;
@@ -138,7 +139,7 @@ namespace Chronolibris.Infrastructure.Seed
                     Id = 0,
                     ContentId = 2,
                     PersonId = 2,
-                    PersonRoleId = 2,
+                    PersonRoleId = 1,
                 });
 
                 context.Participations.AddRange(participations);
@@ -152,6 +153,11 @@ namespace Chronolibris.Infrastructure.Seed
             if (!context.Books.Any())
             {
                 DateTime dt = DateTime.UtcNow;
+
+                var content1 = await context.Contents.FirstAsync(c => c.Id==1);
+                var content2 = await context.Contents.FirstAsync(c => c.Id==2);
+
+
                 var books = new[]
                 {
                     new Book
@@ -174,7 +180,40 @@ namespace Chronolibris.Infrastructure.Seed
                         RatingsCount=0,
                         ReviewsCount=0,
                         Title="Буддизм в Японии",
-
+                        Year=1993,
+                        PublisherId=2,
+                        Contents = new List<Content> { content1 }
+                    },
+                    new Book
+                    {
+                        AverageRating=0,
+                        CountryId=1,
+                        CoverPath="EconomicHistory/StructureBrodel/MainFile.png",
+                        CreatedAt=dt,
+                        Description="Это — второе крупное исследование Ф. Броделя. Первое — «Средиземное море и мир Средиземноморья в эпоху Филиппа II»" +
+                        " — было опубликовано в 1949 г. В течение тридцати лет, разделяющих эти две даты, Ф. Бродель занимал центральное место во французской " +
+                        "историографии. После Марка Блока (1886–1944 гг.) и Люсьена Февра (1878–1956 гг.) — основателей исторической школы «Анналов» — Ф. Бродель, " +
+                        "став общепризнанным лидером этого научного направления, продолжил их «битвы за историю»2, предназначением которой, как они считали, " +
+                        "должно было стать не простое описание событий, не беззаботное повествование о них, а проникновение в глубины исторического движения, " +
+                        "стремление к синтезу, к охвату и объяснению всех сторон жизни общества в их единстве.\r\n\r\nДве основные работы Ф. Броделя и представляют " +
+                        "собой конкретную попытку такого исторического синтеза: в одном случае в масштабе крупного Средиземноморского региона XVI в., а в другом — " +
+                        "в масштабе всего человечества с XV по XVIII в. Эти работы — высшее достижение школы «Анналов», лучшее выражение присущего этому " +
+                        "историографическому направлению способа воссоздания истории, а их автор Ф. Бродель — оригинальный мыслитель, один из крупнейших " +
+                        "современных историков, достойный представитель прогрессивной французской интеллигенции, способствовавший укреплению интернациональных " +
+                        "связей между учеными всех стран, в частности между французскими и советскими историками. Как исследователь он всегда выбирал непроторенные " +
+                        "пути, отыскивал для решения сложные проблемы. Не все они, разумеется, решались одинаково успешно, но в целом творческие поиски Ф. Броделя " +
+                        "оказались весьма плодотворными.",
+                        FilePath="EconomicHistory/StructureBrodel/MainFile.epub",
+                        Id=0,
+                        IsAvailable=true,
+                        IsFragment=false,
+                        LanguageId=2,
+                        RatingsCount=0,
+                        ReviewsCount=0,
+                        Title="Структуры повседневности: возможное и невозможное",
+                        Year=1986,
+                        PublisherId=1,
+                        Contents = new List<Content> { content2 }
                     },
                 };
             }
@@ -183,7 +222,41 @@ namespace Chronolibris.Infrastructure.Seed
 
         public static async Task SelectionSeedDatabase(ApplicationDbContext context)
         {
+            if (!context.Selections.Any())
+            {
+                DateTime dt = DateTime.UtcNow;
+                var selections = new[]
+                {
+                    new Selection
+                    {
+                        CreatedAt=dt,
+                        Description="",
+                        Id=0,
+                        IsActive=true,
+                        Name="Экономическая история",
 
+                    },
+                    new Selection
+                    {
+                        CreatedAt=dt,
+                        Description="",
+                        Id=0,
+                        IsActive=true,
+                        Name="История культуры",
+                    },
+                    new Selection
+                    {
+                        CreatedAt = dt,
+                        Description="",
+                        Id=0,
+                        IsActive=true,
+                        Name="История мира"
+                    }
+                };
+
+                context.Selections.AddRange(selections);
+                await context.SaveChangesAsync();
+            }
         }
 
         public static async Task PersonSeedDatabase(ApplicationDbContext context)

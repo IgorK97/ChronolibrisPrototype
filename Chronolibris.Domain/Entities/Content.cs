@@ -11,8 +11,8 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
-        public required int CountryId { get; set; }
-        public required int LanguageId { get; set; }
+        public required long CountryId { get; set; }
+        public required long LanguageId { get; set; }
         public int? Year { get; set; }
         public required bool IsOriginal { get; set; }
         public required bool IsTranslate { get; set; }

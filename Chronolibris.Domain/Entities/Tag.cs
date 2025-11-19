@@ -12,7 +12,7 @@ namespace Chronolibris.Domain.Entities
     {
         public required long Id { get; set; }
         public required string Name { get; set; }
-        public required int TagTypeId { get; set; }
+        public required long TagTypeId { get; set; }
         public required TagType TagType { get; set; }
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }

@@ -11,7 +11,7 @@ namespace Chronolibris.Domain.Entities
         public long Id { get; set; }
         public long PersonId { get; set; }
         public Person Person { get; set; } = null!;
-        public int PersonRoleId { get; set; }
+        public long PersonRoleId { get; set; }
         public PersonRole PersonRole { get; set; } = null!;
         public long? ContentId { get; set; }
         public Content? Content { get; set; } = null!;

@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
+using Chronolibris.Infrastructure.Persistance;
+using Chronolibris.Infrastructure.Persistance.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +26,15 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
                 options.UseSnakeCaseNamingConvention();
             });
+
+            services.AddScoped<IGenericRepository<Content>, GenericRepository<Content>>();
+            services.AddScoped<IGenericRepository<Review>, GenericRepository<Review>>();
+            services.AddScoped<IGenericRepository<Person>, GenericRepository<Person>>();
+            services.AddScoped<IGenericRepository<Publisher>, GenericRepository<Publisher>>();
+
+            services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             return services;
         }
 
