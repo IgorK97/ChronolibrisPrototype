@@ -26,7 +26,7 @@ namespace Chronolibris.Domain.Entities
         public required long ReviewsCount { get; set; }
         public long? ParentBookId { get; set; }
         public long? PublisherId { get; set; }
-        public Publisher Publisher { get; set; } = null!;
+        public Publisher? Publisher { get; set; }
         public long? SeriesId { get; set; }
         public Series? Series { get; set; }
         public Country Country { get; set; } = null!;

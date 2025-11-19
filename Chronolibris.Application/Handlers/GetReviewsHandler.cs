@@ -30,9 +30,10 @@ namespace Chronolibris.Application.Handlers
 
                     DislikesCount = r.DislikesCount,
                     LikesCount = r.LikesCount,
-                    Name = r.Name,
+                    UserName = r.Name,
                     Score = r.Score,
                     Title = r.Title,
+                    CreatedAt = r.CreatedAt,
                 }).ToList(); // i should fix this code (1 - where, 2 - mapping)
         }
     }

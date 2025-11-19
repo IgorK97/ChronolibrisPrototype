@@ -8,7 +8,7 @@ namespace Chronolibris.Application.DTOs
 {
     public class BookPersonGroupDto
     {
-        public string Role { get; set; } = null!;
+        public long Role { get; set; }
         public IEnumerable<PersonDto> Persons { get; set; } = [];
     }
 }

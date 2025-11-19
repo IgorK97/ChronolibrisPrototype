@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Books\" />
+    <Folder Include="wwwroot\covers\" />
   </ItemGroup>
 
   <ItemGroup>

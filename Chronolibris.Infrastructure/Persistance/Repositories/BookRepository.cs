@@ -22,8 +22,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .Include(b => b.Country)
                 .Include(b => b.Language)
                 .Include(b => b.Contents)
-                .Include(b => b.Reviews)
+                //.Include(b => b.Reviews)
+                .Include(b => b.Participations)
                 .Include(b => b.Persons)
+
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
     }

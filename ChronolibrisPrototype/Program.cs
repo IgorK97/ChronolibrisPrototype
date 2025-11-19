@@ -4,6 +4,7 @@ using System.Text;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.DependencyInjection;
 using Chronolibris.Infrastructure.Seed;
+using ChronolibrisPrototype.DependencyInjection;
 using ChronolibrisPrototype.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
     .AddFilter("ChronolibrisPrototype", LogLevel.Information);
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
+builder.Services.AddCdnService();
 //Конфигурация аутентификации с использованием JWT-токенов
 builder.Services.AddAuthentication(
     JwtBearerDefaults.AuthenticationScheme)
