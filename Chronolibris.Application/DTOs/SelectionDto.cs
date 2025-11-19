@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Application.DTOs
 {
-    internal class electionDto
+    public class SelectionDto
     {
+        public required long Id { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        
     }
 }

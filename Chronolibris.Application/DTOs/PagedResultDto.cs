@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Chronolibris.Application.DTOs
+{
+    public class PagedResultDto<T>
+    {
+        public IEnumerable<T> Items { get; init; } = [];
+        public int TotalCount { get; init; }
+        public int Page { get; init; }
+        public int PageSize { get; init; }
+    }
+}

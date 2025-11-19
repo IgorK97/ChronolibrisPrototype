@@ -13,6 +13,7 @@ namespace Chronolibris.Domain.Interfaces
         IBookmarkRepository Bookmarks { get; }
         IReviewsRatingRepository ReviewsRatings { get; }
         IReviewRepository Reviews { get; }
+        ISelectionsRepository Selections { get; }
 
         IGenericRepository<Person> Persons { get; }
         IGenericRepository<Content> Contents { get; }

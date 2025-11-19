@@ -39,6 +39,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IBookmarkRepository, BookmarkRepository>();
             services.AddScoped<IReviewsRatingRepository,  ReviewsRatingRepository>();
             services.AddScoped<IReviewRepository,  ReviewRepository>();
+            services.AddScoped<ISelectionsRepository, SelectionsRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
