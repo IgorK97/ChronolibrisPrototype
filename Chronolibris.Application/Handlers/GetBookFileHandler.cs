@@ -29,11 +29,14 @@ namespace Chronolibris.Application.Handlers
             {
                 return null;
             }
-            var fileBytes = await _fileProvider.GetBookFileAsync(book.FilePath, cancellationToken);
+            //var fileBytes = await _fileProvider.GetBookFileAsync(book.FilePath, cancellationToken);
+            var stream = await _fileProvider.OpenReadStreamAsync(book.FilePath, cancellationToken);
+            if (stream == null)
+                return null;
 
             return new FileResultDto
             {
-                FileBytes = fileBytes,
+                Stream = stream,
                 ContentType = "application/epub+zip",
                 FileName = book.Title
             };

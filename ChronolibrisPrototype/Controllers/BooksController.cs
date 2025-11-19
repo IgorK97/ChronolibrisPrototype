@@ -19,10 +19,16 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult> GetBook(long bookId)
         {
             var result = await _mediator.Send(new GetBookFileQuery(bookId));
-            if (result != null)
-                return File(result.FileBytes, result.ContentType, result.FileName);
-            return NotFound();
+            //if (result != null)
+            //    return File(result.FileBytes, result.ContentType, result.FileName);
+            //return NotFound();
+            if (result == null)
+                return NotFound();
 
+            return new FileStreamResult(result.Stream, result.ContentType)
+            {
+                FileDownloadName = result.FileName,
+            };
         }
 
         [HttpGet("{bookId}/info")]

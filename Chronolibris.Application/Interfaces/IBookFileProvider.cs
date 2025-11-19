@@ -8,6 +8,9 @@ namespace Chronolibris.Application.Interfaces
 {
     public interface IBookFileProvider
     {
-        Task<byte[]> GetBookFileAsync(string fileName, CancellationToken cancellationToken = default);
+        Task<byte[]> GetBookFileAsync(string fileName, CancellationToken cancellationToken);
+        Task<Stream?> OpenReadStreamAsync(string fileName, CancellationToken token);
+
+
     }
 }

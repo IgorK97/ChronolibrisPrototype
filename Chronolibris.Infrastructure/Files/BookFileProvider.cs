@@ -25,5 +25,14 @@ namespace Chronolibris.Infrastructure.Files
 
             return await File.ReadAllBytesAsync(bookPath, cancellationToken);
         }
+
+        public async Task<Stream?> OpenReadStreamAsync(string fileName, CancellationToken token)
+        {
+            var bookPath = Path.Combine(_booksDirectory, fileName);
+            if (!File.Exists(bookPath))
+                return null;
+
+            return new FileStream(bookPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+        }
     }
 }

@@ -8,7 +8,8 @@ namespace Chronolibris.Application.DTOs
 {
     public class FileResultDto
     {
-        public byte[] FileBytes { get; set; } = Array.Empty<byte>();
+        //public byte[] FileBytes { get; set; } = Array.Empty<byte>();
+        public required Stream Stream { get; set; }
         public string ContentType { get; set; } = string.Empty;
         public string FileName { get; set; } = string.Empty;
     }
