@@ -14,6 +14,7 @@ namespace Chronolibris.Domain.Interfaces
         IReviewsRatingRepository ReviewsRatings { get; }
         IReviewRepository Reviews { get; }
         ISelectionsRepository Selections { get; }
+        IShelvesRepository Shelves { get; }
 
         IGenericRepository<Person> Persons { get; }
         IGenericRepository<Content> Contents { get; }

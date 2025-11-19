@@ -21,7 +21,7 @@ namespace Chronolibris.Infrastructure.Files
             var bookPath = Path.Combine(_booksDirectory, fileName);
 
             if (!File.Exists(bookPath))
-                throw new FileNotFoundException("Book not found.", bookPath);
+                throw new FileNotFoundException("Book not found.", bookPath); //Или я лучше потом нуль верну?
 
             return await File.ReadAllBytesAsync(bookPath, cancellationToken);
         }

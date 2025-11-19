@@ -19,6 +19,7 @@ namespace Chronolibris.Infrastructure.Persistance
         public IReviewsRatingRepository ReviewsRatings { get; }
         public IReviewRepository Reviews { get; }
         public ISelectionsRepository Selections { get; }
+        public IShelvesRepository Shelves { get; }
         public IGenericRepository<Person> Persons { get; }
         public IGenericRepository<Content> Contents { get; }
         //public IGenericRepository<Review> Reviews { get; }
@@ -32,7 +33,7 @@ namespace Chronolibris.Infrastructure.Persistance
             IGenericRepository<Publisher> publisherRepository,
             IReviewsRatingRepository reviewsRatings,
             IReviewRepository reviewRepository,
-            ISelectionsRepository selections)
+            ISelectionsRepository selections, IShelvesRepository shelves)
         {
             _context = context;
 
@@ -44,6 +45,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Publishers = publisherRepository;
             ReviewsRatings = reviewsRatings;
             Selections = selections;
+            Shelves = shelves;
         }
 
         public async Task<int> SaveChangesAsync() =>
