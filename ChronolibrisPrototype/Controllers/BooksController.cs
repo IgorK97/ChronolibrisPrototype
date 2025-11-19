@@ -15,34 +15,24 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("book.epub")]
-        public async Task<ActionResult> GetBook()
+        [HttpGet("{bookId}/read")]
+        public async Task<ActionResult> GetBook(long bookId)
         {
-                var result = await _mediator.Send(new GetBookFileQuery());
+            var result = await _mediator.Send(new GetBookFileQuery(bookId));
+            if (result != null)
                 return File(result.FileBytes, result.ContentType, result.FileName);
+            return NotFound();
 
         }
-        //global exception handlers
-        //служба доделать (в слое аппликэйшн)
-        //модели в отдельные файлы классов
-        //автоматическая генерация
-        //посмотреть то, как регистрация еще может быть организована
-        //всю логику вынести
-        //феггинг фейс
-        //Потоковая преедача
-        //индекс.тс
-        //Файл темплейтс, шаблоны
-        //состояние зустанд можно в модели энтити сторе и использовать потом
-        //nsvak
-        //fsd models, entities, store (zustand states)
 
-        [HttpGet("metadata")]
-        public async Task<ActionResult> GetMetadata()
+        [HttpGet("{bookId}/info")]
+        public async Task<ActionResult> GetBookMetadata(long bookId)
         {
 
-            var metadata = await _mediator.Send(new GetBookMetadataQuery());
-            return Ok(metadata);
-
+            var metadata = await _mediator.Send(new GetBookMetadataQuery(bookId));
+            if(metadata != null)
+                return Ok(metadata);
+            return NotFound();
         }
     }
 }

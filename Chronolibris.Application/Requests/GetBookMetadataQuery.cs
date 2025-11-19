@@ -8,5 +8,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Queries
 {
-    public record GetBookMetadataQuery() : IRequest<BookMetadataDTO>;
+    public record GetBookMetadataQuery(long bookId) : IRequest<BookDetailsDto>;
 }

@@ -26,7 +26,7 @@ namespace Chronolibris.Application.Handlers
                 {
                     Id = r.Id,
                     AverageRating = r.AverageRating,
-                    Description = r.Description,
+                    Text = r.Description,
 
                     DislikesCount = r.DislikesCount,
                     LikesCount = r.LikesCount,

@@ -5,23 +5,37 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.DTOs;
 using Chronolibris.Application.Queries;
+using Chronolibris.Domain.Interfaces;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetBookMetadataHandler : IRequestHandler<GetBookMetadataQuery, BookMetadataDTO>
+    public class GetBookMetadataHandler : IRequestHandler<GetBookMetadataQuery, BookDetailsDto?>
     {
-        public Task<BookMetadataDTO> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork _unitOfWork;
+        public GetBookMetadataHandler(IUnitOfWork unitOfWork)
         {
-            // Example: fetch from database or repository
-            var metadata = new BookMetadataDTO
-            {
-                Title = "Example Book",
-                Author = "John Doe",
-                Pages = 200
-            };
+            _unitOfWork = unitOfWork;
+        }
+        public async Task<BookDetailsDto?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
+        {
+            var book = await _unitOfWork.Books.GetByIdAsync(request.bookId);
+            if (book == null)
+                return null;
 
-            return Task.FromResult(metadata);
+            return new BookDetailsDto
+            {
+                
+            }
+
+            //var metadata = new BookMetadataDTO
+            //{
+            //    Title = "Example Book",
+            //    Author = "John Doe",
+            //    Pages = 200
+            //};
+
+            //return await Task.FromResult(metadata);
         }
     }
 }

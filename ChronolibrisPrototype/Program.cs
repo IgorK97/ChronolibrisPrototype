@@ -4,6 +4,7 @@ using System.Text;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.DependencyInjection;
 using Chronolibris.Infrastructure.Seed;
+using ChronolibrisPrototype.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -30,7 +31,7 @@ builder.Logging.AddConsole();
 
 builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
     .AddFilter("System", LogLevel.Warning)
-    .AddFilter("PizzaDeliveryWeb", LogLevel.Information);
+    .AddFilter("ChronolibrisPrototype", LogLevel.Information);
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
 //Конфигурация аутентификации с использованием JWT-токенов
@@ -61,15 +62,23 @@ builder.Services.AddAuthorization(options =>
 //builder.Services.AddMediatR(typeof(Program).Assembly);
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-builder.Services.AddControllers();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = false;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+});
 
 var app = builder.Build();
 
 var configuration = app.Configuration;
-await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -84,6 +93,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseHttpLogging();
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 app.UseCors(allowAVDCORSPolicy);
 app.UseAuthentication();
@@ -91,6 +101,20 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllers();
 
-//app.Lifetime.ApplicationStarted.Register();
+await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
+
+
+//app.Lifetime.ApplicationStarted.Register(async () =>
+//{
+//    try
+//    {
+//        await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
+//    }
+//    catch (Exception ex)
+//    {
+//        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+//        logger.LogError(ex, "Database seeding failed");
+//    }
+//});
 
 app.Run();

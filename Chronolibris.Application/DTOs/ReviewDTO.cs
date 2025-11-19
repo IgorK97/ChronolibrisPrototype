@@ -8,15 +8,16 @@ namespace Chronolibris.Application.DTOs
 {
     public class ReviewDTO
     {
-        public long Id { get; set; }
+        public required long Id { get; set; }
         //public long UserId { get; set; }
         //public long BookId { get; set; }
-        public string Title { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public short Score { get; set; }
-        public decimal AverageRating { get; set; }
-        public long LikesCount { get; set; }
-        public long DislikesCount { get; set; }
+        public required string Title { get; set; }
+        public required string UserName { get; set; }
+        public required string Text { get; set; }
+        public required short Score { get; set; }
+        public required decimal AverageRating { get; set; }
+        public required long LikesCount { get; set; }
+        public required long DislikesCount { get; set; }
+        public required DateTime CreatedAt { get; set; }
     }
 }
