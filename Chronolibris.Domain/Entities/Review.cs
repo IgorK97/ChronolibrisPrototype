@@ -18,6 +18,7 @@ namespace Chronolibris.Domain.Entities
         public required decimal AverageRating { get; set; }
         public required long LikesCount { get; set; }
         public required long DislikesCount { get; set; }
+        public required DateTime CreatedAt { get; set; }
         //public Book Book { get; set; } = null!;
         public ICollection<ReviewsRating> ReviewsRatings { get; set; } = new List<ReviewsRating>();
     }

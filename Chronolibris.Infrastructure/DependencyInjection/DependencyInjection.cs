@@ -8,6 +8,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.Files;
+using Chronolibris.Infrastructure.Identity;
 using Chronolibris.Infrastructure.Persistance;
 using Chronolibris.Infrastructure.Persistance.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -43,6 +44,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
         public static IServiceCollection AddIdentityRealization(this IServiceCollection services, 
             IConfiguration configuration)
         {
+            services.AddScoped<IIdentityService, IdentityService>();
             services.AddIdentity<ApplicationUser, IdentityRole<long>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -58,5 +60,16 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
             return services;
         }
+
+    //    public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services,
+    //IConfiguration configuration)
+    //    {
+    //        services.AddScoped<IIdentityService, IdentityService>();
+    //        services.AddIdentity<ApplicationUser, IdentityRole<long>>()
+    //                .AddEntityFrameworkStores<ApplicationDbContext>()
+    //                .AddDefaultTokenProviders();
+
+    //        return services;
+    //    }
     }
 }
