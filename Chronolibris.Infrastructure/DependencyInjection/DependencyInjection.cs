@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
+using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Persistance;
 using Chronolibris.Infrastructure.Persistance.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -44,6 +46,15 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddIdentity<ApplicationUser, IdentityRole<long>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            return services;
+        }
+
+        public static IServiceCollection AddFileProviderInfrastructure(this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var booksFolder = configuration["BooksFolder"] ?? throw new InvalidOperationException("BooksFolder not configured.");
+            services.AddSingleton<IBookFileProvider>(new BookFileProvider(booksFolder));
 
             return services;
         }

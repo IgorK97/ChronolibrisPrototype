@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Chronolibris.Application.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronolibrisPrototype.Controllers
@@ -7,33 +9,18 @@ namespace ChronolibrisPrototype.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly IWebHostEnvironment _environment;
-
-        public BooksController(IWebHostEnvironment environment)
+        private readonly IMediator _mediator;
+        public BooksController(IMediator mediator)
         {
-            _environment = environment;
+            _mediator = mediator;
         }
 
         [HttpGet("book.epub")]
         public async Task<ActionResult> GetBook()
         {
-            try
-            {
-                var booksFolder = Path.Combine(_environment.ContentRootPath, "Books");
-                var bookPath = Path.Combine(booksFolder, "book.epub");
+                var result = await _mediator.Send(new GetBookFileQuery());
+                return File(result.FileBytes, result.ContentType, result.FileName);
 
-                if (!System.IO.File.Exists(bookPath))
-                {
-                    return NotFound();
-                }
-
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(bookPath);
-                return File(fileBytes, "application/epub+zip");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500);
-            }
         }
         //global exception handlers
         //служба доделать (в слое аппликэйшн)
@@ -52,14 +39,10 @@ namespace ChronolibrisPrototype.Controllers
         [HttpGet("metadata")]
         public async Task<ActionResult> GetMetadata()
         {
-            try
-            {
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500);
-            }
+
+            var metadata = await _mediator.Send(new GetBookMetadataQuery());
+            return Ok(metadata);
+
         }
     }
 }
