@@ -15,6 +15,7 @@ namespace Chronolibris.Infrastructure.Seed
     {
         public static async Task InitialSeedDatabase(IServiceProvider serviceProvider, IConfiguration configuration)
         {
+            //Потом не забыть сделать так, чтобы была таблица __EFSeedHistory
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 

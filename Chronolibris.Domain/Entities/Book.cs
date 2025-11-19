@@ -9,19 +9,19 @@ namespace Chronolibris.Domain.Entities
     public class Book
     {
         public required long Id { get; set; }
-        public required long Title { get; set; }
-        public required long Description { get; set; }
+        public required string Title { get; set; }
+        public required string Description { get; set; }
         public required int CountryId { get; set; }
         public required int LanguageId { get; set; }
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public long? Year { get; set; }
+        public int? Year { get; set; }
         public string? ISBN { get; set; }
-        public required long IsFragment { get; set; }
-        public required long FilePath { get; set; }
-        public required long CoverPath { get; set; }
-        public required long IsAvailable { get; set; }
-        public required long AverageRating { get; set; }
+        public required bool IsFragment { get; set; }
+        public required string FilePath { get; set; }
+        public required string CoverPath { get; set; }
+        public required bool IsAvailable { get; set; }
+        public required decimal AverageRating { get; set; }
         public required long RatingsCount { get; set; }
         public required long ReviewsCount { get; set; }
         public long? ParentBookId { get; set; }
