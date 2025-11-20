@@ -22,7 +22,7 @@ namespace ChronolibrisPrototype.Controllers
             //if (result != null)
             //    return File(result.FileBytes, result.ContentType, result.FileName);
             //return NotFound();
-            if (result == null)
+            if (result == null) //null pochemu-to :-/
                 return NotFound();
 
             return new FileStreamResult(result.Stream, result.ContentType)

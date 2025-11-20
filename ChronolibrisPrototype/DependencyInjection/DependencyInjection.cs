@@ -8,9 +8,9 @@ namespace ChronolibrisPrototype.DependencyInjection
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddCdnService(this IServiceCollection services)
+        public static IServiceCollection AddCdnService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<ICdnService, CdnService>();
+            services.AddSingleton<ICdnService>(new CdnService(configuration));
 
             return services;
         }

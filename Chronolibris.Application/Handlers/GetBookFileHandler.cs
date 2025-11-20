@@ -40,6 +40,7 @@ namespace Chronolibris.Application.Handlers
                 ContentType = "application/epub+zip",
                 FileName = book.Title
             };
+            //return null;
         }
     }
 }

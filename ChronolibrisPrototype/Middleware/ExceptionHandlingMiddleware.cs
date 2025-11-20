@@ -18,33 +18,38 @@ namespace ChronolibrisPrototype.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            try
-            {
+
+
                 await _next(context);
-            }
 
-            catch (Exception exception)
-            {
-                _logger.LogError(
-                     exception,
-                    "Error processing {Method} {Path}." +
-                    " Query: {QueryString}. Message: {Message}",
-                    context.Request.Method,
-                    context.Request.Path,
-                    context.Request.QueryString,
-                    exception.Message);
 
-                var problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Title = "Unexpected server Error"
-                };
+            //try
+            //{
+            //    await _next(context);
+            //}
 
-                context.Response.StatusCode =
-                    StatusCodes.Status500InternalServerError;
+            //catch (Exception exception)
+            //{
+            //    _logger.LogError(
+            //         exception,
+            //        "Error processing {Method} {Path}." +
+            //        " Query: {QueryString}. Message: {Message}",
+            //        context.Request.Method,
+            //        context.Request.Path,
+            //        context.Request.QueryString,
+            //        exception.Message);
 
-                await context.Response.WriteAsJsonAsync(problemDetails);
-            }
+            //    var problemDetails = new ProblemDetails
+            //    {
+            //        Status = StatusCodes.Status500InternalServerError,
+            //        Title = "Unexpected server Error"
+            //    };
+
+            //    context.Response.StatusCode =
+            //        StatusCodes.Status500InternalServerError;
+
+            //    await context.Response.WriteAsJsonAsync(problemDetails);
+            //}
         }
     }
 }

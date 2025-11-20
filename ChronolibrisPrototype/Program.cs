@@ -1,12 +1,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Chronolibris.Application.Handlers;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.DependencyInjection;
 using Chronolibris.Infrastructure.Seed;
 using ChronolibrisPrototype.DependencyInjection;
 using ChronolibrisPrototype.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
@@ -35,7 +37,8 @@ builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
     .AddFilter("ChronolibrisPrototype", LogLevel.Information);
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
-builder.Services.AddCdnService();
+builder.Services.AddFileProviderInfrastructure(builder.Configuration);
+builder.Services.AddCdnService(builder.Configuration);
 //Конфигурация аутентификации с использованием JWT-токенов
 builder.Services.AddAuthentication(
     JwtBearerDefaults.AuthenticationScheme)
@@ -63,7 +66,9 @@ builder.Services.AddAuthorization(options =>
 // Add services to the container.
 //builder.Services.AddMediatR(typeof(Program).Assembly);
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+    //cfg.RegisterServicesFromAssembly(typeof(Program).Assembly)
+    cfg.RegisterServicesFromAssembly(typeof(GetBookFileHandler).Assembly)
+    );
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false;
@@ -76,10 +81,16 @@ builder.Services.AddHttpLogging(logging =>
     logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
 });
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApiDocument(options =>
+{
+    options.Title = "My API";
+});
+
 var app = builder.Build();
 
 var configuration = app.Configuration;
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+//app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 
 // Configure the HTTP request pipeline.
@@ -87,11 +98,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chronolibris Prototype V1");
-    });
+    //app.UseSwagger();
+    //app.UseSwaggerUI(c =>
+    //{
+    //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chronolibris Prototype V1");
+    //});
 }
 
 app.UseHttpsRedirection();
@@ -101,6 +112,8 @@ app.UseCors(allowAVDCORSPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
+app.UseOpenApi();
+app.UseSwaggerUI();
 app.MapControllers();
 
 await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
