@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class BookmarkDto
+    public class ShelfDetails
     {
         public long Id { get; set; }
-        public string Mark { get; set; }
-        public DateTime createdAt { get; set; }
+        public required string Name { get; set; }
+        public int BooksCount { get; set; }
     }
+
 }

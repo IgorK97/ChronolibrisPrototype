@@ -20,36 +20,36 @@ namespace ChronolibrisPrototype.Middleware
         {
 
 
+            //await _next(context);
+
+
+            try
+            {
                 await _next(context);
+            }
 
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                     exception,
+                    "Error processing {Method} {Path}." +
+                    " Query: {QueryString}. Message: {Message}",
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Request.QueryString,
+                    exception.Message);
 
-            //try
-            //{
-            //    await _next(context);
-            //}
+                var problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "Unexpected server Error"
+                };
 
-            //catch (Exception exception)
-            //{
-            //    _logger.LogError(
-            //         exception,
-            //        "Error processing {Method} {Path}." +
-            //        " Query: {QueryString}. Message: {Message}",
-            //        context.Request.Method,
-            //        context.Request.Path,
-            //        context.Request.QueryString,
-            //        exception.Message);
+                context.Response.StatusCode =
+                    StatusCodes.Status500InternalServerError;
 
-            //    var problemDetails = new ProblemDetails
-            //    {
-            //        Status = StatusCodes.Status500InternalServerError,
-            //        Title = "Unexpected server Error"
-            //    };
-
-            //    context.Response.StatusCode =
-            //        StatusCodes.Status500InternalServerError;
-
-            //    await context.Response.WriteAsJsonAsync(problemDetails);
-            //}
+                await context.Response.WriteAsJsonAsync(problemDetails);
+            }
         }
     }
 }

@@ -3,28 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Interfaces;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetUserShelvesHandler
-    : IRequestHandler<GetUserShelvesQuery, IEnumerable<ShelfDto>>
+    public class GetUserShelvesHandler(IShelvesRepository shelvesRepository)
+    : IRequestHandler<GetUserShelvesQuery, IEnumerable<ShelfDetails>>
     {
-        private readonly IUnitOfWork _uow;
 
-        public GetUserShelvesHandler(IUnitOfWork uow)
+
+        public async Task<IEnumerable<ShelfDetails>> Handle(GetUserShelvesQuery request, CancellationToken ct)
         {
-            _uow = uow;
-        }
+            var shelves = await shelvesRepository.GetForUserAsync(request.UserId);
 
-        public async Task<IEnumerable<ShelfDto>> Handle(GetUserShelvesQuery request, CancellationToken ct)
-        {
-            var shelves = await _uow.Shelves.GetForUserAsync(request.UserId);
-
-            return shelves.Select(s => new ShelfDto
+            return shelves.Select(s => new ShelfDetails
             {
                 Id = s.Id,
                 Name = s.Name,

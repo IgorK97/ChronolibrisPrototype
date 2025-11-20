@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Queries;
 using Chronolibris.Domain.Interfaces;
@@ -11,34 +11,32 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetBookDetailsHandler : IRequestHandler<GetBookMetadataQuery, BookDetailsDto?>
+    public class GetBookDetailsHandler : IRequestHandler<GetBookMetadataQuery, BookDetails?>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ICdnService _cdnService;
-        public GetBookDetailsHandler(IUnitOfWork unitOfWork, ICdnService cdnService)
+        private readonly IBookRepository _bookRepository;
+        public GetBookDetailsHandler(IBookRepository bookRepository)
         {
-            _unitOfWork = unitOfWork;
-            _cdnService = cdnService;
+            _bookRepository = bookRepository;
         }
-        public async Task<BookDetailsDto?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
+        public async Task<BookDetails?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
         {
-            var book = await _unitOfWork.Books.GetBookWithRelationsAsync(request.bookId);
+            var book = await _bookRepository.GetBookWithRelationsAsync(request.bookId);
             if (book == null)
                 return null;
 
             var participantsGrouped = book.Participations
                 .GroupBy(p => p.PersonRoleId)
-                .Select(g => new BookPersonGroupDto
+                .Select(g => new BookPersonGroupDetails
                 {
                     Role = g.Key,
-                    Persons = g.Select(p => new PersonDto
+                    Persons = g.Select(p => new PersonDetails
                     {
                         Id = p.PersonId,
                         FullName = p.Person.Name
                     }).ToList()
                 }).ToList();
 
-            var dto = new BookDetailsDto
+            var dto = new BookDetails
             {
                 Id = book.Id,
                 Title = book.Title,
@@ -49,7 +47,7 @@ namespace Chronolibris.Application.Handlers
                 RatingsCount = book.RatingsCount,
                 ReviewsCount = book.ReviewsCount,
                 IsAvailable = book.IsAvailable,
-                Publisher = book.Publisher != null ? new PublisherDto
+                Publisher = book.Publisher != null ? new PublisherDetails
                 {
                     Id = book.Publisher.Id,
                     Name = book.Publisher.Name

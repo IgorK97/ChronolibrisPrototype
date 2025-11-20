@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class RegistrationResultDTO
+    public class LoginResult
     {
         public bool Success { get; set; }
-        public string Token { get; set; }
+        public string? Token { get; set; }
         public IEnumerable<string>? Errors { get; set; }
     }
 }

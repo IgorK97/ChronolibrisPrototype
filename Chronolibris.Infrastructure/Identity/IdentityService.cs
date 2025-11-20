@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -29,7 +29,7 @@ namespace Chronolibris.Infrastructure.Identity
             _config = config;
         }
 
-        public async Task<RegistrationResultDTO> RegisterUserAsync(RegisterRequest request)
+        public async Task<RegistrationResult> RegisterUserAsync(RegisterRequest request)
         {
             DateTime dt = DateTime.UtcNow;
             var user = new User
@@ -44,7 +44,7 @@ namespace Chronolibris.Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
-            return new RegistrationResultDTO
+            return new RegistrationResult
             {
                 Success = result.Succeeded,
                 Token = GenerateJwtToken(user),
@@ -53,14 +53,14 @@ namespace Chronolibris.Infrastructure.Identity
         
         }
 
-        public async Task<LoginResultDTO?> LoginUserByEmailAsync(LoginRequest request)
+        public async Task<LoginResult> LoginUserByEmailAsync(string Email, string Password)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null) return null; //Exception???
-            var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+            var user = await _userManager.FindByEmailAsync(Email);
+            //if (user == null) return null; //Exception???
+            var result = await _signInManager.CheckPasswordSignInAsync(user, Password, false);
 
-            if (!result.Succeeded) return null;
-            return new LoginResultDTO
+            //if (!result.Succeeded) return null;
+            return new LoginResult
             {
                 Success = true,
                 Token = GenerateJwtToken(user)

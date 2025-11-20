@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class ShelfDto
+    public class PublisherDetails
     {
-        public long Id { get; set; }
+        public required long Id { get; set; }
         public required string Name { get; set; }
-        public int BooksCount { get; set; }
     }
-
 }

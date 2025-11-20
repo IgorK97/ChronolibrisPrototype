@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class BookPersonGroupDto
+    public class BookPersonGroupDetails
     {
         public long Role { get; set; }
-        public IEnumerable<PersonDto> Persons { get; set; } = [];
+        public IEnumerable<PersonDetails> Persons { get; set; } = [];
     }
 }

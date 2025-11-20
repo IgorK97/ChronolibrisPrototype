@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Queries;
+using Chronolibris.Application.Requests;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class RegisterUserHandler : IRequestHandler<RegisterUserRequest, RegistrationResultDTO>
+    public class RegisterUserHandler : IRequestHandler<RegisterUserRequest, RegistrationResult>
     {
         private readonly IIdentityService _identityService;
 
@@ -19,9 +20,15 @@ namespace Chronolibris.Application.Handlers
             _identityService = identityService;
         }
 
-        public async Task<RegistrationResultDTO> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
+        public async Task<RegistrationResult> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
         {
-            var result = await _identityService.RegisterUserAsync(request.request);
+            var result = await _identityService.RegisterUserAsync(new RegisterRequest
+            {
+                Email = request.Email,
+                FamilyName = request.FamilyName,
+                Name = request.Name,
+                Password = request.Password
+            });
             return result;
         }
     }

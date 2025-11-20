@@ -1,4 +1,5 @@
-﻿using Chronolibris.Application.DTOs;
+﻿using Chronolibris.Application.Requests;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -18,16 +19,16 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register(RegisterRequest request)
+        public async Task<ActionResult> Register(RegisterUserRequest request)
         {
-            var result = await _mediator.Send(new RegisterUserRequest(request));
+            var result = await _mediator.Send(request);
             return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login(LoginRequest request)
+        public async Task<ActionResult> Login(LoginUserRequest request)
         {
-            var result = await _mediator.Send(new LoginUserRequest(request));
+            var result = await _mediator.Send(request);
             return Ok(result);
         }
     }

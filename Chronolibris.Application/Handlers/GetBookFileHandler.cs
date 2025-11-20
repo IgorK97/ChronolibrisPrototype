@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Queries;
 using Chronolibris.Domain.Interfaces;
@@ -11,20 +11,20 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetBookFileHandler : IRequestHandler<GetBookFileQuery, FileResultDto?>
+    public class GetBookFileHandler : IRequestHandler<GetBookFileQuery, FileResult?>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBookRepository _bookRepository;
         private readonly IBookFileProvider _fileProvider;
 
-        public GetBookFileHandler(IUnitOfWork unitOfWork, IBookFileProvider fileProvider)
+        public GetBookFileHandler(IBookRepository bookRepository, IBookFileProvider fileProvider)
         {
-            _unitOfWork = unitOfWork;
+            _bookRepository = bookRepository;
             _fileProvider = fileProvider;
         }
 
-        public async Task<FileResultDto?> Handle(GetBookFileQuery request, CancellationToken cancellationToken)
+        public async Task<FileResult?> Handle(GetBookFileQuery request, CancellationToken cancellationToken)
         {
-            var book = await _unitOfWork.Books.GetByIdAsync(request.bookId);
+            var book = await _bookRepository.GetByIdAsync(request.bookId);
             if (book == null || String.IsNullOrEmpty(book.FilePath))
             {
                 return null;
@@ -34,7 +34,7 @@ namespace Chronolibris.Application.Handlers
             if (stream == null)
                 return null;
 
-            return new FileResultDto
+            return new FileResult
             {
                 Stream = stream,
                 ContentType = "application/epub+zip",

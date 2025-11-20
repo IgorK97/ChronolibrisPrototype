@@ -3,31 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Interfaces;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetShelfBooksHandler
-    : IRequestHandler<GetShelfBooksQuery, PagedResultDto<BookListItemDto>>
+    public class GetShelfBooksHandler(IShelvesRepository shelvesRepository)
+    : IRequestHandler<GetShelfBooksQuery, PagedResult<BookListItem>>
     {
-        private readonly IUnitOfWork _uow;
 
-        public GetShelfBooksHandler(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
 
-        public async Task<PagedResultDto<BookListItemDto>> Handle(GetShelfBooksQuery request, CancellationToken ct)
+        public async Task<PagedResult<BookListItem>> Handle(GetShelfBooksQuery request, CancellationToken ct)
         {
-            var (books, total) = await _uow.Shelves.GetBooksForShelfAsync(
+            var (books, total) = await shelvesRepository.GetBooksForShelfAsync(
                 request.ShelfId, request.Page, request.PageSize);
 
-            return new PagedResultDto<BookListItemDto>
+            return new PagedResult<BookListItem>
             {
-                Items = books.Select(b => new BookListItemDto
+                Items = books.Select(b => new BookListItem
                 {
                     Id = b.Id,
                     Title = b.Title,

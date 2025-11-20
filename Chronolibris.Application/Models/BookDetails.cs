@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class BookDetailsDto
+    public class BookDetails
     {
         public long Id { get; set; }
         public required string Title { get; set; }
@@ -19,10 +19,10 @@ namespace Chronolibris.Application.DTOs
         public required long ReviewsCount { get; set; }
         public string? CoverUri { get; set; }
         public required bool IsAvailable { get; set; }
-        public PublisherDto? Publisher { get; set; }
+        public PublisherDetails? Publisher { get; set; }
         public string? Country { get; set; }
         public required string Language { get; set; }
 
-        public IEnumerable<BookPersonGroupDto> Participants { get; set; } = [];
+        public IEnumerable<BookPersonGroupDetails> Participants { get; set; } = [];
     }
 }

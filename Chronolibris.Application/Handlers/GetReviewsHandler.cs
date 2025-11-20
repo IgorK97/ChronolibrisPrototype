@@ -3,26 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using MediatR;
 using Chronolibris.Domain.Interfaces;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetReviewsHandler : IRequestHandler<GetReviewsRequest, List<ReviewDTO>>
+    public class GetReviewsHandler(IReviewRepository reviewRepository) : IRequestHandler<GetReviewsRequest, List<ReviewDetails>>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public GetReviewsHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
 
-        public async Task<List<ReviewDTO>> Handle(GetReviewsRequest request, CancellationToken cancellationToken)
+
+        public async Task<List<ReviewDetails>> Handle(GetReviewsRequest request, CancellationToken cancellationToken)
         {
-            var reviews = await _unitOfWork.Reviews.GetAllAsync();
+            var reviews = await reviewRepository.GetAllAsync();
             return reviews.Where(r => r.BookId == request.BookId)
-                .Select(r => new ReviewDTO
+                .Select(r => new ReviewDetails
                 {
                     Id = r.Id,
                     AverageRating = r.AverageRating,

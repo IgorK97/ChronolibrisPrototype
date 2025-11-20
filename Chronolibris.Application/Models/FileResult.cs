@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class FileResultDto
+    public class FileResult
     {
         //public byte[] FileBytes { get; set; } = Array.Empty<byte>();
         public required Stream Stream { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.DTOs;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class RateReviewHandler : IRequestHandler<RateReviewRequest, ReviewDTO?>
+    public class RateReviewHandler : IRequestHandler<RateReviewRequest, ReviewDetails?>
     {
         private readonly IUnitOfWork _unitOfWork;
         public RateReviewHandler(IUnitOfWork unitOfWork)
@@ -19,7 +19,7 @@ namespace Chronolibris.Application.Handlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ReviewDTO?> Handle(RateReviewRequest request, CancellationToken cancellationToken)
+        public async Task<ReviewDetails?> Handle(RateReviewRequest request, CancellationToken cancellationToken)
         {
             var review = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId);
             if (review == null)
@@ -59,7 +59,7 @@ namespace Chronolibris.Application.Handlers
             await _unitOfWork.SaveChangesAsync();
 
             //Maybe I need return not ReviewDTO, but Result {Succeeded, ReviewDTO} ??????????
-            return new ReviewDTO
+            return new ReviewDetails
             {
                 Id = review.Id,
                 AverageRating = review.AverageRating,

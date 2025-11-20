@@ -1,10 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Chronolibris.Application.Extensions;
 using Chronolibris.Application.Handlers;
-using Chronolibris.Infrastructure.Data;
+using Chronolibris.Infrastructure.DatabaseChecker;
 using Chronolibris.Infrastructure.DependencyInjection;
-using Chronolibris.Infrastructure.Seed;
 using ChronolibrisPrototype.DependencyInjection;
 using ChronolibrisPrototype.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -64,11 +64,10 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Add services to the container.
-//builder.Services.AddMediatR(typeof(Program).Assembly);
-builder.Services.AddMediatR(cfg =>
-    //cfg.RegisterServicesFromAssembly(typeof(Program).Assembly)
-    cfg.RegisterServicesFromAssembly(typeof(GetBookFileHandler).Assembly)
-    );
+//builder.Services.AddMediatR(cfg =>
+//    cfg.RegisterServicesFromAssembly(typeof(GetBookFileHandler).Assembly)
+//    );
+builder.Services.AddApplicationServices();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false;
@@ -123,7 +122,7 @@ app.Lifetime.ApplicationStarted.Register(async () =>
 {
     try
     {
-        await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
+        await DatabaseChecker.CheckDatabase(app.Services, configuration);
     }
     catch (Exception ex)
     {

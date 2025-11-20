@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class BookListItemDto
+    public class BookListItem
     {
         public required long Id { get; set; }
         public required string Title { get; set; }

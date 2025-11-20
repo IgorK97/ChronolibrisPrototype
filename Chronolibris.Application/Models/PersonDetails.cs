@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class PersonDto
+    public class PersonDetails
     {
         public required long Id { get; set; }
         public required string FullName { get; set; }

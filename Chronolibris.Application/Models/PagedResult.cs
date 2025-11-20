@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.DTOs
+namespace Chronolibris.Application.Models
 {
-    public class PagedResultDto<T>
+    public class PagedResult<T>
     {
         public IEnumerable<T> Items { get; init; } = [];
         public int TotalCount { get; init; }
