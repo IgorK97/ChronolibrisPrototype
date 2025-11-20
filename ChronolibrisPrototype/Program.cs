@@ -14,110 +14,108 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Очистка карты клеймов до настройки аутентификации
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+// CORS
 var allowAVDCORSPolicy = "_allowAVDCORSPolicy";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(allowAVDCORSPolicy,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173").WithOrigins("http://localhost:45457")
+            policy.WithOrigins("http://localhost:5173", "http://localhost:45457")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
         });
 });
 
-//Настройка логирования и уровней
+// Настройка логирования и уровней
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-
+// Настройка уровней логирования
 builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
     .AddFilter("System", LogLevel.Warning)
-    .AddFilter("ChronolibrisPrototype", LogLevel.Information);
+    .AddFilter("Default", LogLevel.Information);
+
+// Инфраструктурные сервисы
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
 builder.Services.AddFileProviderInfrastructure(builder.Configuration);
-builder.Services.AddCdnService(builder.Configuration);
-//Конфигурация аутентификации с использованием JWT-токенов
+
+// Конфигурация аутентификации с использованием JWT-токенов
 builder.Services.AddAuthentication(
     JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
-                                            {
-                                                ValidateIssuer = true,
-                                                ValidateAudience = true,
-                                                ValidateLifetime = true,
-                                                ValidateIssuerSigningKey = true,
-                                                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                                                ValidAudience = builder.Configuration["Jwt:Audience"],
-                                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
             GetBytes(builder.Configuration["Jwt:Key"])),
-                                                RoleClaimType = ClaimsIdentity.DefaultRoleClaimType
-                                            };
+            RoleClaimType = ClaimsIdentity.DefaultRoleClaimType
+        };
     });
 
+// Авторизация
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
 });
 
 // Add services to the container.
-//builder.Services.AddMediatR(cfg =>
-//    cfg.RegisterServicesFromAssembly(typeof(GetBookFileHandler).Assembly)
-//    );
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false;
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddHttpLogging(logging =>
-{
-    logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
-});
 
+// NSwag (OpenAPI/Swagger)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(options =>
 {
     options.Title = "My API";
 });
 
-var app = builder.Build();
+// HTTP Logging
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+});
 
+var app = builder.Build();
 var configuration = app.Configuration;
-//app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-
-    //app.UseSwagger();
-    //app.UseSwaggerUI(c =>
-    //{
-    //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chronolibris Prototype V1");
-    //});
 }
 
 app.UseHttpsRedirection();
 app.UseHttpLogging();
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
 app.UseCors(allowAVDCORSPolicy);
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseStaticFiles();
-app.UseOpenApi();
-app.UseSwaggerUI();
 app.MapControllers();
 
-//await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
+app.UseOpenApi();
+app.UseSwaggerUI();
 
-
+// Запуск проверки БД (миграций) при старте приложения
 app.Lifetime.ApplicationStarted.Register(async () =>
 {
     try
