@@ -50,7 +50,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             IConfiguration configuration)
         {
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddIdentity<ApplicationUser, IdentityRole<long>>()
+            services.AddIdentity<User, IdentityRole<long>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 

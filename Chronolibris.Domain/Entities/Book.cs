@@ -31,13 +31,13 @@ namespace Chronolibris.Domain.Entities
         public Series? Series { get; set; }
         public Country Country { get; set; } = null!;
         public Language Language { get; set; } = null!;
-        public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
-        public ICollection<Review> Reviews { get; set; } = new List<Review>();
-        public ICollection<Content> Contents { get; set; } = new List<Content>();
+        public ICollection<Bookmark> Bookmarks { get; set; } = [];
+        public ICollection<Review> Reviews { get; set; } = [];
+        public ICollection<BookContent> BookContents { get; set; } = [];
         public ICollection<Shelf> Shelves { get; set; } = [];
-        public ICollection<Person> Persons { get; set; } = new List<Person>();
-        public ICollection<Participation> Participations { get; set; } = new List<Participation>();
-        public ICollection<Selection> Selections { get; set; } = new List<Selection>();
+        public ICollection<Person> Persons { get; set; } = [];
+        public ICollection<Participation> Participations { get; set; } = [];
+        public ICollection<Selection> Selections { get; set; } = [];
         
     }
 }

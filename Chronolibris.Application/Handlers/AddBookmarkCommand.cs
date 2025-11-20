@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.DTOs;
 using MediatR;
 
-namespace Chronolibris.Application.Requests
+namespace Chronolibris.Application.Handlers
 {
     public record AddBookmarkCommand(long BookId, long UserId, string Mark) : IRequest<bool>;
 }

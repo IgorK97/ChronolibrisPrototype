@@ -10,18 +10,20 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetBookmarksHandler : IRequestHandler<GetBookmarksQuery, List<BookmarkDto>?>
+    public class GetBookmarksHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetBookmarksQuery, List<BookmarkDto>>
     {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public GetBookmarksHandler(IUnitOfWork unitOfWork)
+        public async Task<List<BookmarkDto>> Handle(GetBookmarksQuery request, CancellationToken cancellationToken)
         {
-            _unitOfWork = unitOfWork;
-        }
 
-        public async Task<List<BookmarkDto>?> Handle(GetBookmarksQuery request, CancellationToken cancellationToken)
-        {
-            var bookmarks = await _unitOfWork.Bookmarks.GetAllForBookAndUserAsync(request.Bookid, request.UserId);
+            var bookmarks = await unitOfWork.Bookmarks
+                                            .GetAllForBookAndUserAsync(request.Bookid, request.UserId);
+
+
+            if (bookmarks == null)
+            {
+                return new List<BookmarkDto>();
+            }
+
             return bookmarks.Select(b => new BookmarkDto
             {
                 Id = b.Id,

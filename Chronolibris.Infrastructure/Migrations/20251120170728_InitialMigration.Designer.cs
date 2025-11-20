@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251119205825_ChangeColumnTypeForAverageRating")]
-    partial class ChangeColumnTypeForAverageRating
+    [Migration("20251120170728_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,25 +24,6 @@ namespace Chronolibris.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("BookContent", b =>
-                {
-                    b.Property<long>("BooksId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("books_id");
-
-                    b.Property<long>("ContentsId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("contents_id");
-
-                    b.HasKey("BooksId", "ContentsId")
-                        .HasName("pk_books_contents");
-
-                    b.HasIndex("ContentsId")
-                        .HasDatabaseName("ix_books_contents_contents_id");
-
-                    b.ToTable("books_contents", (string)null);
-                });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Book", b =>
                 {
@@ -152,6 +133,81 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasDatabaseName("ix_books_tag_id");
 
                     b.ToTable("books", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            AverageRating = 0m,
+                            CountryId = 1L,
+                            CoverPath = "BuddismHistory/BuddismJapanGrig/MainFile.png",
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Монография является первой в отечественной литературе попыткой...",
+                            FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
+                            IsAvailable = true,
+                            IsFragment = false,
+                            LanguageId = 2L,
+                            PublisherId = 2L,
+                            RatingsCount = 0L,
+                            ReviewsCount = 0L,
+                            Title = "Буддизм в Японии",
+                            Year = 1993
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            AverageRating = 0m,
+                            CountryId = 1L,
+                            CoverPath = "EconomicHistory/StructureBrodel/MainFile.png",
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Это — второе крупное исследование Ф. Броделя...",
+                            FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
+                            IsAvailable = true,
+                            IsFragment = false,
+                            LanguageId = 2L,
+                            PublisherId = 1L,
+                            RatingsCount = 0L,
+                            ReviewsCount = 0L,
+                            Title = "Структуры повседневности: возможное и невозможное",
+                            Year = 1986
+                        });
+                });
+
+            modelBuilder.Entity("Chronolibris.Domain.Entities.BookContent", b =>
+                {
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("book_id");
+
+                    b.Property<long>("ContentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("content_id");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer")
+                        .HasColumnName("order");
+
+                    b.HasKey("BookId", "ContentId")
+                        .HasName("pk_books_contents");
+
+                    b.HasIndex("ContentId")
+                        .HasDatabaseName("ix_books_contents_content_id");
+
+                    b.ToTable("books_contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            BookId = 1L,
+                            ContentId = 1L,
+                            Order = 1
+                        },
+                        new
+                        {
+                            BookId = 2L,
+                            ContentId = 2L,
+                            Order = 1
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Bookmark", b =>
@@ -185,6 +241,9 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.HasIndex("BookId")
                         .HasDatabaseName("ix_bookmarks_book_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_bookmarks_user_id");
 
                     b.ToTable("bookmarks", (string)null);
                 });
@@ -254,6 +313,34 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasDatabaseName("ix_contents_language_id");
 
                     b.ToTable("contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CountryId = 1L,
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Монография является первой в отечественной литературе попыткой проследить процесс становления японского буддизма...",
+                            IsOriginal = true,
+                            IsTranslate = false,
+                            LanguageId = 2L,
+                            Position = 0,
+                            Title = "Буддизм в Японии",
+                            Year = 1993
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CountryId = 5L,
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Это — второе крупное исследование Ф. Броделя. Первое — «Средиземное море и мир Средиземноморья в эпоху Филиппа II»...",
+                            IsOriginal = false,
+                            IsTranslate = true,
+                            LanguageId = 2L,
+                            Position = 0,
+                            Title = "Структуры повседневности: возможное и невозможное",
+                            Year = 1979
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Country", b =>
@@ -274,6 +361,33 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasName("pk_countries");
 
                     b.ToTable("countries", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Россия"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "СССР"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Российская империя"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Name = "США"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Name = "Франция"
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Language", b =>
@@ -294,6 +408,28 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasName("pk_languages");
 
                     b.ToTable("languages", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Английский"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "Русский"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Французский"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Name = "Немецкий"
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Participation", b =>
@@ -337,6 +473,22 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasDatabaseName("ix_participations_person_role_id");
 
                     b.ToTable("participations", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            ContentId = 1L,
+                            PersonId = 1L,
+                            PersonRoleId = 1L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            ContentId = 2L,
+                            PersonId = 2L,
+                            PersonRoleId = 1L
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Person", b =>
@@ -375,6 +527,24 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasName("pk_persons");
 
                     b.ToTable("persons", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Советский и российский востоковед-японист, литературовед, переводчица...",
+                            ImagePath = "none",
+                            Name = "Татьяна Петровна Григорьева"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Французский историк, член Французской академии...",
+                            ImagePath = "Brodel/MainFile.jpeg",
+                            Name = "Фернан Поль Ахилл Бродель"
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.PersonRole", b =>
@@ -395,6 +565,23 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasName("pk_person_roles");
 
                     b.ToTable("person_roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Автор"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "Переводчик"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Редактор"
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Publisher", b =>
@@ -432,6 +619,24 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasName("pk_publishers");
 
                     b.ToTable("publishers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CountryId = 2L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
+                            Name = "Прогресс"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CountryId = 1L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
+                            Name = "Восточная литература"
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Review", b =>
@@ -442,10 +647,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long?>("ApplicationUserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("application_user_id");
 
                     b.Property<long>("AverageRating")
                         .HasColumnType("bigint")
@@ -493,11 +694,11 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_reviews");
 
-                    b.HasIndex("ApplicationUserId")
-                        .HasDatabaseName("ix_reviews_application_user_id");
-
                     b.HasIndex("BookId")
                         .HasDatabaseName("ix_reviews_book_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_reviews_user_id");
 
                     b.ToTable("reviews", (string)null);
                 });
@@ -528,6 +729,9 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.HasIndex("ReviewId")
                         .HasDatabaseName("ix_reviews_ratings_review_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_reviews_ratings_user_id");
 
                     b.ToTable("reviews_ratings", (string)null);
                 });
@@ -567,6 +771,32 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasName("pk_selections");
 
                     b.ToTable("selections", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
+                            IsActive = true,
+                            Name = "Экономическая история"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
+                            IsActive = true,
+                            Name = "История культуры"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
+                            IsActive = true,
+                            Name = "История мира"
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Series", b =>
@@ -609,10 +839,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("ApplicationUserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("application_user_id");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -629,8 +855,8 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_shelves");
 
-                    b.HasIndex("ApplicationUserId")
-                        .HasDatabaseName("ix_shelves_application_user_id");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_shelves_user_id");
 
                     b.ToTable("shelves", (string)null);
                 });
@@ -680,6 +906,23 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasName("pk_tag_types");
 
                     b.ToTable("tag_types", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Место"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "Время"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Персоналия"
+                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Theme", b =>
@@ -707,9 +950,31 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasDatabaseName("ix_themes_parent_theme_id");
 
                     b.ToTable("themes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Отечественная история"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "История религии"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "История культуры"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Name = "Социально-экономическая история"
+                        });
                 });
 
-            modelBuilder.Entity("Chronolibris.Infrastructure.Data.ApplicationUser", b =>
+            modelBuilder.Entity("Chronolibris.Infrastructure.Data.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -1039,23 +1304,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.ToTable("contents_themes", (string)null);
                 });
 
-            modelBuilder.Entity("BookContent", b =>
-                {
-                    b.HasOne("Chronolibris.Domain.Entities.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_books_contents_books_books_id");
-
-                    b.HasOne("Chronolibris.Domain.Entities.Content", null)
-                        .WithMany()
-                        .HasForeignKey("ContentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_books_contents_contents_contents_id");
-                });
-
             modelBuilder.Entity("Chronolibris.Domain.Entities.Book", b =>
                 {
                     b.HasOne("Chronolibris.Domain.Entities.Country", "Country")
@@ -1096,6 +1344,27 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Navigation("Series");
                 });
 
+            modelBuilder.Entity("Chronolibris.Domain.Entities.BookContent", b =>
+                {
+                    b.HasOne("Chronolibris.Domain.Entities.Book", "Book")
+                        .WithMany("BookContents")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_books_contents_books_book_id");
+
+                    b.HasOne("Chronolibris.Domain.Entities.Content", "Content")
+                        .WithMany("BookContents")
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_books_contents_contents_content_id");
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Content");
+                });
+
             modelBuilder.Entity("Chronolibris.Domain.Entities.Bookmark", b =>
                 {
                     b.HasOne("Chronolibris.Domain.Entities.Book", "Book")
@@ -1104,6 +1373,13 @@ namespace Chronolibris.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_bookmarks_books_book_id");
+
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_asp_net_users_user_id");
 
                     b.Navigation("Book");
                 });
@@ -1166,17 +1442,19 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Review", b =>
                 {
-                    b.HasOne("Chronolibris.Infrastructure.Data.ApplicationUser", null)
-                        .WithMany("Reviews")
-                        .HasForeignKey("ApplicationUserId")
-                        .HasConstraintName("fk_reviews_users_application_user_id");
-
                     b.HasOne("Chronolibris.Domain.Entities.Book", null)
                         .WithMany("Reviews")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_reviews_books_book_id");
+
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reviews_asp_net_users_user_id");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.ReviewsRating", b =>
@@ -1187,6 +1465,13 @@ namespace Chronolibris.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_reviews_ratings_reviews_review_id");
+
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reviews_ratings_asp_net_users_user_id");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Series", b =>
@@ -1203,10 +1488,12 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Shelf", b =>
                 {
-                    b.HasOne("Chronolibris.Infrastructure.Data.ApplicationUser", null)
-                        .WithMany("Shelves")
-                        .HasForeignKey("ApplicationUserId")
-                        .HasConstraintName("fk_shelves_users_application_user_id");
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_shelves_asp_net_users_user_id");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Tag", b =>
@@ -1243,7 +1530,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
                 {
-                    b.HasOne("Chronolibris.Infrastructure.Data.ApplicationUser", null)
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1253,7 +1540,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
                 {
-                    b.HasOne("Chronolibris.Infrastructure.Data.ApplicationUser", null)
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1270,7 +1557,7 @@ namespace Chronolibris.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_roles_asp_net_roles_role_id");
 
-                    b.HasOne("Chronolibris.Infrastructure.Data.ApplicationUser", null)
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1280,7 +1567,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
                 {
-                    b.HasOne("Chronolibris.Infrastructure.Data.ApplicationUser", null)
+                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1341,6 +1628,8 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Book", b =>
                 {
+                    b.Navigation("BookContents");
+
                     b.Navigation("Bookmarks");
 
                     b.Navigation("Participations");
@@ -1350,6 +1639,8 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Content", b =>
                 {
+                    b.Navigation("BookContents");
+
                     b.Navigation("Participations");
                 });
 
@@ -1392,13 +1683,6 @@ namespace Chronolibris.Infrastructure.Migrations
             modelBuilder.Entity("Chronolibris.Domain.Entities.TagType", b =>
                 {
                     b.Navigation("Tags");
-                });
-
-            modelBuilder.Entity("Chronolibris.Infrastructure.Data.ApplicationUser", b =>
-                {
-                    b.Navigation("Reviews");
-
-                    b.Navigation("Shelves");
                 });
 #pragma warning restore 612, 618
         }

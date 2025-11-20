@@ -10,6 +10,6 @@ namespace Chronolibris.Application.DTOs
     {
         public required long BookId { get; set; }
         public required long UserId { get; set; }
-        public required string mark { get; set; }
+        public required string Mark { get; set; }
     }
 }

@@ -116,20 +116,20 @@ app.UseOpenApi();
 app.UseSwaggerUI();
 app.MapControllers();
 
-await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
+//await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
 
 
-//app.Lifetime.ApplicationStarted.Register(async () =>
-//{
-//    try
-//    {
-//        await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
-//    }
-//    catch (Exception ex)
-//    {
-//        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-//        logger.LogError(ex, "Database seeding failed");
-//    }
-//});
+app.Lifetime.ApplicationStarted.Register(async () =>
+{
+    try
+    {
+        await InitialDatabaseSeeder.InitialSeedDatabase(app.Services, configuration);
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Database seeding failed");
+    }
+});
 
 app.Run();

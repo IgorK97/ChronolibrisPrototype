@@ -25,9 +25,52 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany(s => s.Books)
                 .UsingEntity("books_selections");
 
-            builder.HasMany(b => b.Contents)
-                .WithMany(c => c.Books)
-                .UsingEntity(j => j.ToTable("books_contents"));
+            //builder.HasMany(b => b.Contents)
+            //    .WithMany(c => c.Books)
+            //    .UsingEntity(j => j.ToTable("books_contents"));
+
+            DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
+
+
+            builder.HasData(
+                new Book
+                {
+                    Id = 1,
+                    AverageRating = 0,
+                    CountryId = 1, // Россия
+                    CoverPath = "BuddismHistory/BuddismJapanGrig/MainFile.png",
+                    CreatedAt = dt,
+                    Description = "Монография является первой в отечественной литературе попыткой...",
+                    FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
+                    IsAvailable = true,
+                    IsFragment = false,
+                    LanguageId = 2, // Русский
+                    RatingsCount = 0,
+                    ReviewsCount = 0,
+                    Title = "Буддизм в Японии",
+                    Year = 1993,
+                    PublisherId = 2, // Восточная литература
+                },
+                new Book
+                {
+                    Id = 2,
+                    AverageRating = 0,
+                    CountryId = 1, // Россия
+                    CoverPath = "EconomicHistory/StructureBrodel/MainFile.png",
+                    CreatedAt = dt,
+                    Description = "Это — второе крупное исследование Ф. Броделя...",
+                    FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
+                    IsAvailable = true,
+                    IsFragment = false,
+                    LanguageId = 2, // Русский
+                    RatingsCount = 0,
+                    ReviewsCount = 0,
+                    Title = "Структуры повседневности: возможное и невозможное",
+                    Year = 1986,
+                    PublisherId = 1, // Прогресс
+                }
+            );
+
         }
     }
 }

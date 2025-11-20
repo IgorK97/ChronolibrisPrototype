@@ -9,11 +9,11 @@ namespace Chronolibris.Application.Requests
 {
     public class CreateReviewRequest : IRequest<long>
     {
-        public long BookId { get; set; }
-        public long UserId { get; set; }
-        public string? Title { get; set; }
-        public string? Description { get; set; }
-        public short Score { get; set; }
-        public string? UserName { get; set; }
+        public long BookId { get; init; }
+        public long UserId { get; init; }
+        public string? Title { get; init; }
+        public string? Description { get; init; }
+        public short Score { get; init; }
+        public string? UserName { get; init; }
     }
 }

@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
-    //[Table("books_contents")]
+    [Table("books_contents")]
     public class BookContent
     {
         public long ContentId { get; set; }
         public long BookId { get; set; }
-        public Content Content { get; set; } = null!;
-        public Book Book { get; set; } = null!;
+        public Content Content { get; set; }
+        public Book Book { get; set; }
+        public int Order { get; set; }
     }
 }

@@ -19,8 +19,8 @@ namespace Chronolibris.Infrastructure.Seed
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            context.Database.Migrate();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            await context.Database.MigrateAsync();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<long>>>();
             if (!context.Roles.Any())
             {
@@ -32,7 +32,7 @@ namespace Chronolibris.Infrastructure.Seed
             if (!userManager.Users.Any())
             {
                 var dt = DateTime.UtcNow;
-                var adminUser = new ApplicationUser
+                var adminUser = new User
                 {
                     FamilyName = "KQWERTY",
                     IsDeleted = false,
@@ -58,15 +58,15 @@ namespace Chronolibris.Infrastructure.Seed
                         string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
             }
-            await DataDatabaseSeeder.LanguageSeedDatabase(context);
-            await DataDatabaseSeeder.CountrySeedDatabase(context);
-            await DataDatabaseSeeder.PersonSeedDatabase(context);
-            await DataDatabaseSeeder.PublisherSeedDatabase(context);
-            await DataDatabaseSeeder.TagTypeSeedDatabase(context);
-            await DataDatabaseSeeder.ThemeSeedDatabase(context);
-            await DataDatabaseSeeder.ContentsSeedDatabase(context);
-            await DataDatabaseSeeder.BooksSeedDatabase(context);
-            await DataDatabaseSeeder.SelectionSeedDatabase(context);
+            //await DataDatabaseSeeder.LanguageSeedDatabase(context);
+            //await DataDatabaseSeeder.CountrySeedDatabase(context);
+            //await DataDatabaseSeeder.PersonSeedDatabase(context);
+            //await DataDatabaseSeeder.PublisherSeedDatabase(context);
+            //await DataDatabaseSeeder.TagTypeSeedDatabase(context);
+            //await DataDatabaseSeeder.ThemeSeedDatabase(context);
+            //await DataDatabaseSeeder.ContentsSeedDatabase(context);
+            //await DataDatabaseSeeder.BooksSeedDatabase(context);
+            //await DataDatabaseSeeder.SelectionSeedDatabase(context);
         }
 
         

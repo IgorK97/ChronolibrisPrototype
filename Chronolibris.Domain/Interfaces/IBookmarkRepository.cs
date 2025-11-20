@@ -9,7 +9,7 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface IBookmarkRepository : IGenericRepository<Bookmark>
     {
-        Task<List<Bookmark>?> GetAllForBookAndUserAsync(long bookId, long userId);
+        Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId);
 
     }
 }

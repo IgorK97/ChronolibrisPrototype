@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Chronolibris.Infrastructure.Data
 {
-    public class ApplicationUser : IdentityUser<long>
+    public class User : IdentityUser<long>
     {
         //[Key]
         //public required long Id { get; set; }
@@ -22,7 +22,6 @@ namespace Chronolibris.Infrastructure.Data
         public required DateTime LastEnteredAt { get; set; }
         public required bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public ICollection<Shelf> Shelves { get; set; } = new List<Shelf>();
-        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+       
     }
 }

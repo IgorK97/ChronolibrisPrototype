@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
@@ -10,22 +9,31 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chronolibris.Infrastructure.Configurations
 {
-    //public class BookContentConfiguration : IEntityTypeConfiguration<BookContent>
-    //{
-    //    public void Configure(EntityTypeBuilder<BookContent> builder)
-    //    {
-    //        builder
-    //            .ToTable("books_contents")
-    //            .HasKey(bc => new { bc.BookId, bc.ContentId });
-    //        builder
-    //            .HasOne(bc => bc.Book)
-    //            .WithMany(b => b.Contents)
-    //            .HasForeignKey(bc => bc.BookId);
+    public class BookContentConfiguration : IEntityTypeConfiguration<BookContent>
+    {
+        public void Configure(EntityTypeBuilder<BookContent> builder)
+        {
+            // Используем HasData для заполнения таблицы связей (Join Table)
+            builder.HasData(
+                // --- Книга 1 ("Буддизм в Японии") ---
+                new BookContent
+                {
+                    BookId = 1,
+                    ContentId = 1,
+                    Order = 1 // Контент 1 является первым контентом в Книге 1
+                },
 
-    //        builder
-    //            .HasOne(bc => bc.Content)
-    //            .WithMany(c => c.Books)
-    //            .HasForeignKey(bc => bc.ContentId);
-    //    }
-    //}
+                // --- Книга 2 ("Структуры повседневности...") ---
+                new BookContent
+                {
+                    BookId = 2,
+                    ContentId = 2,
+                    Order = 1 // Контент 2 является первым контентом в Книге 2
+                }
+
+            // Если бы Контент 1 входил и в Книгу 2:
+            // new BookContent { BookId = 2, ContentId = 1, Order = 2 }
+            );
+        }
+    }
 }

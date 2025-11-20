@@ -16,12 +16,12 @@ namespace Chronolibris.Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, 
-            SignInManager<ApplicationUser> signInManager,
+        public IdentityService(UserManager<User> userManager, 
+            SignInManager<User> signInManager,
             IConfiguration config)
         {
             _userManager = userManager;
@@ -32,7 +32,7 @@ namespace Chronolibris.Infrastructure.Identity
         public async Task<RegistrationResultDTO> RegisterUserAsync(RegisterRequest request)
         {
             DateTime dt = DateTime.UtcNow;
-            var user = new ApplicationUser
+            var user = new User
             {
                 FamilyName = request.FamilyName,
                 IsDeleted = false,
@@ -67,7 +67,7 @@ namespace Chronolibris.Infrastructure.Identity
             };
         }
 
-        private string GenerateJwtToken(ApplicationUser user)
+        private string GenerateJwtToken(User user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

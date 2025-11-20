@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<long>, long>
+    public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<long>, long>
     {
 
         public DbSet<Content> Contents { get; set; }
@@ -39,6 +39,27 @@ namespace Chronolibris.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<IdentityRole<long>>().ToTable("Roles");
+            modelBuilder.Entity<IdentityUserRole<long>>().ToTable("UserRoles");
+            modelBuilder.Entity<IdentityUserClaim<long>>().ToTable("UserClaims");
+            modelBuilder.Entity<IdentityUserLogin<long>>().ToTable("UserLogins");
+            modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("RoleClaims");
+            modelBuilder.Entity<IdentityUserToken<long>>().ToTable("UserTokens");
+
+            modelBuilder.Entity<BookContent>()
+                .HasKey(bc => new { bc.BookId, bc.ContentId });
+
+            modelBuilder.Entity<BookContent>()
+                .HasOne(bc => bc.Book)
+                .WithMany(b => b.BookContents)
+                .HasForeignKey(bc => bc.BookId);
+
+            modelBuilder.Entity<BookContent>()
+                .HasOne(bc => bc.Content)
+                .WithMany(c => c.BookContents)
+                .HasForeignKey(bc => bc.ContentId);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 

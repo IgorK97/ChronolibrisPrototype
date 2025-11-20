@@ -20,11 +20,11 @@ namespace Chronolibris.Domain.Entities
         public required int Position { get; set; }
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public ICollection<BookContent> BookContents { get; set; } = [];
         public Country Country { get; set; } = null!;
         public Language Language { get; set; } = null!;
-        public ICollection<Participation> Participations { get; set; } = new List<Participation>();
-        public ICollection<Person> Persons { get; set;} = new List<Person>();
-        public ICollection<Theme> Themes { get; set; }=new List<Theme>();
+        public ICollection<Participation> Participations { get; set; } = [];
+        public ICollection<Person> Persons { get; set;} = [];
+        public ICollection<Theme> Themes { get; set; }=[];
     }
 }

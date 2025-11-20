@@ -4,10 +4,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Chronolibris.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,7 +65,7 @@ namespace Chronolibris.Infrastructure.Migrations
                 name: "countries",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "text", nullable: false)
                 },
@@ -76,7 +78,7 @@ namespace Chronolibris.Infrastructure.Migrations
                 name: "languages",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "text", nullable: false)
                 },
@@ -89,7 +91,7 @@ namespace Chronolibris.Infrastructure.Migrations
                 name: "person_roles",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "text", nullable: false)
                 },
@@ -125,7 +127,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     description = table.Column<string>(type: "text", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    country_id = table.Column<int>(type: "integer", nullable: false)
+                    country_id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -153,7 +155,7 @@ namespace Chronolibris.Infrastructure.Migrations
                 name: "tag_types",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "text", nullable: false)
                 },
@@ -295,17 +297,17 @@ namespace Chronolibris.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    application_user_id = table.Column<long>(type: "bigint", nullable: true)
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_shelves", x => x.id);
                     table.ForeignKey(
-                        name: "fk_shelves_users_application_user_id",
-                        column: x => x.application_user_id,
+                        name: "fk_shelves_asp_net_users_user_id",
+                        column: x => x.user_id,
                         principalTable: "AspNetUsers",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -316,8 +318,8 @@ namespace Chronolibris.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     title = table.Column<string>(type: "text", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
-                    country_id = table.Column<int>(type: "integer", nullable: false),
-                    language_id = table.Column<int>(type: "integer", nullable: false),
+                    country_id = table.Column<long>(type: "bigint", nullable: false),
+                    language_id = table.Column<long>(type: "bigint", nullable: false),
                     year = table.Column<int>(type: "integer", nullable: true),
                     is_original = table.Column<bool>(type: "boolean", nullable: false),
                     is_translate = table.Column<bool>(type: "boolean", nullable: false),
@@ -371,7 +373,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "text", nullable: false),
-                    tag_type_id = table.Column<int>(type: "integer", nullable: false)
+                    tag_type_id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -414,19 +416,19 @@ namespace Chronolibris.Infrastructure.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    title = table.Column<long>(type: "bigint", nullable: false),
-                    description = table.Column<long>(type: "bigint", nullable: false),
-                    country_id = table.Column<int>(type: "integer", nullable: false),
-                    language_id = table.Column<int>(type: "integer", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: false),
+                    country_id = table.Column<long>(type: "bigint", nullable: false),
+                    language_id = table.Column<long>(type: "bigint", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    year = table.Column<long>(type: "bigint", nullable: true),
+                    year = table.Column<int>(type: "integer", nullable: true),
                     isbn = table.Column<string>(type: "text", nullable: true),
-                    is_fragment = table.Column<long>(type: "bigint", nullable: false),
-                    file_path = table.Column<long>(type: "bigint", nullable: false),
-                    cover_path = table.Column<long>(type: "bigint", nullable: false),
-                    is_available = table.Column<long>(type: "bigint", nullable: false),
-                    average_rating = table.Column<long>(type: "bigint", nullable: false),
+                    is_fragment = table.Column<bool>(type: "boolean", nullable: false),
+                    file_path = table.Column<string>(type: "text", nullable: false),
+                    cover_path = table.Column<string>(type: "text", nullable: false),
+                    is_available = table.Column<bool>(type: "boolean", nullable: false),
+                    average_rating = table.Column<decimal>(type: "numeric", nullable: false),
                     ratings_count = table.Column<long>(type: "bigint", nullable: false),
                     reviews_count = table.Column<long>(type: "bigint", nullable: false),
                     parent_book_id = table.Column<long>(type: "bigint", nullable: true),
@@ -481,6 +483,12 @@ namespace Chronolibris.Infrastructure.Migrations
                 {
                     table.PrimaryKey("pk_bookmarks", x => x.id);
                     table.ForeignKey(
+                        name: "fk_bookmarks_asp_net_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "fk_bookmarks_books_book_id",
                         column: x => x.book_id,
                         principalTable: "books",
@@ -492,21 +500,22 @@ namespace Chronolibris.Infrastructure.Migrations
                 name: "books_contents",
                 columns: table => new
                 {
-                    books_id = table.Column<long>(type: "bigint", nullable: false),
-                    contents_id = table.Column<long>(type: "bigint", nullable: false)
+                    content_id = table.Column<long>(type: "bigint", nullable: false),
+                    book_id = table.Column<long>(type: "bigint", nullable: false),
+                    order = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_books_contents", x => new { x.books_id, x.contents_id });
+                    table.PrimaryKey("pk_books_contents", x => new { x.book_id, x.content_id });
                     table.ForeignKey(
-                        name: "fk_books_contents_books_books_id",
-                        column: x => x.books_id,
+                        name: "fk_books_contents_books_book_id",
+                        column: x => x.book_id,
                         principalTable: "books",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_books_contents_contents_contents_id",
-                        column: x => x.contents_id,
+                        name: "fk_books_contents_contents_content_id",
+                        column: x => x.content_id,
                         principalTable: "contents",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -567,7 +576,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     person_id = table.Column<long>(type: "bigint", nullable: false),
-                    person_role_id = table.Column<int>(type: "integer", nullable: false),
+                    person_role_id = table.Column<long>(type: "bigint", nullable: false),
                     content_id = table.Column<long>(type: "bigint", nullable: true),
                     book_id = table.Column<long>(type: "bigint", nullable: true)
                 },
@@ -610,25 +619,26 @@ namespace Chronolibris.Infrastructure.Migrations
                     name = table.Column<string>(type: "text", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
                     score = table.Column<short>(type: "smallint", nullable: false),
-                    average_rating = table.Column<decimal>(type: "numeric", nullable: false),
+                    average_rating = table.Column<long>(type: "bigint", nullable: false),
                     likes_count = table.Column<long>(type: "bigint", nullable: false),
                     dislikes_count = table.Column<long>(type: "bigint", nullable: false),
-                    application_user_id = table.Column<long>(type: "bigint", nullable: true)
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_reviews", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_reviews_asp_net_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_reviews_books_book_id",
                         column: x => x.book_id,
                         principalTable: "books",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_reviews_users_application_user_id",
-                        column: x => x.application_user_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -645,11 +655,135 @@ namespace Chronolibris.Infrastructure.Migrations
                 {
                     table.PrimaryKey("pk_reviews_ratings", x => x.id);
                     table.ForeignKey(
+                        name: "fk_reviews_ratings_asp_net_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "fk_reviews_ratings_reviews_review_id",
                         column: x => x.review_id,
                         principalTable: "reviews",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "countries",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1L, "Россия" },
+                    { 2L, "СССР" },
+                    { 3L, "Российская империя" },
+                    { 4L, "США" },
+                    { 5L, "Франция" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "languages",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1L, "Английский" },
+                    { 2L, "Русский" },
+                    { 3L, "Французский" },
+                    { 4L, "Немецкий" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "person_roles",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1L, "Автор" },
+                    { 2L, "Переводчик" },
+                    { 3L, "Редактор" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "persons",
+                columns: new[] { "id", "created_at", "description", "image_path", "name", "updated_at" },
+                values: new object[,]
+                {
+                    { 1L, new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Советский и российский востоковед-японист, литературовед, переводчица...", "none", "Татьяна Петровна Григорьева", null },
+                    { 2L, new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Французский историк, член Французской академии...", "Brodel/MainFile.jpeg", "Фернан Поль Ахилл Бродель", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "publishers",
+                columns: new[] { "id", "country_id", "created_at", "description", "name", "updated_at" },
+                values: new object[,]
+                {
+                    { 1L, 2L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", "Прогресс", null },
+                    { 2L, 1L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", "Восточная литература", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "selections",
+                columns: new[] { "id", "created_at", "description", "is_active", "name", "updated_at" },
+                values: new object[,]
+                {
+                    { 1L, new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "", true, "Экономическая история", null },
+                    { 2L, new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "", true, "История культуры", null },
+                    { 3L, new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "", true, "История мира", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "tag_types",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1L, "Место" },
+                    { 2L, "Время" },
+                    { 3L, "Персоналия" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "themes",
+                columns: new[] { "id", "name", "parent_theme_id" },
+                values: new object[,]
+                {
+                    { 1L, "Отечественная история", null },
+                    { 2L, "История религии", null },
+                    { 3L, "История культуры", null },
+                    { 4L, "Социально-экономическая история", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "books",
+                columns: new[] { "id", "average_rating", "country_id", "cover_path", "created_at", "description", "file_path", "isbn", "is_available", "is_fragment", "language_id", "parent_book_id", "publisher_id", "ratings_count", "reviews_count", "series_id", "tag_id", "title", "updated_at", "year" },
+                values: new object[,]
+                {
+                    { 1L, 0m, 1L, "BuddismHistory/BuddismJapanGrig/MainFile.png", new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Монография является первой в отечественной литературе попыткой...", "BuddismHistory/BuddismJapanGrig/MainFile.epub", null, true, false, 2L, null, 2L, 0L, 0L, null, null, "Буддизм в Японии", null, 1993 },
+                    { 2L, 0m, 1L, "EconomicHistory/StructureBrodel/MainFile.png", new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Это — второе крупное исследование Ф. Броделя...", "EconomicHistory/StructureBrodel/MainFile.epub", null, true, false, 2L, null, 1L, 0L, 0L, null, null, "Структуры повседневности: возможное и невозможное", null, 1986 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "contents",
+                columns: new[] { "id", "country_id", "created_at", "description", "is_original", "is_translate", "language_id", "parent_content_id", "position", "title", "updated_at", "year" },
+                values: new object[,]
+                {
+                    { 1L, 1L, new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Монография является первой в отечественной литературе попыткой проследить процесс становления японского буддизма...", true, false, 2L, null, 0, "Буддизм в Японии", null, 1993 },
+                    { 2L, 5L, new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Это — второе крупное исследование Ф. Броделя. Первое — «Средиземное море и мир Средиземноморья в эпоху Филиппа II»...", false, true, 2L, null, 0, "Структуры повседневности: возможное и невозможное", null, 1979 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "books_contents",
+                columns: new[] { "book_id", "content_id", "order" },
+                values: new object[,]
+                {
+                    { 1L, 1L, 1 },
+                    { 2L, 2L, 1 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "participations",
+                columns: new[] { "id", "book_id", "content_id", "person_id", "person_role_id" },
+                values: new object[,]
+                {
+                    { 1L, null, 1L, 1L, 1L },
+                    { 2L, null, 2L, 2L, 1L }
                 });
 
             migrationBuilder.CreateIndex(
@@ -695,6 +829,11 @@ namespace Chronolibris.Infrastructure.Migrations
                 column: "book_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_bookmarks_user_id",
+                table: "bookmarks",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_books_country_id",
                 table: "books",
                 column: "country_id");
@@ -720,9 +859,9 @@ namespace Chronolibris.Infrastructure.Migrations
                 column: "tag_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_books_contents_contents_id",
+                name: "ix_books_contents_content_id",
                 table: "books_contents",
-                column: "contents_id");
+                column: "content_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_books_selections_selections_id",
@@ -770,14 +909,14 @@ namespace Chronolibris.Infrastructure.Migrations
                 column: "person_role_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_reviews_application_user_id",
-                table: "reviews",
-                column: "application_user_id");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_reviews_book_id",
                 table: "reviews",
                 column: "book_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_reviews_user_id",
+                table: "reviews",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_reviews_ratings_review_id",
@@ -785,14 +924,19 @@ namespace Chronolibris.Infrastructure.Migrations
                 column: "review_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_reviews_ratings_user_id",
+                table: "reviews_ratings",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_series_publisher_id",
                 table: "series",
                 column: "publisher_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_shelves_application_user_id",
+                name: "ix_shelves_user_id",
                 table: "shelves",
-                column: "application_user_id");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_tags_tag_type_id",
@@ -869,10 +1013,10 @@ namespace Chronolibris.Infrastructure.Migrations
                 name: "reviews");
 
             migrationBuilder.DropTable(
-                name: "books");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "books");
 
             migrationBuilder.DropTable(
                 name: "countries");

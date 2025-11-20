@@ -16,7 +16,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         {
         }
 
-        public async Task<List<Bookmark>?> GetAllForBookAndUserAsync(long bookId, long userId)
+        public async Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId)
         {
             return await _context.Bookmarks.Where(b => b.BookId == bookId && b.UserId == userId)
                 .ToListAsync();
