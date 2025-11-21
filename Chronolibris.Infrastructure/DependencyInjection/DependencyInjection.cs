@@ -18,45 +18,78 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Chronolibris.Infrastructure.DependencyInjection
 {
+
+    /// <summary>
+    /// Статический класс для регистрации всех зависимостей инфраструктурного уровня 
+    /// в контейнере служб <see cref="IServiceCollection"/>.
+    /// </summary>
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Регистрирует контекст базы данных PostgreSQL и все репозитории приложения.
+        /// </summary>
+        /// <param name="services">Коллекция служб для расширения.</param>
+        /// <param name="configuration">Конфигурация приложения для получения строки подключения.</param>
+        /// <returns>Обновленная коллекция служб.</returns>
         public static IServiceCollection AddDatabaseInfrastructure(this IServiceCollection services, 
             IConfiguration configuration)
         {
+
+            // Регистрация DbContext для PostgreSQL
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
 
+                // Настройка для автоматического преобразования имен свойств в snake_case в БД
                 options.UseSnakeCaseNamingConvention();
             });
 
+            // Регистрация обобщенных репозиториев (Scoped lifetime)
             services.AddScoped<IGenericRepository<Content>, GenericRepository<Content>>();
-            //services.AddScoped<IGenericRepository<Review>, GenericRepository<Review>>();
             services.AddScoped<IGenericRepository<Person>, GenericRepository<Person>>();
             services.AddScoped<IGenericRepository<Publisher>, GenericRepository<Publisher>>();
 
+            // Регистрация специфических репозиториев (Scoped lifetime)
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IBookmarkRepository, BookmarkRepository>();
             services.AddScoped<IReviewsRatingRepository,  ReviewsRatingRepository>();
             services.AddScoped<IReviewRepository,  ReviewRepository>();
             services.AddScoped<ISelectionsRepository, SelectionsRepository>();
             services.AddScoped<IShelvesRepository, ShelvesRepository>();
+
+            // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }
 
+        /// <summary>
+        /// Регистрирует службы, связанные с системой аутентификации и идентификации (ASP.NET Core Identity).
+        /// </summary>
+        /// <param name="services">Коллекция служб для расширения.</param>
+        /// <param name="configuration">Конфигурация приложения (не используется явно в теле метода).</param>
+        /// <returns>Обновленная коллекция служб.</returns>
         public static IServiceCollection AddIdentityRealization(this IServiceCollection services, 
             IConfiguration configuration)
         {
+            // Регистрация кастомного сервиса идентификации
             services.AddScoped<IIdentityService, IdentityService>();
+
+            // Регистрация стандартной реализации Identity
             services.AddIdentity<User, IdentityRole<long>>()
+                // Указывает, что Identity будет использовать ApplicationDbContext
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             return services;
         }
 
+        /// <summary>
+        /// Регистрирует провайдер для доступа к файлам книг.
+        /// </summary>
+        /// <param name="services">Коллекция служб для расширения.</param>
+        /// <param name="configuration">Конфигурация приложения для получения пути к папке с книгами.</param>
+        /// <returns>Обновленная коллекция служб.</returns>
         public static IServiceCollection AddFileProviderInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
@@ -66,15 +99,5 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             return services;
         }
 
-    //    public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services,
-    //IConfiguration configuration)
-    //    {
-    //        services.AddScoped<IIdentityService, IdentityService>();
-    //        services.AddIdentity<ApplicationUser, IdentityRole<long>>()
-    //                .AddEntityFrameworkStores<ApplicationDbContext>()
-    //                .AddDefaultTokenProviders();
-
-    //        return services;
-    //    }
     }
 }

@@ -8,5 +8,16 @@ using MediatR;
 
 namespace Chronolibris.Application.Queries
 {
+    /// <summary>
+    /// Команда для аутентификации пользователя в системе по электронной почте и паролю.
+    /// <para>
+    /// Этот класс является <c>record</c> с позиционными параметрами, 
+    /// что обеспечивает неизменяемость (immutability) данных запроса.
+    /// </para>
+    /// </summary>
+    /// <param name="Email">Адрес электронной почты, используемый для входа.</param>
+    /// <param name="Password">Пароль пользователя.</param>
+    /// <returns>Возвращает объект <see cref="LoginResult"/>, содержащий статус входа 
+    /// и, при успехе, токен аутентификации.</returns>
     public record LoginUserCommand(string Email, string Password) : IRequest<LoginResult>;
 }

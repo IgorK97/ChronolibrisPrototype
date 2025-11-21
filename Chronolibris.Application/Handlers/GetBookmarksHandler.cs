@@ -54,7 +54,7 @@ namespace Chronolibris.Application.Handlers
             {
                 Id = b.Id,
                 Mark = b.Mark,
-                createdAt = b.CreatedAt
+                СreatedAt = b.CreatedAt
             }).ToList();
         }
     }

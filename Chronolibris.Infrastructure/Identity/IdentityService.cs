@@ -14,12 +14,23 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Chronolibris.Infrastructure.Identity
 {
+    /// <summary>
+    /// Сервис, предоставляющий функциональность для управления пользователями (регистрация, вход) 
+    /// и генерации токенов аутентификации на основе ASP.NET Core Identity.
+    /// Реализует интерфейс <see cref="IIdentityService"/>.
+    /// </summary>
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="IdentityService"/>.
+        /// </summary>
+        /// <param name="userManager">Менеджер пользователей ASP.NET Core Identity для управления сущностями <see cref="User"/>.</param>
+        /// <param name="signInManager">Менеджер входа ASP.NET Core Identity для проверки учетных данных.</param>
+        /// <param name="config">Конфигурация приложения, используемая для получения секретов JWT.</param>
         public IdentityService(UserManager<User> userManager, 
             SignInManager<User> signInManager,
             IConfiguration config)
@@ -29,6 +40,15 @@ namespace Chronolibris.Infrastructure.Identity
             _config = config;
         }
 
+        /// <summary>
+        /// Асинхронно регистрирует нового пользователя в системе.
+        /// </summary>
+        /// <param name="request">Запрос на регистрацию, содержащий имя, фамилию, email и пароль.</param>
+        /// <returns>
+        /// Задача, представляющая асинхронную операцию. Результат задачи — 
+        /// объект <see cref="RegistrationResult"/>, содержащий статус успеха, 
+        /// ошибки (если есть) и JWT-токен при успешной регистрации.
+        /// </returns>
         public async Task<RegistrationResult> RegisterUserAsync(RegisterRequest request)
         {
             DateTime dt = DateTime.UtcNow;
@@ -53,6 +73,16 @@ namespace Chronolibris.Infrastructure.Identity
         
         }
 
+        /// <summary>
+        /// Асинхронно выполняет вход пользователя по электронной почте и паролю.
+        /// </summary>
+        /// <param name="Email">Электронная почта пользователя.</param>
+        /// <param name="Password">Пароль пользователя.</param>
+        /// <returns>
+        /// Задача, представляющая асинхронную операцию. Результат задачи — 
+        /// объект <see cref="LoginResult"/>, содержащий статус успеха и JWT-токен при успешном входе. 
+        /// Возвращает успешный результат с пустым токеном или с ошибками в случае неудачи (зависит от логики обработки ошибок).
+        /// </returns>
         public async Task<LoginResult> LoginUserByEmailAsync(string Email, string Password)
         {
             var user = await _userManager.FindByEmailAsync(Email);
@@ -67,6 +97,11 @@ namespace Chronolibris.Infrastructure.Identity
             };
         }
 
+        /// <summary>
+        /// Создает подписанный JSON Web Token (JWT) для указанного пользователя.
+        /// </summary>
+        /// <param name="user">Сущность <see cref="User"/>, для которого создается токен.</param>
+        /// <returns>Сгенерированная строка JWT-токена.</returns>
         private string GenerateJwtToken(User user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));

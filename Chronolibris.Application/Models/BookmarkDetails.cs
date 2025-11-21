@@ -6,10 +6,26 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Application.Models
 {
+    /// <summary>
+    /// Представляет модель данных для закладки (Bookmark), созданной пользователем в книге.
+    /// Используется для передачи деталей закладки в приложении.
+    /// </summary>
     public class BookmarkDetails
     {
+        /// <summary>
+        /// Уникальный идентификатор закладки.
+        /// </summary>
         public long Id { get; set; }
+
+        /// <summary>
+        /// Текст или местоположение закладки, например, номер страницы,
+        /// цитата или точное положение в электронном файле.
+        /// </summary>
         public string Mark { get; set; }
-        public DateTime createdAt { get; set; }
+
+        /// <summary>
+        /// Дата и время создания закладки.
+        /// </summary>
+        public DateTime СreatedAt { get; set; }
     }
 }

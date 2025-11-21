@@ -8,11 +8,30 @@ using MediatR;
 
 namespace Chronolibris.Application.Models
 {
+    /// <summary>
+    /// Представляет модель запроса, используемую для регистрации нового пользователя в системе.
+    /// Все поля являются обязательными (<c>required</c>) и доступными только для инициализации (<c>init</c>).
+    /// </summary>
     public class RegisterRequest
     {
+        /// <summary>
+        /// Обязательное имя пользователя (например, имя).
+        /// </summary>
         public required string Name { get; init; }
+
+        /// <summary>
+        /// Обязательная фамилия пользователя.
+        /// </summary>
         public required string FamilyName { get; init; }
+
+        /// <summary>
+        /// Обязательный адрес электронной почты пользователя. Используется для аутентификации.
+        /// </summary>
         public required string Email { get; init; }
+
+        /// <summary>
+        /// Обязательный пароль для новой учетной записи. Должен быть хеширован сервисом идентификации.
+        /// </summary>
         public required string Password { get; init; }
     }
 }

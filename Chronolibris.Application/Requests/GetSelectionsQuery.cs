@@ -8,6 +8,15 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
+    /// <summary>
+    /// Запрос на асинхронное получение списка всех доступных подборок (<see cref="SelectionDetails"/>).
+    /// <para>
+    /// Этот класс является <c>record</c> без входных параметров, 
+    /// что обеспечивает неизменяемость (immutability).
+    /// </para>
+    /// </summary>
+    /// <returns>Возвращает <see cref="System.Collections.Generic.IEnumerable{T}"/> 
+    /// объектов <see cref="SelectionDetails"/>, содержащий все подборки.</returns>
     public record GetSelectionsQuery() : IRequest<IEnumerable<SelectionDetails>>;
 
 }
