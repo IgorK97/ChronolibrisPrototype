@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class RateReviewHandler : IRequestHandler<RateReviewRequest, ReviewDetails?>
+    public class RateReviewHandler : IRequestHandler<RateReviewCommand, ReviewDetails?>
     {
         private readonly IUnitOfWork _unitOfWork;
         public RateReviewHandler(IUnitOfWork unitOfWork)
@@ -19,9 +19,9 @@ namespace Chronolibris.Application.Handlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ReviewDetails?> Handle(RateReviewRequest request, CancellationToken cancellationToken)
+        public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken cancellationToken)
         {
-            var review = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId);
+            var review = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
             if (review == null)
                 return null;
             var rating = await _unitOfWork.ReviewsRatings.GetReviewsRatingByUserIdAsync(request.ReviewId,
@@ -43,7 +43,7 @@ namespace Chronolibris.Application.Handlers
                         Score = request.Score,
                         UserId = request.UserId,
                     };
-                    await _unitOfWork.ReviewsRatings.AddAsync(rating);
+                    await _unitOfWork.ReviewsRatings.AddAsync(rating, cancellationToken);
                 }
                 else
                 {
@@ -56,7 +56,7 @@ namespace Chronolibris.Application.Handlers
             long average = likesCount - dislikesCount;
 
             review.AverageRating = average;
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             //Maybe I need return not ReviewDTO, but Result {Succeeded, ReviewDTO} ??????????
             return new ReviewDetails

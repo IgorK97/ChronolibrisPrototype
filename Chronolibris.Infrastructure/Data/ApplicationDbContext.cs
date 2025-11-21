@@ -40,26 +40,13 @@ namespace Chronolibris.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>().ToTable("Users");
-            modelBuilder.Entity<IdentityRole<long>>().ToTable("Roles");
-            modelBuilder.Entity<IdentityUserRole<long>>().ToTable("UserRoles");
-            modelBuilder.Entity<IdentityUserClaim<long>>().ToTable("UserClaims");
-            modelBuilder.Entity<IdentityUserLogin<long>>().ToTable("UserLogins");
-            modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("RoleClaims");
-            modelBuilder.Entity<IdentityUserToken<long>>().ToTable("UserTokens");
-
-            modelBuilder.Entity<BookContent>()
-                .HasKey(bc => new { bc.BookId, bc.ContentId });
-
-            modelBuilder.Entity<BookContent>()
-                .HasOne(bc => bc.Book)
-                .WithMany(b => b.BookContents)
-                .HasForeignKey(bc => bc.BookId);
-
-            modelBuilder.Entity<BookContent>()
-                .HasOne(bc => bc.Content)
-                .WithMany(c => c.BookContents)
-                .HasForeignKey(bc => bc.ContentId);
+            modelBuilder.Entity<User>().ToTable("users");
+            modelBuilder.Entity<IdentityRole<long>>().ToTable("roles");
+            modelBuilder.Entity<IdentityUserRole<long>>().ToTable("user_role");
+            modelBuilder.Entity<IdentityUserClaim<long>>().ToTable("user_claims");
+            modelBuilder.Entity<IdentityUserLogin<long>>().ToTable("user_logins");
+            modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("role_claims");
+            modelBuilder.Entity<IdentityUserToken<long>>().ToTable("user_tokens");
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 

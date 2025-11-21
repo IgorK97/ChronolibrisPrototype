@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public class RegisterUserRequest : IRequest<RegistrationResult>
+    public class RegisterUserCommand : IRequest<RegistrationResult>
     {
         public required string Name { get; init; }
         public required string FamilyName { get; init; }

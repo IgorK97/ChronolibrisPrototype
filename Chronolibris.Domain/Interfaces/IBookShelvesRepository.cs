@@ -9,13 +9,13 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface IShelvesRepository
     {
-        Task<Shelf?> GetByIdAsync(long shelfId);
-        Task<IEnumerable<Shelf>> GetForUserAsync(long userId);
+        Task<Shelf?> GetByIdAsync(long shelfId, CancellationToken token = default);
+        Task<IEnumerable<Shelf>> GetForUserAsync(long userId, CancellationToken token = default);
         Task<(IEnumerable<Book> Books, int TotalCount)>
-            GetBooksForShelfAsync(long shelfId, int page, int pageSize);
+            GetBooksForShelfAsync(long shelfId, int page, int pageSize, CancellationToken token = default);
 
-        Task AddBookToShelf(long shelfId, long bookId);
-        Task RemoveBookFromShelf(long shelfId, long bookId);
+        Task AddBookToShelf(long shelfId, long bookId, CancellationToken token = default);
+        Task RemoveBookFromShelf(long shelfId, long bookId, CancellationToken token = default);
     }
 
 }

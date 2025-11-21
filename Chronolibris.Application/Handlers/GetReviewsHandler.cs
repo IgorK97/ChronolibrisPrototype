@@ -10,13 +10,13 @@ using Chronolibris.Domain.Interfaces;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetReviewsHandler(IReviewRepository reviewRepository) : IRequestHandler<GetReviewsRequest, List<ReviewDetails>>
+    public class GetReviewsHandler(IReviewRepository reviewRepository) : IRequestHandler<GetReviewsQuery, List<ReviewDetails>>
     {
 
 
-        public async Task<List<ReviewDetails>> Handle(GetReviewsRequest request, CancellationToken cancellationToken)
+        public async Task<List<ReviewDetails>> Handle(GetReviewsQuery request, CancellationToken cancellationToken)
         {
-            var reviews = await reviewRepository.GetAllAsync();
+            var reviews = await reviewRepository.GetAllAsync(cancellationToken);
             return reviews.Where(r => r.BookId == request.BookId)
                 .Select(r => new ReviewDetails
                 {

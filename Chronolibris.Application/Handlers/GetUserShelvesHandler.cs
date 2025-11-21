@@ -17,7 +17,7 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<IEnumerable<ShelfDetails>> Handle(GetUserShelvesQuery request, CancellationToken ct)
         {
-            var shelves = await shelvesRepository.GetForUserAsync(request.UserId);
+            var shelves = await shelvesRepository.GetForUserAsync(request.UserId, ct);
 
             return shelves.Select(s => new ShelfDetails
             {

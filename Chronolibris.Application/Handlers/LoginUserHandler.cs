@@ -10,7 +10,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class LoginUserHandler : IRequestHandler<LoginUserRequest, LoginResult>
+    public class LoginUserHandler : IRequestHandler<LoginUserCommand, LoginResult>
     {
         private readonly IIdentityService _identityService;
 
@@ -19,7 +19,7 @@ namespace Chronolibris.Application.Handlers
             _identityService = identityService;
         }
 
-        public async Task<LoginResult> Handle(LoginUserRequest request, CancellationToken cancellationToken)
+        public async Task<LoginResult> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var result = await _identityService.LoginUserByEmailAsync(request.Email, request.Password);
             return result;

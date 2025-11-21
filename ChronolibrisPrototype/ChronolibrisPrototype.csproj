@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Books\" />
+    <Folder Include="DependencyInjection\" />
     <Folder Include="wwwroot\covers\" />
   </ItemGroup>
 

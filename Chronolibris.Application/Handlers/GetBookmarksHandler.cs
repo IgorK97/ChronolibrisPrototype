@@ -16,7 +16,7 @@ namespace Chronolibris.Application.Handlers
         {
 
             var bookmarks = await bookmarkRepository
-                                            .GetAllForBookAndUserAsync(request.Bookid, request.UserId);
+                                            .GetAllForBookAndUserAsync(request.Bookid, request.UserId, cancellationToken);
 
 
             if (bookmarks == null)

@@ -9,10 +9,10 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface ISelectionsRepository
     {
-        Task<Selection?> GetByIdAsync(long id);
-        Task<IEnumerable<Selection>> GetActiveSelectionsAsync();
+        Task<Selection?> GetByIdAsync(long id, CancellationToken token = default);
+        Task<IEnumerable<Selection>> GetActiveSelectionsAsync(CancellationToken token = default);
         Task<(IEnumerable<Book> Books, int TotalCount)>
-            GetBooksForSelection(long selectionId, int page, int pageSize);
+            GetBooksForSelection(long selectionId, int page, int pageSize, CancellationToken token = default);
     }
 
 }

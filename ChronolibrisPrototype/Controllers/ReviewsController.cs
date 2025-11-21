@@ -20,12 +20,12 @@ namespace ChronolibrisPrototype.Controllers
         [HttpGet("{bookId}")]
         public async Task<IActionResult> GetReviews(long bookId)
         {
-            var reviews = await _mediator.Send(new GetReviewsRequest(bookId));
+            var reviews = await _mediator.Send(new GetReviewsQuery(bookId));
             return Ok(reviews);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateReview(CreateReviewRequest command)
+        public async Task<IActionResult> CreateReview(CreateReviewCommand command)
         {
             
             var reviewId = await _mediator.Send(command);
@@ -33,7 +33,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost("rate")]
-        public async Task<IActionResult> RateReview(RateReviewRequest request)
+        public async Task<IActionResult> RateReview(RateReviewCommand request)
         {
             var result = await _mediator.Send(request);
             return Ok(result);

@@ -48,8 +48,8 @@ namespace Chronolibris.Infrastructure.Persistance
             Shelves = shelves;
         }
 
-        public async Task<int> SaveChangesAsync() =>
-        await _context.SaveChangesAsync();
+        public async Task<int> SaveChangesAsync(CancellationToken ct) =>
+        await _context.SaveChangesAsync(ct);
 
         public void Dispose() => _context.Dispose();
     }

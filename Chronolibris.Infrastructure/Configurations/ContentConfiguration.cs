@@ -21,9 +21,21 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany(p => p.Contents)
                 .UsingEntity<Participation>();
 
+            //builder.HasMany(c => c.Themes)
+            //    .WithMany(th => th.Contents)
+            //    .UsingEntity("content_theme");
+
             builder.HasMany(c => c.Themes)
                 .WithMany(th => th.Contents)
-                .UsingEntity("contents_themes");
+                .UsingEntity(
+                    r => r.HasOne(typeof(Theme))
+                          .WithMany()
+                          .HasForeignKey("theme_id"),
+                    l => l.HasOne(typeof(Content))
+                          .WithMany()
+                          .HasForeignKey("content_id"),
+                    j => j.ToTable("content_theme")
+                );
 
 
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);

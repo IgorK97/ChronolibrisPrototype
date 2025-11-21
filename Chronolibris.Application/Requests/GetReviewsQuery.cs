@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using MediatR;
 
-namespace Chronolibris.Application.Handlers
+namespace Chronolibris.Application.Requests
 {
-    public record AddBookmarkCommand(long BookId, long UserId, string Mark) : IRequest<bool>;
+    public record GetReviewsQuery(long BookId):IRequest<List<ReviewDetails>>;
 }

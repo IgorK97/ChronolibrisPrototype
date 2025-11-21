@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace Chronolibris.Domain.Entities
         public required long RatingsCount { get; set; }
         public required long ReviewsCount { get; set; }
         public long? ParentBookId { get; set; }
+        [ForeignKey("ParentBookId")]
+        public Book? ParentBook { get; set; }
         public long? PublisherId { get; set; }
         public Publisher? Publisher { get; set; }
         public long? SeriesId { get; set; }

@@ -9,6 +9,6 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface IReviewsRatingRepository : IGenericRepository<ReviewsRating>
     {
-        Task<ReviewsRating?> GetReviewsRatingByUserIdAsync(long reviewId, long userId, CancellationToken token);
+        Task<ReviewsRating?> GetReviewsRatingByUserIdAsync(long reviewId, long userId, CancellationToken token = default);
     }
 }

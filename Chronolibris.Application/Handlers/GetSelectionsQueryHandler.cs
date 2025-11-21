@@ -17,7 +17,7 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<IEnumerable<SelectionDetails>> Handle(GetSelectionsQuery request, CancellationToken ct)
         {
-            var selections = await selectionsRepository.GetActiveSelectionsAsync();
+            var selections = await selectionsRepository.GetActiveSelectionsAsync(ct);
 
             return selections.Select(s => new SelectionDetails
             {

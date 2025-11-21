@@ -14,7 +14,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
     {
         public BookRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<Book?> GetBookWithRelationsAsync(long id)
+        public async Task<Book?> GetBookWithRelationsAsync(long id, CancellationToken token)
         {
             return await _context.Books
                 .Include(b => b.Publisher)
@@ -25,8 +25,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 //.Include(b => b.Reviews)
                 .Include(b => b.Participations)
                 .Include(b => b.Persons)
-
-                .FirstOrDefaultAsync(b => b.Id == id);
+                .FirstOrDefaultAsync(b => b.Id == id, token);
         }
     }
 }

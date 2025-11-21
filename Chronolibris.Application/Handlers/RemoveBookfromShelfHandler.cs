@@ -20,8 +20,8 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<bool> Handle(RemoveBookFromShelfCommand request, CancellationToken ct)
         {
-            await _uow.Shelves.RemoveBookFromShelf(request.ShelfId, request.BookId);
-            await _uow.SaveChangesAsync();
+            await _uow.Shelves.RemoveBookFromShelf(request.ShelfId, request.BookId, ct);
+            await _uow.SaveChangesAsync(ct);
             return true;
         }
     }

@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class RegisterUserHandler : IRequestHandler<RegisterUserRequest, RegistrationResult>
+    public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, RegistrationResult>
     {
         private readonly IIdentityService _identityService;
 
@@ -20,7 +20,7 @@ namespace Chronolibris.Application.Handlers
             _identityService = identityService;
         }
 
-        public async Task<RegistrationResult> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
+        public async Task<RegistrationResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var result = await _identityService.RegisterUserAsync(new RegisterRequest
             {

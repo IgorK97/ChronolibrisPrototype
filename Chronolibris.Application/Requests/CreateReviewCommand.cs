@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public class CreateReviewRequest : IRequest<long>
+    public class CreateReviewCommand : IRequest<long>
     {
         public long BookId { get; init; }
         public long UserId { get; init; }

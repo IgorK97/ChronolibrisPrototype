@@ -8,5 +8,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Queries
 {
-    public record LoginUserRequest(string Email, string Password) : IRequest<LoginResult>;
+    public record LoginUserCommand(string Email, string Password) : IRequest<LoginResult>;
 }

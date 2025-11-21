@@ -10,7 +10,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class CreateReviewHandler : IRequestHandler<CreateReviewRequest, long>
+    public class CreateReviewHandler : IRequestHandler<CreateReviewCommand, long>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -19,7 +19,7 @@ namespace Chronolibris.Application.Handlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<long> Handle(CreateReviewRequest request, CancellationToken cancellationToken)
+        public async Task<long> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
             var review = new Review
             {
@@ -36,8 +36,8 @@ namespace Chronolibris.Application.Handlers
                 Name = request.UserName ?? "",
             };
 
-            await _unitOfWork.Reviews.AddAsync(review);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.Reviews.AddAsync(review, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return review.Id;
         }

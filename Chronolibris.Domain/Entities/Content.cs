@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace Chronolibris.Domain.Entities
         public required bool IsOriginal { get; set; }
         public required bool IsTranslate { get; set; }
         public long? ParentContentId { get; set; }
+        [ForeignKey("ParentContentId")]
+        public Content? ParentContent { get; set; }
         public required int Position { get; set; }
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

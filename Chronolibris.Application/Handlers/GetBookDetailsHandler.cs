@@ -20,7 +20,7 @@ namespace Chronolibris.Application.Handlers
         }
         public async Task<BookDetails?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
         {
-            var book = await _bookRepository.GetBookWithRelationsAsync(request.bookId);
+            var book = await _bookRepository.GetBookWithRelationsAsync(request.bookId, cancellationToken);
             if (book == null)
                 return null;
 

@@ -19,44 +19,44 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             _context = context;
         }
 
-        public async Task<Shelf?> GetByIdAsync(long shelfId)
+        public async Task<Shelf?> GetByIdAsync(long shelfId, CancellationToken ct)
         {
             return await _context.Shelves
                 .Include(s => s.Books)
-                .FirstOrDefaultAsync(s => s.Id == shelfId);
+                .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
         }
 
-        public async Task<IEnumerable<Shelf>> GetForUserAsync(long userId)
+        public async Task<IEnumerable<Shelf>> GetForUserAsync(long userId, CancellationToken ct)
         {
             return await _context.Shelves
                 .Where(s => s.UserId == userId)
                 .Include(s => s.Books)
-                .ToListAsync();
+                .ToListAsync(ct);
         }
 
         public async Task<(IEnumerable<Book> Books, int TotalCount)>
-            GetBooksForShelfAsync(long shelfId, int page, int pageSize)
+            GetBooksForShelfAsync(long shelfId, int page, int pageSize, CancellationToken ct)
         {
             var query = _context.Shelves
                 .Where(s => s.Id == shelfId)
                 .SelectMany(s => s.Books);
 
-            var total = await query.CountAsync();
+            var total = await query.CountAsync(ct);
 
             var books = await query
                 .OrderBy(b => b.Title)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync(ct);
 
             return (books, total);
         }
 
-        public async Task AddBookToShelf(long shelfId, long bookId)
+        public async Task AddBookToShelf(long shelfId, long bookId, CancellationToken ct)
         {
             var shelf = await _context.Shelves
                 .Include(s => s.Books)
-                .FirstAsync(s => s.Id == shelfId);
+                .FirstAsync(s => s.Id == shelfId, ct);
 
             if (!shelf.Books.Any(b => b.Id == bookId))
             {
@@ -66,11 +66,11 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             }
         }
 
-        public async Task RemoveBookFromShelf(long shelfId, long bookId)
+        public async Task RemoveBookFromShelf(long shelfId, long bookId, CancellationToken ct)
         {
             var shelf = await _context.Shelves
                 .Include(s => s.Books)
-                .FirstAsync(s => s.Id == shelfId);
+                .FirstAsync(s => s.Id == shelfId, ct);
 
             var book = shelf.Books.FirstOrDefault(b => b.Id == bookId);
             if (book != null)

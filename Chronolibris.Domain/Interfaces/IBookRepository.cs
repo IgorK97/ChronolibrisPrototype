@@ -9,6 +9,6 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface IBookRepository : IGenericRepository<Book>
     {
-        Task<Book?> GetBookWithRelationsAsync(long id);
+        Task<Book?> GetBookWithRelationsAsync(long id, CancellationToken token = default);
     }
 }

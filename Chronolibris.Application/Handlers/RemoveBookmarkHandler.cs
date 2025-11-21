@@ -20,14 +20,14 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<bool> Handle(RemoveBookmarkCommand request, CancellationToken cancellationToken)
         {
-            var existing = await _unitOfWork.Bookmarks.GetByIdAsync(request.bookmarkId);
+            var existing = await _unitOfWork.Bookmarks.GetByIdAsync(request.bookmarkId, cancellationToken);
             if (existing == null)
             {
                 return false;
             }
 
             _unitOfWork.Bookmarks.Delete(existing);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
         }

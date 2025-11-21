@@ -15,11 +15,11 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public ReviewRepository(ApplicationDbContext context) : base(context) { }
         public async Task<long> CountLikesForReview(long reviewId, CancellationToken cancellationToken)
         {
-            return await _context.ReviewsRatings.LongCountAsync(rr => rr.ReviewId == reviewId && rr.Score == 1);
+            return await _context.ReviewsRatings.LongCountAsync(rr => rr.ReviewId == reviewId && rr.Score == 1, cancellationToken);
         }
         public async Task<long> CountDislikesForReview(long reviewId, CancellationToken token)
         {
-            return await _context.ReviewsRatings.LongCountAsync(rr => rr.ReviewId == reviewId && rr.Score == -1);
+            return await _context.ReviewsRatings.LongCountAsync(rr => rr.ReviewId == reviewId && rr.Score == -1, token);
         }
 
         public async Task<long> GetAverageForReview(long reviewId, CancellationToken token)

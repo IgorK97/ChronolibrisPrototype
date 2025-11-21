@@ -8,9 +8,9 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity:class
     {
-        Task<TEntity?> GetByIdAsync(long id);
-        Task<IReadOnlyList<TEntity>> GetAllAsync();
-        Task AddAsync(TEntity entity);
+        Task<TEntity?> GetByIdAsync(long id, CancellationToken token = default);
+        Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken token = default);
+        Task AddAsync(TEntity entity, CancellationToken token = default);
         void Update(TEntity entity);
         void Delete(TEntity entity);
     }

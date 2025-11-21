@@ -24,7 +24,7 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<FileResult?> Handle(GetBookFileQuery request, CancellationToken cancellationToken)
         {
-            var book = await _bookRepository.GetByIdAsync(request.bookId);
+            var book = await _bookRepository.GetByIdAsync(request.bookId, cancellationToken);
             if (book == null || String.IsNullOrEmpty(book.FilePath))
             {
                 return null;

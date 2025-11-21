@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
-    [Table("books_contents")]
+    [Table("book_content")]
     public class BookContent
     {
         public long ContentId { get; set; }

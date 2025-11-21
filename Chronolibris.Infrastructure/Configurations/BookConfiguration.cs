@@ -17,17 +17,39 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany(b => b.Books)
                 .UsingEntity<Participation>();
 
+            //builder.HasMany(b => b.Shelves)
+            //    .WithMany(s => s.Books)
+            //    .UsingEntity(j => j.ToTable("book_shelf"),
+            //    j => j.HasOne<Shelf>().WithMany().HasForeignKey("shelf_id"),
+            //    j => j.HasOne<Book>().WithMany().HasForeignKey("book_id"));
+
             builder.HasMany(b => b.Shelves)
                 .WithMany(s => s.Books)
-                .UsingEntity("books_shelves");
+                .UsingEntity(
+                    r => r.HasOne(typeof(Shelf))
+                          .WithMany()
+                          .HasForeignKey("shelf_id"),
+                    l => l.HasOne(typeof(Book))
+                          .WithMany()
+                          .HasForeignKey("book_id"),
+                    j => j.ToTable("book_shelf")
+                );
+
+            //builder.HasMany(b => b.Selections)
+            //    .WithMany(s => s.Books)
+            //    .UsingEntity("book_selection");
 
             builder.HasMany(b => b.Selections)
                 .WithMany(s => s.Books)
-                .UsingEntity("books_selections");
-
-            //builder.HasMany(b => b.Contents)
-            //    .WithMany(c => c.Books)
-            //    .UsingEntity(j => j.ToTable("books_contents"));
+                .UsingEntity(
+                    r => r.HasOne(typeof(Selection))
+                          .WithMany()
+                          .HasForeignKey("selection_id"),
+                    l => l.HasOne(typeof(Book))
+                          .WithMany()
+                          .HasForeignKey("book_id"),
+                    j => j.ToTable("book_selection")
+                );
 
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 

@@ -18,9 +18,9 @@ namespace Chronolibris.Domain.Interfaces
 
         IGenericRepository<Person> Persons { get; }
         IGenericRepository<Content> Contents { get; }
-        //IGenericRepository<Review> Reviews { get; }
+
         IGenericRepository<Publisher> Publishers { get; }
 
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken token = default);
     }
 }

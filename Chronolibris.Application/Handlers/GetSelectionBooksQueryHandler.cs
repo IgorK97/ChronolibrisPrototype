@@ -19,7 +19,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<PagedResult<BookListItem>> Handle(GetSelectionBooksQuery request, CancellationToken ct)
         {
             var (books, totalCount) = await selectionsRepository
-                .GetBooksForSelection(request.SelectionId, request.Page, request.PageSize);
+                .GetBooksForSelection(request.SelectionId, request.Page, request.PageSize, ct);
 
             return new PagedResult<BookListItem>
             {

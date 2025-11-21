@@ -5,7 +5,6 @@ using Chronolibris.Application.Extensions;
 using Chronolibris.Application.Handlers;
 using Chronolibris.Infrastructure.DatabaseChecker;
 using Chronolibris.Infrastructure.DependencyInjection;
-using ChronolibrisPrototype.DependencyInjection;
 using ChronolibrisPrototype.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;

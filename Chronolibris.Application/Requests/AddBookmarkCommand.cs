@@ -8,10 +8,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public class RateReviewRequest : IRequest<ReviewDetails?>
-    {
-        public long ReviewId { get; init; }
-        public long UserId { get; init; }
-        public short Score { get; init; }
-    }
+    public record AddBookmarkCommand(long BookId, long UserId, string Mark) : IRequest<bool>;
 }

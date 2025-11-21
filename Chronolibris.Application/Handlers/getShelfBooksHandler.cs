@@ -18,7 +18,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<PagedResult<BookListItem>> Handle(GetShelfBooksQuery request, CancellationToken ct)
         {
             var (books, total) = await shelvesRepository.GetBooksForShelfAsync(
-                request.ShelfId, request.Page, request.PageSize);
+                request.ShelfId, request.Page, request.PageSize, ct);
 
             return new PagedResult<BookListItem>
             {

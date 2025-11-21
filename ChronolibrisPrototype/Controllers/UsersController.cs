@@ -19,14 +19,14 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register(RegisterUserRequest request)
+        public async Task<ActionResult> Register(RegisterUserCommand request)
         {
             var result = await _mediator.Send(request);
             return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login(LoginUserRequest request)
+        public async Task<ActionResult> Login(LoginUserCommand request)
         {
             var result = await _mediator.Send(request);
             return Ok(result);
