@@ -10,15 +10,37 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
+    /// <summary>
+    /// Обработчик запроса для получения списка активных подборок (коллекций книг).
+    /// Использует первичный конструктор для внедрения зависимости <see cref="ISelectionsRepository"/>.
+    /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/>
+    /// для обработки <see cref="GetSelectionsQuery"/> и возврата коллекции <see cref="SelectionDetails"/>.
+    /// </summary>
     public class GetSelectionsQueryHandler(ISelectionsRepository selectionsRepository)
     : IRequestHandler<GetSelectionsQuery, IEnumerable<SelectionDetails>>
     {
+        // Примечание: Внедрение зависимости через первичный конструктор (Primary Constructor)
+        // автоматически создает приватное поле только для чтения `selectionsRepository`.
 
-
+        /// <summary>
+        /// Обрабатывает запрос на получение списка активных подборок.
+        /// </summary>
+        /// <remarks>
+        /// 1. Вызывает репозиторий для получения всех активных подборок.
+        /// 2. Преобразует полученные сущности подборок в <see cref="SelectionDetails"/> DTO.
+        /// </remarks>
+        /// <param name="request">Объект запроса, в данном случае используется как маркер.</param>
+        /// <param name="ct">Токен отмены для асинхронной операции.</param>
+        /// <returns>
+        /// Задача, представляющая асинхронную операцию.
+        /// Результат задачи — коллекция <see cref="IEnumerable{T}"/> объектов <see cref="SelectionDetails"/>.
+        /// </returns>
         public async Task<IEnumerable<SelectionDetails>> Handle(GetSelectionsQuery request, CancellationToken ct)
         {
+            // Получение всех активных подборок из репозитория
             var selections = await selectionsRepository.GetActiveSelectionsAsync(ct);
 
+            // Маппинг сущностей подборок на DTO SelectionDetails
             return selections.Select(s => new SelectionDetails
             {
                 Id = s.Id,

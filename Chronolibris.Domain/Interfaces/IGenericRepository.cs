@@ -13,5 +13,11 @@ namespace Chronolibris.Domain.Interfaces
         Task AddAsync(TEntity entity, CancellationToken token = default);
         void Update(TEntity entity);
         void Delete(TEntity entity);
+
+        /// <summary>
+        /// Принудительно отсоединяет указанную сущность от контекста отслеживания изменений (Detached state).
+        /// </summary>
+        /// <param name="entity">Сущность, которую нужно отсоединить.</param>
+        void Detach(TEntity entity);
     }
 }

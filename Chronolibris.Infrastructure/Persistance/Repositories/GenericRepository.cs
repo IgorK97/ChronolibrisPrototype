@@ -34,5 +34,22 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
         public void Delete(TEntity entity) =>
             _set.Remove(entity);
+
+        /// <summary>
+        /// Реализация Detach. Устанавливает состояние сущности в EntityState.Detached.
+        /// </summary>
+        /// <param name="entity">Сущность для отсоединения.</param>
+        public void Detach(TEntity entity)
+        {
+            // Получаем объект Entry (запись отслеживания) для данной сущности
+            var entityEntry = _context.Entry(entity);
+
+            // Если сущность отслеживается (ее состояние не Detached), 
+            // принудительно устанавливаем ее состояние в Detached.
+            if (entityEntry.State != EntityState.Detached)
+            {
+                entityEntry.State = EntityState.Detached;
+            }
+        }
     }
 }

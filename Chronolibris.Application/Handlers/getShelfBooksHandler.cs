@@ -10,18 +10,44 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
+    /// <summary>
+    /// Обработчик запроса для получения постраничного списка книг, находящихся на определенной полке пользователя.
+    /// Использует первичный конструктор для внедрения зависимости <see cref="IShelvesRepository"/>.
+    /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/>
+    /// для обработки <see cref="GetShelfBooksQuery"/> и возврата <see cref="PagedResult{T}"/> из <see cref="BookListItem"/>.
+    /// </summary>
     public class GetShelfBooksHandler(IShelvesRepository shelvesRepository)
     : IRequestHandler<GetShelfBooksQuery, PagedResult<BookListItem>>
     {
 
+        // Примечание: Внедрение зависимости через первичный конструктор (Primary Constructor)
+        // автоматически создает приватное поле только для чтения `shelvesRepository`.
 
+        /// <summary>
+        /// Обрабатывает запрос на получение книг для указанной полки с поддержкой пагинации.
+        /// </summary>
+        /// <remarks>
+        /// 1. Вызывает репозиторий для получения страницы книг и общего количества записей (<c>total</c>) для данной полки.
+        /// 2. Преобразует полученные сущности книг в <see cref="BookListItem"/> DTO.
+        /// 3. Упаковывает DTO и данные пагинации в объект <see cref="PagedResult{T}"/>.
+        /// </remarks>
+        /// <param name="request">Запрос, содержащий идентификатор полки (<c>ShelfId</c>), номер страницы (<c>Page</c>) и размер страницы (<c>PageSize</c>).</param>
+        /// <param name="ct">Токен отмены для асинхронной операции.</param>
+        /// <returns>
+        /// Задача, представляющая асинхронную операцию.
+        /// Результат задачи — объект <see cref="PagedResult{T}"/>, содержащий список <see cref="BookListItem"/> 
+        /// и информацию о пагинации.
+        /// </returns>
         public async Task<PagedResult<BookListItem>> Handle(GetShelfBooksQuery request, CancellationToken ct)
         {
+            // Получение страницы книг и общего количества записей (total) из репозитория
             var (books, total) = await shelvesRepository.GetBooksForShelfAsync(
                 request.ShelfId, request.Page, request.PageSize, ct);
 
+            // Создание и возврат объекта PagedResult, содержащего DTO и информацию о пагинации
             return new PagedResult<BookListItem>
             {
+                // Маппинг сущностей книг на DTO BookListItem
                 Items = books.Select(b => new BookListItem
                 {
                     Id = b.Id,
