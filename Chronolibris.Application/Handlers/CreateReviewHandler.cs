@@ -10,25 +10,54 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
+    /// <summary>
+    /// Обработчик команды для создания нового отзыва (<see cref="Review"/>) о книге.
+    /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/> 
+    /// для обработки <see cref="CreateReviewCommand"/> и возврата идентификатора отзыва (<see cref="long"/>).
+    /// </summary>
     public class CreateReviewHandler : IRequestHandler<CreateReviewCommand, long>
     {
+        /// <summary>
+        /// Приватное поле только для чтения для доступа к Unit of Work.
+        /// </summary>
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="CreateReviewHandler"/>.
+        /// </summary>
+        /// <param name="unitOfWork">Интерфейс Unit of Work для взаимодействия с базой данных.</param>
         public CreateReviewHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Обрабатывает команду создания нового отзыва.
+        /// </summary>
+        /// <remarks>
+        /// Создает новую сущность <see cref="Review"/> из данных команды, 
+        /// добавляет ее через репозиторий и сохраняет изменения в базе данных.
+        /// В конце возвращает сгенерированный базой данных идентификатор нового отзыва.
+        /// </remarks>
+        /// <param name="request">Объект команды, содержащий данные для нового отзыва.</param>
+        /// <param name="cancellationToken">Токен отмены для асинхронной операции.</param>
+        /// <returns>
+        /// Задача, представляющая асинхронную операцию. 
+        /// Результат задачи — <see cref="long"/>, представляющий идентификатор нового отзыва.
+        /// </returns>
         public async Task<long> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
+            // Создание новой сущности Review из данных команды
             var review = new Review
             {
                 BookId = request.BookId,
                 UserId = request.UserId,
+                // Используем оператор объединения с null (??) для обеспечения не-null значений для строк
                 Title = request.Title ?? "",
                 Description = request.Description ?? "",
                 Score = request.Score,
                 CreatedAt = DateTime.UtcNow,
+                // Эти поля должны быть инициализированы нулем
                 AverageRating = 0,
                 DislikesCount = 0,
                 Id = 0,
@@ -36,9 +65,13 @@ namespace Chronolibris.Application.Handlers
                 Name = request.UserName ?? "",
             };
 
+            // Добавление новой сущности в контекст отслеживания (не сохраняет в БД)
             await _unitOfWork.Reviews.AddAsync(review, cancellationToken);
+
+            // Сохранение изменений в базе данных и присвоение сущности сгенерированного Id
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            // Возврат сгенерированного идентификатора
             return review.Id;
         }
     }

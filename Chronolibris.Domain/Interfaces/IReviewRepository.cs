@@ -9,6 +9,7 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface IReviewRepository : IGenericRepository<Review>
     {
+        Task<IEnumerable<Review>> GetByBookIdAsync(long bookId, CancellationToken token = default);
         Task<long> CountLikesForReview(long reviewId, CancellationToken token = default);
         Task<long> CountDislikesForReview(long reviewId, CancellationToken token = default);
         Task<long> GetAverageForReview(long reviewId, CancellationToken token = default);

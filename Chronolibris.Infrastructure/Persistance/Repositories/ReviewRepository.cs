@@ -26,5 +26,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         {
             return await _context.ReviewsRatings.Where(rr => rr.ReviewId == reviewId).SumAsync(rr => (long)rr.Score, token);
         }
+
+        public async Task<IEnumerable<Review>> GetByBookIdAsync(long bookId, CancellationToken token)
+        {
+            return await _context.Reviews.Where(r => r.BookId == bookId).ToListAsync(token);
+        }
     }
 }
