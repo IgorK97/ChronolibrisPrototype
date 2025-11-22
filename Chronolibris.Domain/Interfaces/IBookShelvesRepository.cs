@@ -46,8 +46,8 @@ namespace Chronolibris.Domain.Interfaces
         /// Кортеж, содержащий коллекцию сущностей <see cref="Book"/> для текущей страницы 
         /// и общее количество книг на полке (<c>TotalCount</c>).
         /// </returns>
-        Task<(IEnumerable<Book> Books, int TotalCount)>
-            GetBooksForShelfAsync(long shelfId, int page, int pageSize, CancellationToken token = default);
+        Task<List<Book>>
+            GetBooksForShelfAsync(long shelfId, long? lastId, int limit, CancellationToken token = default);
 
         /// <summary>
         /// Асинхронно добавляет связь между указанной книгой и указанной полкой.

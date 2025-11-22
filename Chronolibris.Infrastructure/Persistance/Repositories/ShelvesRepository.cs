@@ -71,22 +71,36 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// Кортеж, содержащий коллекцию сущностей <see cref="Book"/> для текущей страницы 
         /// и общее количество книг на полке (<c>TotalCount</c>).
         /// </returns>
-        public async Task<(IEnumerable<Book> Books, int TotalCount)>
-            GetBooksForShelfAsync(long shelfId, int page, int pageSize, CancellationToken ct)
+        public async Task<List<Book>>
+            GetBooksForShelfAsync(long shelfId, long? lastId, int limit, CancellationToken ct)
         {
-            var query = _context.Shelves
-                .Where(s => s.Id == shelfId)
-                .SelectMany(s => s.Books);
 
-            var total = await query.CountAsync(ct);
+
+            //TODO: Делать Select (проекцию) прямо в запросе к базе данных (в репозитории),
+            //чтобы SQL возвращал только нужные поля (ID, Title, список имен авторов),
+            //а не все объекты целиком. - Eager Loading (over fetching?)
+
+    
+
+            var query = _context.Books
+            .AsNoTracking()
+            .Where(b => b.Shelves.Any(s => s.Id == shelfId));
+
+            if (lastId.HasValue)
+                query = query.Where(b => b.Id > lastId.Value);
 
             var books = await query
-                .OrderBy(b => b.Title)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Include(b => b.Participations)
+                    .ThenInclude(p => p.Person)
+                .Include(b => b.BookContents)
+                    .ThenInclude(bc => bc.Content)
+                    .ThenInclude(c => c.Participations)
+                    .ThenInclude(p => p.Person)
+                .OrderBy(b => b.Id)
+                .Take(limit + 1)
                 .ToListAsync(ct);
 
-            return (books, total);
+            return books;
         }
 
         /// <summary>

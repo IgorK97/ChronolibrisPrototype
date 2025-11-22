@@ -24,10 +24,13 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{selectionId}/books")]
-        public async Task<IActionResult> GetBooks(long selectionId, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> GetBooks(long selectionId, long? lastId, int limit = 20)
         {
+            if (limit < 1) limit = 20;
+            else if (limit > 100) limit = 100;
+
             var result = await _mediator.Send(
-                new GetSelectionBooksQuery(selectionId, page, pageSize));
+                new GetSelectionBooksQuery(selectionId, lastId, limit));
 
             return Ok(result);
         }

@@ -18,9 +18,12 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{bookId}")]
-        public async Task<IActionResult> GetReviews(long bookId)
+        public async Task<IActionResult> GetReviews(long bookId, long? lastId, int limit=20)
         {
-            var reviews = await _mediator.Send(new GetReviewsQuery(bookId));
+            if (limit < 1) limit = 20;
+            else if (limit > 100) limit = 100;
+
+            var reviews = await _mediator.Send(new GetReviewsQuery(bookId, lastId, limit));
             return Ok(reviews);
         }
 

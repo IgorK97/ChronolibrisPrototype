@@ -44,9 +44,20 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// <param name="bookId">Идентификатор книги.</param>
         /// <param name="token">Токен отмены.</param>
         /// <returns>Коллекция отзывов.</returns>
-        public async Task<IEnumerable<Review>> GetByBookIdAsync(long bookId, CancellationToken token)
+        public async Task<List<Review>> GetByBookIdAsync(long bookId, long? lastId, int limit, CancellationToken token)
         {
-            return await _context.Reviews.Where(r => r.BookId == bookId).ToListAsync(token);
+
+            var query = _context.Reviews.AsNoTracking()
+                .Where(r => r.BookId == bookId);
+
+            if (lastId.HasValue)
+            {
+                query = query.Where(r => r.Id > lastId.Value);
+            }
+
+            return await query.OrderBy(r => r.Id)
+                .Take(limit + 1)
+                .ToListAsync(token);
         }
 
         /// <summary>

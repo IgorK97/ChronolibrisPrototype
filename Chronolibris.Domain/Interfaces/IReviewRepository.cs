@@ -19,7 +19,7 @@ namespace Chronolibris.Domain.Interfaces
         /// <param name="bookId">Идентификатор книги.</param>
         /// <param name="token">Токен отмены.</param>
         /// <returns>Коллекция отзывов.</returns>
-        Task<IEnumerable<Review>> GetByBookIdAsync(long bookId, CancellationToken token = default);
+        Task<List<Review>> GetByBookIdAsync(long bookId, long? lastId, int limit, CancellationToken token = default);
         //Task<long> CountLikesForReview(long reviewId, CancellationToken token = default);
         //Task<long> CountDislikesForReview(long reviewId, CancellationToken token = default);
         //Task<long> GetAverageForReview(long reviewId, CancellationToken token = default);

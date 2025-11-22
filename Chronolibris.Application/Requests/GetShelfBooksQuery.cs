@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
+using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Requests
@@ -21,7 +22,7 @@ namespace Chronolibris.Application.Requests
     /// <param name="PageSize">Максимальное количество элементов, которое должно находиться на одной странице.</param>
     /// <returns>Возвращает объект <see cref="PagedResult{T}"/>, содержащий коллекцию 
     /// <see cref="BookListItem"/> (облегченная модель книги) и метаданные пагинации.</returns>
-    public record GetShelfBooksQuery(long ShelfId, int Page, int PageSize)
+    public record GetShelfBooksQuery(long ShelfId, long? lastId, int Limit)
     : IRequest<PagedResult<BookListItem>>;
 
 }

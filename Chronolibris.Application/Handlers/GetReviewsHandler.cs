@@ -16,7 +16,7 @@ namespace Chronolibris.Application.Handlers
     /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/>
     /// для обработки <see cref="GetReviewsQuery"/> и возврата списка <see cref="List{T}"/> из <see cref="ReviewDetails"/>.
     /// </summary>
-    public class GetReviewsHandler(IReviewRepository reviewRepository) : IRequestHandler<GetReviewsQuery, List<ReviewDetails>>
+    public class GetReviewsHandler(IReviewRepository reviewRepository) : IRequestHandler<GetReviewsQuery, PagedResult<ReviewDetails>>
     {
 
         // Примечание: Внедрение зависимости через первичный конструктор (Primary Constructor)
@@ -40,45 +40,41 @@ namespace Chronolibris.Application.Handlers
         /// Результат задачи — список <see cref="ReviewDetails"/>, содержащий отзывы, 
         /// или пустой список, если отзывы не найдены.
         /// </returns>
-        public async Task<List<ReviewDetails>> Handle(GetReviewsQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<ReviewDetails>> Handle(GetReviewsQuery request, CancellationToken cancellationToken)
         {
-            //var reviews = await reviewRepository.GetAllAsync(cancellationToken);
-            //return reviews.Where(r => r.BookId == request.BookId)
-            //    .Select(r => new ReviewDetails
-            //    {
-            //        Id = r.Id,
-            //        AverageRating = r.AverageRating,
-            //        Text = r.Description,
 
-            //        DislikesCount = r.DislikesCount,
-            //        LikesCount = r.LikesCount,
-            //        UserName = r.Name,
-            //        Score = r.Score,
-            //        Title = r.Title,
-            //        CreatedAt = r.CreatedAt,
-            //    }).ToList(); // i should fix this code later (1 - where, 2 - mapping)
-            var reviews = await reviewRepository.GetByBookIdAsync(request.BookId, cancellationToken);
+            var reviews = await reviewRepository.GetByBookIdAsync(request.BookId,
+                request.lastId, request.limit, cancellationToken);
 
-            // Если GetByBookIdAsync возвращает null, возвращаем пустой список
-            if (reviews == null)
+            bool hasNext = reviews.Count() > request.limit;
+            if (hasNext)
             {
-                return new List<ReviewDetails>();
+                reviews.RemoveAt(reviews.Count() - 1);
             }
 
             // 2. Оптимизация маппинга: Select для преобразования сущностей в DTO.
-            return reviews
-                .Select(r => new ReviewDetails
-                {
-                    Id = r.Id,
-                    AverageRating = r.AverageRating,
-                    Text = r.Description, // Маппинг Description на Text
-                    DislikesCount = r.DislikesCount,
-                    LikesCount = r.LikesCount,
-                    UserName = r.Name,
-                    Score = r.Score,
-                    Title = r.Title,
-                    CreatedAt = r.CreatedAt,
-                }).ToList();
+            var rDtos = reviews
+            .Select(r => new ReviewDetails
+            {
+                Id = r.Id,
+                AverageRating = r.AverageRating,
+                Text = r.Description, // Маппинг Description на Text
+                DislikesCount = r.DislikesCount,
+                LikesCount = r.LikesCount,
+                UserName = r.Name,
+                Score = r.Score,
+                Title = r.Title,
+                CreatedAt = r.CreatedAt,
+            }).ToList();
+
+
+            return new PagedResult<ReviewDetails>
+            {
+                Items = rDtos,
+                Limit = request.limit,
+                HasNext = hasNext,
+                LastId = reviews.LastOrDefault()?.Id
+            };
         }
     }
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
@@ -40,27 +41,40 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<PagedResult<BookListItem>> Handle(GetShelfBooksQuery request, CancellationToken ct)
         {
-            // Получение страницы книг и общего количества записей (total) из репозитория
-            var (books, total) = await shelvesRepository.GetBooksForShelfAsync(
-                request.ShelfId, request.Page, request.PageSize, ct);
 
-            // Создание и возврат объекта PagedResult, содержащего DTO и информацию о пагинации
+            long? lastId = request.lastId;
+
+
+            // Получение страницы книг и общего количества записей (total) из репозитория
+            var books = await shelvesRepository.GetBooksForShelfAsync(
+                request.ShelfId, lastId, request.Limit, ct);
+
+            var hasNext = books.Count() > request.Limit;
+            if (hasNext)
+            {
+                books.RemoveAt(books.Count() - 1);
+            }
+
+            var bookDtos = books.Select(b => new BookListItem
+            {
+                Id = b.Id,
+                Title = b.Title,
+                AverageRating = b.AverageRating,
+                //CoverUrl = _coverUrl.GetCoverUrl(b.CoverPath)
+                CoverUri = b.CoverPath,
+                IsFavorite = false, //TODO: определить логику для IsFavorite
+                RatingsCount = b.RatingsCount,
+                Authors = b.BookContents.SelectMany(bc => bc.Content.Participations
+                .Select(cp => cp.Person.Name))
+                .ToList()
+            });
+
             return new PagedResult<BookListItem>
             {
-                // Маппинг сущностей книг на DTO BookListItem
-                Items = books.Select(b => new BookListItem
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    AverageRating = b.AverageRating,
-                    //CoverUrl = _coverUrl.GetCoverUrl(b.CoverPath)
-                    CoverUri = b.CoverPath,
-                    IsFavorite = false,
-                    RatingsCount = b.RatingsCount,
-                }),
-                TotalCount = total,
-                Page = request.Page,
-                PageSize = request.PageSize
+                Items = bookDtos,
+                Limit = request.Limit,
+                HasNext = hasNext,
+                LastId = bookDtos.LastOrDefault()?.Id
             };
         }
     }

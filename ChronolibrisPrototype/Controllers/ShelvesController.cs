@@ -23,10 +23,14 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
         [HttpGet("{shelfId}/books")]
-        public async Task<IActionResult> GetShelfBooks(long shelfId, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> GetShelfBooks(long shelfId, 
+            long? lastId = null, int limit = 20)
         {
+            if (limit < 1) limit = 20;
+            else if (limit > 100) limit = 100;
+
             var result = await _mediator.Send(
-                new GetShelfBooksQuery(shelfId, page, pageSize));
+                new GetShelfBooksQuery(shelfId, lastId, limit));
 
             return Ok(result);
         }

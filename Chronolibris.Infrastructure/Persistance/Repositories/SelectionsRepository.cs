@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -70,22 +72,52 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// Кортеж, содержащий коллекцию сущностей <see cref="Book"/> для текущей страницы 
         /// и общее количество книг в подборке (<c>TotalCount</c>).
         /// </returns>
-        public async Task<(IEnumerable<Book> Books, int TotalCount)>
-            GetBooksForSelection(long selectionId, int page, int pageSize, CancellationToken ct)
+        public async Task<List<BookListItem>>
+            GetBooksForSelection(long selectionId, long? lastId, int limit, CancellationToken ct)
         {
-            var query = _context.Selections
-                .Where(s => s.Id == selectionId && s.IsActive)
-                .SelectMany(s => s.Books);
+            //var query = _context.Selections
+            //    .Where(s => s.Id == selectionId && s.IsActive)
+            //    .SelectMany(s => s.Books);
 
-            var total = await query.CountAsync(ct);
+            //var total = await query.CountAsync(ct);
 
-            var items = await query
-                .OrderBy(b => b.Title)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+            //var items = await query
+            //    .OrderBy(b => b.Title)
+            //    .Skip((page - 1) * pageSize)
+            //    .Take(pageSize)
+            //    .ToListAsync(ct);
+
+            //return (items, total);
+
+            var query = _context.Books.AsNoTracking()
+                .Where(b => b.Selections.Any(s => s.Id == selectionId && s.IsActive));
+
+            if (lastId.HasValue)
+            {
+                query = query.Where(b => b.Id > lastId.Value);
+            }
+
+            var books = await query
+                .OrderBy(b => b.Id)
+                .Select(b => new BookListItem
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    AverageRating = b.AverageRating,
+                    CoverUri = b.CoverPath,
+                    RatingsCount = b.RatingsCount,
+                    IsFavorite = false,
+                    //эффективный SQL (JOIN/Subselect)
+                    Authors = b.BookContents
+                        .SelectMany(bc => bc.Content.Participations
+                            .Select(p => p.Person.Name))
+                        .ToList()
+                })
+                .Take(limit + 1)
                 .ToListAsync(ct);
 
-            return (items, total);
+            return books;
+
         }
     }
 

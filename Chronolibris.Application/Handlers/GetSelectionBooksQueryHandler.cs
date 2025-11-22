@@ -8,6 +8,7 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Interfaces;
 using MediatR;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers
 {
@@ -41,29 +42,23 @@ namespace Chronolibris.Application.Handlers
         public async Task<PagedResult<BookListItem>> Handle(GetSelectionBooksQuery request, CancellationToken ct)
         {
             // Получение страницы книг и общего количества записей из репозитория
-            var (books, totalCount) = await selectionsRepository
-                .GetBooksForSelection(request.SelectionId, request.Page, request.PageSize, ct);
+            var books = await selectionsRepository
+                .GetBooksForSelection(request.SelectionId, request.LastId, request.Limit, ct);
 
-            // Создание и возврат объекта PagedResult, содержащего DTO и информацию о пагинации
+            bool hasNext = books.Count > request.Limit;
+
+            if (hasNext)
+            {
+                // Удаляем лишний элемент, который брали для проверки
+                books.RemoveAt(books.Count - 1);
+            }
+
             return new PagedResult<BookListItem>
             {
-                // Маппинг сущностей книг на DTO BookListItem
-                Items = books.Select(b => new BookListItem
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    AverageRating = b.AverageRating,
-                    //CoverUrl = _coverService.GetCoverUrl(b.CoverPath)
-                    // Поле IsFavorite временно установлено в false, пока не будет реализована логика проверки избранного
-                    //TODO!!!
-                    IsFavorite = false,
-                    RatingsCount = b.RatingsCount,
-                    CoverUri = b.CoverPath
-                }),
-
-                TotalCount = totalCount,
-                Page = request.Page,
-                PageSize = request.PageSize
+                Items = books,
+                Limit = request.Limit,
+                HasNext = hasNext,
+                LastId = books.LastOrDefault()?.Id 
             };
         }
     }

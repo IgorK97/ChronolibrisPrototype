@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.Models
+namespace Chronolibris.Domain.Models
 {
     /// <summary>
     /// Представляет упрощенную модель данных книги, предназначенную для отображения 
