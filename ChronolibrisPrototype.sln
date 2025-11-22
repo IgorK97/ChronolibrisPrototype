@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Domain", "Chro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Application", "Chronolibris.Application\Chronolibris.Application.csproj", "{AE7B4E23-AF3B-48E3-9DFC-3D2A1580AC20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Infrastructure", "Chronolibris.Infrastructure\Chronolibris.Infrastructure.csproj", "{07C66C69-B445-400E-9C5B-7347E56D63AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Infrastructure.DataAccess", "Chronolibris.Infrastructure\Chronolibris.Infrastructure.DataAccess.csproj", "{07C66C69-B445-400E-9C5B-7347E56D63AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Infrastructure.ObjectStorage", "Chronolibris.Infrastructure.ObjectStorage\Chronolibris.Infrastructure.ObjectStorage.csproj", "{7561294D-8E40-4F1E-A0D5-20866A439C7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7561294D-8E40-4F1E-A0D5-20866A439C7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7561294D-8E40-4F1E-A0D5-20866A439C7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7561294D-8E40-4F1E-A0D5-20866A439C7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7561294D-8E40-4F1E-A0D5-20866A439C7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,12 +26,42 @@ namespace Chronolibris.Infrastructure.Files
             return await File.ReadAllBytesAsync(bookPath, cancellationToken);
         }
 
+        //public async Task<Stream?> OpenReadStreamAsync(string fileName, CancellationToken token)
+        //{
+        //    var bookPath = Path.Combine(_booksDirectory, fileName);
+        //    if (!File.Exists(bookPath))
+        //        return null;
+
+        //    return new FileStream(bookPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+        //}
+
         public async Task<Stream?> OpenReadStreamAsync(string fileName, CancellationToken token)
         {
-            var bookPath = Path.Combine(_booksDirectory, fileName);
-            if (!File.Exists(bookPath))
-                return null;
+            // 1. Убираем возможные "грязные" слеши и приводим к системному виду
+            // Path.DirectorySeparatorChar в Windows это '\', в Linux '/'
+            var safeRoot = _booksDirectory.Replace('/', Path.DirectorySeparatorChar)
+                                          .Replace('\\', Path.DirectorySeparatorChar);
 
+            var safeFileName = fileName.Replace('/', Path.DirectorySeparatorChar)
+                                       .Replace('\\', Path.DirectorySeparatorChar);
+
+            // 2. Если в fileName в начале есть слеш (например "/Buddism..."), 
+            // Path.Combine может проигнорировать первую часть (root). Убираем начальный слеш.
+            safeFileName = safeFileName.TrimStart(Path.DirectorySeparatorChar);
+
+            // 3. Объединяем
+            var bookPath = Path.Combine(safeRoot, safeFileName);
+
+            // 4. (ВАЖНО) Логируем или смотрим в отладчике, что получилось!
+            // Console.WriteLine($"Looking for file at: {bookPath}"); 
+
+            if (!File.Exists(bookPath))
+            {
+                // Поставьте здесь точку останова (breakpoint) и посмотрите переменную bookPath
+                return null;
+            }
+
+            //return new FileStream(bookPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
             return new FileStream(bookPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
         }
     }
