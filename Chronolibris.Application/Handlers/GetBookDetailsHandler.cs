@@ -55,19 +55,44 @@ namespace Chronolibris.Application.Handlers
             if (book == null)
                 return null;
 
+            var bookParticipations = book.Participations;
+            var contentParticipations = book.BookContents
+                .SelectMany(bc => bc.Content.Participations)
+                .ToList();
+
+            var allParticipations = bookParticipations
+                .Concat(contentParticipations) // Объединяем участия книги и контента
+                .ToList();
+
             // Группировка участников (Person) по их роли (PersonRoleId)
-            var participantsGrouped = book.Participations
+            //var participantsGrouped = book.Participations
+            //    .GroupBy(p => p.PersonRoleId)
+            //    .Select(g => new BookPersonGroupDetails
+            //    {
+            //        Role = g.Key,
+            //        //RoleName = g.First().PersonRole.Name,
+            //        Persons = g.Select(p => new PersonDetails
+            //        {
+            //            Id = p.PersonId,
+            //            FullName = p.Person.Name
+            //        }).ToList()
+            //    }).ToList();
+
+            var participantsGrouped = allParticipations
+                .DistinctBy(p => new { p.PersonRoleId, p.PersonId })
                 .GroupBy(p => p.PersonRoleId)
                 .Select(g => new BookPersonGroupDetails
                 {
                     Role = g.Key,
-                    //RoleName = g.First().PersonRole.Name,
+                    // RoleName: Вам нужно убедиться, что PersonRole загружена
+                    // RoleName = g.First().PersonRole.Name, 
                     Persons = g.Select(p => new PersonDetails
                     {
                         Id = p.PersonId,
                         FullName = p.Person.Name
                     }).ToList()
-                }).ToList();
+                })
+                .ToList();
 
             // Создание DTO (Data Transfer Object) BookDetails
             var dto = new BookDetails
