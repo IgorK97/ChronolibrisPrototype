@@ -83,5 +83,8 @@ namespace Chronolibris.Application.Models
         /// Инициализируется пустым списком, если не указано иное.
         /// </summary>
         public IEnumerable<BookPersonGroupDetails> Participants { get; set; } = [];
+
+
+        public IEnumerable<ThemeDetails> Themes { get; set; } = [];
     }
 }

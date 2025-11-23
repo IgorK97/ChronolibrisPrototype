@@ -46,6 +46,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .Include(b => b.Country)
                 .Include(b => b.Language)
                 .Include(b => b.BookContents).ThenInclude(bc => bc.Content).ThenInclude(c => c.Participations).ThenInclude(p => p.Person)
+                .Include(b => b.BookContents).ThenInclude(bc => bc.Content).ThenInclude(c => c.Themes)
                 
                 //.Include(b => b.Reviews)
                 .Include(b => b.Participations)

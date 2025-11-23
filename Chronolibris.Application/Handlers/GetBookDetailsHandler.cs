@@ -61,22 +61,12 @@ namespace Chronolibris.Application.Handlers
                 .ToList();
 
             var allParticipations = bookParticipations
-                .Concat(contentParticipations) // Объединяем участия книги и контента
+                .Concat(contentParticipations) 
                 .ToList();
 
-            // Группировка участников (Person) по их роли (PersonRoleId)
-            //var participantsGrouped = book.Participations
-            //    .GroupBy(p => p.PersonRoleId)
-            //    .Select(g => new BookPersonGroupDetails
-            //    {
-            //        Role = g.Key,
-            //        //RoleName = g.First().PersonRole.Name,
-            //        Persons = g.Select(p => new PersonDetails
-            //        {
-            //            Id = p.PersonId,
-            //            FullName = p.Person.Name
-            //        }).ToList()
-            //    }).ToList();
+            var allThemes = book.BookContents
+                .SelectMany(bc => bc.Content.Themes)
+                .ToList();
 
             var participantsGrouped = allParticipations
                 .DistinctBy(p => new { p.PersonRoleId, p.PersonId })
@@ -84,7 +74,6 @@ namespace Chronolibris.Application.Handlers
                 .Select(g => new BookPersonGroupDetails
                 {
                     Role = g.Key,
-                    // RoleName: Вам нужно убедиться, что PersonRole загружена
                     // RoleName = g.First().PersonRole.Name, 
                     Persons = g.Select(p => new PersonDetails
                     {
@@ -122,6 +111,7 @@ namespace Chronolibris.Application.Handlers
                 Participants = participantsGrouped,
                 //CoverUri = _cdnService.GetCoverUrl(book.CoverPath),
                 CoverUri = book.CoverPath,
+                Themes = allThemes.Select(th =>new ThemeDetails { Id = th.Id, Name  = th.Name }).ToList()
             };
 
             return dto;
