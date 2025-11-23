@@ -66,7 +66,9 @@ namespace Chronolibris.Infrastructure.Persistance
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Publisher"/>.
         /// </summary>
         public IGenericRepository<Publisher> Publishers { get; }
-        //public IGenericRepository<ReviewsRating> ReviewsRatings { get; }
+
+        public IGenericRepository<PersonRole> PersonRoles { get; }
+
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="UnitOfWork"/>, 
@@ -88,7 +90,8 @@ namespace Chronolibris.Infrastructure.Persistance
             IGenericRepository<Publisher> publisherRepository,
             IReviewsRatingRepository reviewsRatings,
             IReviewRepository reviewRepository,
-            ISelectionsRepository selections, IShelvesRepository shelves)
+            ISelectionsRepository selections, IShelvesRepository shelves,
+            IGenericRepository<PersonRole> personRoles)
         {
             _context = context;
 
@@ -101,6 +104,7 @@ namespace Chronolibris.Infrastructure.Persistance
             ReviewsRatings = reviewsRatings;
             Selections = selections;
             Shelves = shelves;
+            PersonRoles = personRoles;
         }
 
         /// <summary>

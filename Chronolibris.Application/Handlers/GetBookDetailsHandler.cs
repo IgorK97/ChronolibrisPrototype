@@ -61,6 +61,7 @@ namespace Chronolibris.Application.Handlers
                 .Select(g => new BookPersonGroupDetails
                 {
                     Role = g.Key,
+                    //RoleName = g.First().PersonRole.Name,
                     Persons = g.Select(p => new PersonDetails
                     {
                         Id = p.PersonId,

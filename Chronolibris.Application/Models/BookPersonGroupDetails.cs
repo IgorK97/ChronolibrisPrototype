@@ -16,7 +16,9 @@ namespace Chronolibris.Application.Models
         /// Идентификатор роли, которую выполняет данная группа людей 
         /// по отношению к книге (например, ID для "Автор" или "Переводчик").
         /// </summary>
-        public long Role { get; set; }
+        public required long Role { get; set; }
+
+        //public required string RoleName { get; set; }
 
         /// <summary>
         /// Коллекция <see cref="PersonDetails"/>, представляющая всех людей, 

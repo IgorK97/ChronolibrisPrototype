@@ -61,6 +61,8 @@ namespace Chronolibris.Domain.Interfaces
         /// </summary>
         IGenericRepository<Publisher> Publishers { get; }
 
+        IGenericRepository<PersonRole> PersonRoles { get; }
+
         /// <summary>
         /// Асинхронно сохраняет все изменения, накопленные в контексте отслеживания 
         /// изменений во всех репозиториях, в базе данных как единую транзакцию.
