@@ -49,11 +49,11 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        [HttpGet("/readbooks")]
-        public async Task<IActionResult> GetReadBooks(GetReadBooksQuery request)
+        [HttpGet("readbooks")]
+        public async Task<IActionResult> GetReadBooks(long userId, long? lastId, int limit=20)
         {
 
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(new GetReadBooksQuery(userId, lastId, limit));
             return Ok(result);
         }
     }
