@@ -30,6 +30,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<Tag> Tags { get; set; }
         public DbSet<TagType> TagTypes { get; set; }
         public DbSet<Theme> Themes { get; set; }
+        public DbSet<ReadingProgress> ReadingProgresses { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

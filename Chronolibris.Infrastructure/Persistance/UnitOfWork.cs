@@ -68,6 +68,7 @@ namespace Chronolibris.Infrastructure.Persistance
         public IGenericRepository<Publisher> Publishers { get; }
 
         public IGenericRepository<PersonRole> PersonRoles { get; }
+        public IReadingProgressRepository ReadingProgresses { get; }
 
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace Chronolibris.Infrastructure.Persistance
             IReviewsRatingRepository reviewsRatings,
             IReviewRepository reviewRepository,
             ISelectionsRepository selections, IShelvesRepository shelves,
-            IGenericRepository<PersonRole> personRoles)
+            IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses)
         {
             _context = context;
 
@@ -105,6 +106,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Selections = selections;
             Shelves = shelves;
             PersonRoles = personRoles;
+            ReadingProgresses = readingProgresses;
         }
 
         /// <summary>

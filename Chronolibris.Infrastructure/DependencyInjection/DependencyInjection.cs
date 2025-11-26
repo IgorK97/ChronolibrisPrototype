@@ -7,6 +7,7 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
+using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
 using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Identity;
 using Chronolibris.Infrastructure.Persistance;
@@ -49,6 +50,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Person>, GenericRepository<Person>>();
             services.AddScoped<IGenericRepository<Publisher>, GenericRepository<Publisher>>();
             services.AddScoped<IGenericRepository<PersonRole>, GenericRepository<PersonRole>>();
+            //services.AddScoped<IGenericRepository<ReadingProgress>, GenericRepository<ReadingProgress>>();
 
             // Регистрация специфических репозиториев (Scoped lifetime)
             services.AddScoped<IBookRepository, BookRepository>();
@@ -57,6 +59,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IReviewRepository,  ReviewRepository>();
             services.AddScoped<ISelectionsRepository, SelectionsRepository>();
             services.AddScoped<IShelvesRepository, ShelvesRepository>();
+            services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

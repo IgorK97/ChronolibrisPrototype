@@ -1,4 +1,5 @@
 ﻿using Chronolibris.Application.Queries;
+using Chronolibris.Application.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,13 @@ namespace ChronolibrisPrototype.Controllers
             if(metadata != null)
                 return Ok(metadata);
             return NotFound();
+        }
+
+        [HttpPost("{bookId}/progress")]
+        public async Task<ActionResult> UpdateReadingProgress(UpdateReadingProgressCommand request)
+        {
+            var metadata = await _mediator.Send(request);
+            return NoContent();
         }
     }
 }
