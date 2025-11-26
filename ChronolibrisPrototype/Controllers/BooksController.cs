@@ -48,5 +48,13 @@ namespace ChronolibrisPrototype.Controllers
             var metadata = await _mediator.Send(request);
             return NoContent();
         }
+
+        [HttpGet("/readbooks")]
+        public async Task<IActionResult> GetReadBooks(GetReadBooksQuery request)
+        {
+
+            var result = await _mediator.Send(request);
+            return Ok(result);
+        }
     }
 }
