@@ -43,9 +43,9 @@ namespace Chronolibris.Application.Handlers
 
             var bookmark = new Bookmark
             {
-                BookId = request.BookId,
-                UserId = request.UserId,
-                Mark = request.Mark,
+                BookId = request.bookId,
+                UserId = request.userId,
+                Mark = request.mark,
                 CreatedAt = DateTime.UtcNow,
                 Id = 0,
             };

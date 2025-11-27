@@ -19,5 +19,5 @@ namespace Chronolibris.Application.Requests
     /// <param name="UserId">Идентификатор пользователя, создающего закладку.</param>
     /// <param name="Mark">Текст или позиция закладки (например, номер страницы или цитата).</param>
     /// <returns>Возвращает <c>bool</c>, указывающий на успех выполнения операции.</returns>
-    public record AddBookmarkCommand(long BookId, long UserId, string Mark) : IRequest<bool>;
+    public record AddBookmarkCommand(long bookId, long userId, string mark) : IRequest<bool>;
 }
