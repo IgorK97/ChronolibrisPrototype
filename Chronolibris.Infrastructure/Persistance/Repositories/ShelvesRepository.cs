@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using Chronolibris.Domain.SystemConstants;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -72,32 +73,46 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// Кортеж, содержащий коллекцию сущностей <see cref="Book"/> для текущей страницы 
         /// и общее количество книг на полке (<c>TotalCount</c>).
         /// </returns>
-        public async Task<List<Book>>
-            GetBooksForShelfAsync(long shelfId, long? lastId, int limit, CancellationToken ct)
+        public async Task<List<BookListItem>>
+            GetBooksForShelfAsync(long shelfId, long? lastId, int limit, long userId, CancellationToken ct)
         {
-
-
-            //TODO: Делать Select (проекцию) прямо в запросе к базе данных (в репозитории),
-            //чтобы SQL возвращал только нужные поля (ID, Title, список имен авторов),
-            //а не все объекты целиком. - Eager Loading (over fetching?)
-
-    
-
+            // Шаг 1: Определяем базовый запрос
             var query = _context.Books
-            .AsNoTracking()
-            .Where(b => b.Shelves.Any(s => s.Id == shelfId));
+                .AsNoTracking()
+                // Фильтруем по полке
+                .Where(b => b.Shelves.Any(s => s.Id == shelfId));
 
+            // Шаг 2: Применяем пагинацию (Keyset)
             if (lastId.HasValue)
                 query = query.Where(b => b.Id > lastId.Value);
 
+            // Шаг 3: Проекция (Select) на BookListItem DTO
+            // EF Core сам сгенерирует все необходимые JOIN'ы для получения данных авторов,
+            // но только для тех полей, которые нужны в DTO.
             var books = await query
-                .Include(b => b.Participations)
-                    .ThenInclude(p => p.Person)
-                .Include(b => b.BookContents)
-                    .ThenInclude(bc => bc.Content)
-                    .ThenInclude(c => c.Participations)
-                    .ThenInclude(p => p.Person)
                 .OrderBy(b => b.Id)
+                .Select(b => new BookListItem
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    AverageRating = b.AverageRating,
+                    CoverUri = b.CoverPath,
+                    RatingsCount = b.RatingsCount,
+
+                    IsFavorite = b.Shelves.Any(s =>
+                        s.UserId == userId &&
+                        s.ShelfType.Code == ShelfTypes.FAVORITES),
+
+                    // Аналогично для прочитанного
+                    IsRead = b.Shelves.Any(s =>
+                        s.UserId == userId &&
+                        s.ShelfType.Code == ShelfTypes.READ),
+
+                    Authors = b.BookContents
+                        .SelectMany(bc => bc.Content.Participations
+                            .Select(p => p.Person.Name))
+                        .ToList()
+                })
                 .Take(limit + 1)
                 .ToListAsync(ct);
 

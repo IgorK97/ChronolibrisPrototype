@@ -43,7 +43,7 @@ namespace Chronolibris.Application.Handlers
         {
             // Получение страницы книг и общего количества записей из репозитория
             var books = await selectionsRepository
-                .GetBooksForSelection(request.SelectionId, request.LastId, request.Limit, ct);
+                .GetBooksForSelection(request.SelectionId, request.LastId, request.Limit, request.userId, ct);
 
             bool hasNext = books.Count > request.Limit;
 

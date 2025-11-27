@@ -43,6 +43,8 @@ namespace Chronolibris.Domain.Models
         /// </summary>
         public required bool IsFavorite { get; set; }
 
+        public required bool IsRead { get; set; }
+
         /// <summary>
         /// Список имен авторов книги. Инициализируется пустым списком строк, если не указано иное.
         /// </summary>

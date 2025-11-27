@@ -17,7 +17,7 @@ namespace Chronolibris.Application.Handlers
     /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/>
     /// для обработки <see cref="GetShelfBooksQuery"/> и возврата <see cref="PagedResult{T}"/> из <see cref="BookListItem"/>.
     /// </summary>
-    public class GetShelfBooksHandler(IShelfRepository shelvesRepository)
+    public class GetShelfBooksHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetShelfBooksQuery, PagedResult<BookListItem>>
     {
 
@@ -46,8 +46,8 @@ namespace Chronolibris.Application.Handlers
 
 
             // Получение страницы книг и общего количества записей (total) из репозитория
-            var books = await shelvesRepository.GetBooksForShelfAsync(
-                request.ShelfId, lastId, request.Limit, ct);
+            var books = await unitOfWork.Shelves.GetBooksForShelfAsync(
+                request.ShelfId, lastId, request.Limit, request.userId, ct);
 
             var hasNext = books.Count() > request.Limit;
             if (hasNext)
@@ -55,26 +55,14 @@ namespace Chronolibris.Application.Handlers
                 books.RemoveAt(books.Count() - 1);
             }
 
-            var bookDtos = books.Select(b => new BookListItem
-            {
-                Id = b.Id,
-                Title = b.Title,
-                AverageRating = b.AverageRating,
-                //CoverUrl = _coverUrl.GetCoverUrl(b.CoverPath)
-                CoverUri = b.CoverPath,
-                IsFavorite = false, //TODO: определить логику для IsFavorite
-                RatingsCount = b.RatingsCount,
-                Authors = b.BookContents.SelectMany(bc => bc.Content.Participations
-                .Select(cp => cp.Person.Name))
-                .ToList()
-            });
+
 
             return new PagedResult<BookListItem>
             {
-                Items = bookDtos,
+                Items = books,
                 Limit = request.Limit,
                 HasNext = hasNext,
-                LastId = bookDtos.LastOrDefault()?.Id
+                LastId = books.LastOrDefault()?.Id
             };
         }
     }

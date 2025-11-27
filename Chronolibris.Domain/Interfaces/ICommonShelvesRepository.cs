@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Domain.Interfaces
 {
@@ -46,8 +47,8 @@ namespace Chronolibris.Domain.Interfaces
         /// Кортеж, содержащий коллекцию сущностей <see cref="Book"/> для текущей страницы 
         /// и общее количество книг на полке (<c>TotalCount</c>).
         /// </returns>
-        Task<List<Book>>
-            GetBooksForShelfAsync(long shelfId, long? lastId, int limit, CancellationToken token = default);
+        Task<List<BookListItem>>
+                    GetBooksForShelfAsync(long shelfId, long? lastId, int limit, long userId, CancellationToken ct = default);
 
         /// <summary>
         /// Асинхронно добавляет связь между указанной книгой и указанной полкой.

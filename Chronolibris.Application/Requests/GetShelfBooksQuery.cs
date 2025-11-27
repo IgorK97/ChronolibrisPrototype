@@ -22,7 +22,7 @@ namespace Chronolibris.Application.Requests
     /// <param name="PageSize">Максимальное количество элементов, которое должно находиться на одной странице.</param>
     /// <returns>Возвращает объект <see cref="PagedResult{T}"/>, содержащий коллекцию 
     /// <see cref="BookListItem"/> (облегченная модель книги) и метаданные пагинации.</returns>
-    public record GetShelfBooksQuery(long ShelfId, long? lastId, int Limit)
+    public record GetShelfBooksQuery(long ShelfId, long? lastId, int Limit, long userId)
     : IRequest<PagedResult<BookListItem>>;
 
 }

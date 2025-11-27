@@ -7,6 +7,7 @@ using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Models;
+using Chronolibris.Domain.SystemConstants;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,7 +74,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// и общее количество книг в подборке (<c>TotalCount</c>).
         /// </returns>
         public async Task<List<BookListItem>>
-            GetBooksForSelection(long selectionId, long? lastId, int limit, CancellationToken ct)
+            GetBooksForSelection(long selectionId, long? lastId, int limit, long userId, CancellationToken ct)
         {
             //var query = _context.Selections
             //    .Where(s => s.Id == selectionId && s.IsActive)
@@ -97,8 +98,29 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(b => b.Id > lastId.Value);
             }
 
+            //var books = await query
+            //    .OrderBy(b => b.Id)
+            //    .Select(b => new BookListItem
+            //    {
+            //        Id = b.Id,
+            //        Title = b.Title,
+            //        AverageRating = b.AverageRating,
+            //        CoverUri = b.CoverPath,
+            //        RatingsCount = b.RatingsCount,
+            //        IsFavorite = false,
+            //        //эффективный SQL (JOIN/Subselect)
+            //        Authors = b.BookContents
+            //            .SelectMany(bc => bc.Content.Participations
+            //                .Select(p => p.Person.Name))
+            //            .ToList()
+            //    })
+            //    .Take(limit + 1)
+            //    .ToListAsync(ct);
+
+            //return books;
+
             var books = await query
-                .OrderBy(b => b.Id)
+                .OrderBy(rp => rp.Id)
                 .Select(b => new BookListItem
                 {
                     Id = b.Id,
@@ -106,15 +128,30 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     AverageRating = b.AverageRating,
                     CoverUri = b.CoverPath,
                     RatingsCount = b.RatingsCount,
-                    IsFavorite = false,
-                    //эффективный SQL (JOIN/Subselect)
+
+                    // --- ЛОГИКА ПРОВЕРКИ СТАТУСОВ ---
+
+                    // Проверяем, есть ли у этой книги полка, которая:
+                    // 1. Принадлежит текущему пользователю (s.UserId == userId)
+                    // 2. Имеет тип с кодом "favorites"
+                    IsFavorite = b.Shelves.Any(s =>
+                        s.UserId == userId &&
+                        s.ShelfType.Code == ShelfTypes.FAVORITES),
+
+                    // Аналогично для прочитанного
+                    IsRead = b.Shelves.Any(s =>
+                        s.UserId == userId &&
+                        s.ShelfType.Code == ShelfTypes.READ),
+
+                    // -------------------------------
+
                     Authors = b.BookContents
                         .SelectMany(bc => bc.Content.Participations
                             .Select(p => p.Person.Name))
                         .ToList()
                 })
                 .Take(limit + 1)
-                .ToListAsync(ct);
+                .ToListAsync(ct); // Не забываем передать токен отмены
 
             return books;
 
