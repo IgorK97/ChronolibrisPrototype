@@ -33,10 +33,10 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{bookId}/info")]
-        public async Task<ActionResult> GetBookMetadata(long bookId)
+        public async Task<ActionResult> GetBookMetadata(long bookId, long userId)
         {
 
-            var metadata = await _mediator.Send(new GetBookMetadataQuery(bookId));
+            var metadata = await _mediator.Send(new GetBookMetadataQuery(bookId, userId));
             if(metadata != null)
                 return Ok(metadata);
             return NotFound();

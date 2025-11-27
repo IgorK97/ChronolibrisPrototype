@@ -21,15 +21,15 @@ namespace Chronolibris.Application.Handlers
         /// <summary>
         /// Приватное поле только для чтения для доступа к репозиторию книг.
         /// </summary>
-        private readonly IBookRepository _bookRepository;
+        private readonly IUnitOfWork unitOfWork;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="GetBookDetailsHandler"/>.
         /// </summary>
         /// <param name="bookRepository">Интерфейс репозитория для доступа к данным книг.</param>
-        public GetBookDetailsHandler(IBookRepository bookRepository)
+        public GetBookDetailsHandler(IUnitOfWork uow)
         {
-            _bookRepository = bookRepository;
+            unitOfWork = uow;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<BookDetails?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
         {
             // Получение книги с необходимыми связанными сущностями из репозитория
-            var book = await _bookRepository.GetBookWithRelationsAsync(request.bookId, cancellationToken);
+            var book = await unitOfWork.Books.GetBookWithRelationsAsync(request.bookId, cancellationToken);
             if (book == null)
                 return null;
 
@@ -83,6 +83,9 @@ namespace Chronolibris.Application.Handlers
                 })
                 .ToList();
 
+            bool isFavorite = await unitOfWork.Shelves.IsInFavorite(request.userId, request.bookId);
+            bool isRead = await unitOfWork.Shelves.IsRead(request.userId, request.bookId);
+
             // Создание DTO (Data Transfer Object) BookDetails
             var dto = new BookDetails
             {
@@ -95,7 +98,8 @@ namespace Chronolibris.Application.Handlers
                 RatingsCount = book.RatingsCount,
                 ReviewsCount = book.ReviewsCount,
                 IsAvailable = book.IsAvailable,
-
+                IsFavorite=isFavorite,
+                IsRead = isRead,
                 // Проверка на null для Publisher перед маппингом
                 Publisher = book.Publisher != null ? new PublisherDetails
                 {
@@ -111,7 +115,8 @@ namespace Chronolibris.Application.Handlers
                 Participants = participantsGrouped,
                 //CoverUri = _cdnService.GetCoverUrl(book.CoverPath),
                 CoverUri = book.CoverPath,
-                Themes = allThemes.Select(th =>new ThemeDetails { Id = th.Id, Name  = th.Name }).ToList()
+                Themes = allThemes.Select(th =>new ThemeDetails { Id = th.Id, Name  = th.Name }).ToList(),
+                
             };
 
             return dto;

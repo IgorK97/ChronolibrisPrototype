@@ -42,9 +42,9 @@ namespace Chronolibris.Domain.Interfaces
         ISelectionsRepository Selections { get; }
 
         /// <summary>
-        /// Получает репозиторий для управления сущностями <see cref="Chronolibris.Domain.Interfaces.IShelvesRepository"/> (полки пользователя).
+        /// Получает репозиторий для управления сущностями <see cref="Chronolibris.Domain.Interfaces.IShelfRepository"/> (полки пользователя).
         /// </summary>
-        IShelvesRepository Shelves { get; }
+        IShelfRepository Shelves { get; }
 
         /// <summary>
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Person"/>.

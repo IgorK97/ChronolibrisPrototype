@@ -49,7 +49,7 @@ namespace Chronolibris.Infrastructure.Persistance
         /// <summary>
         /// Получает репозиторий для управления полками пользователя.
         /// </summary>
-        public IShelvesRepository Shelves { get; }
+        public IShelfRepository Shelves { get; }
 
         /// <summary>
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Person"/> (например, авторы).
@@ -91,7 +91,7 @@ namespace Chronolibris.Infrastructure.Persistance
             IGenericRepository<Publisher> publisherRepository,
             IReviewsRatingRepository reviewsRatings,
             IReviewRepository reviewRepository,
-            ISelectionsRepository selections, IShelvesRepository shelves,
+            ISelectionsRepository selections, IShelfRepository shelves,
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses)
         {
             _context = context;

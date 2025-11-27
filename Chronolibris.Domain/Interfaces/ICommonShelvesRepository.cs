@@ -11,7 +11,7 @@ namespace Chronolibris.Domain.Interfaces
     /// Определяет контракт для репозитория, управляющего сущностями <see cref="Shelf"/>
     /// и операциями по управлению книгами на этих полках.
     /// </summary>
-    public interface IShelvesRepository
+    public interface ICommonShelvesRepository
     {
         /// <summary>
         /// Асинхронно получает сущность полки по ее уникальному идентификатору.

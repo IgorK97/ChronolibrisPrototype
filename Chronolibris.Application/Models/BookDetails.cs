@@ -63,6 +63,9 @@ namespace Chronolibris.Application.Models
         /// </summary>
         public required bool IsAvailable { get; set; }
 
+        public required bool IsFavorite { get; set; }
+        public required bool IsRead { get; set; }
+
         /// <summary>
         /// Детали издателя книги. Может быть null, если издатель неизвестен.
         /// </summary>

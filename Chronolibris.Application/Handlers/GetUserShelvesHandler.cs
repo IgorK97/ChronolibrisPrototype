@@ -12,11 +12,11 @@ namespace Chronolibris.Application.Handlers
 {
     /// <summary>
     /// Обработчик запроса для получения списка полок (<see cref="ShelfDetails"/>), принадлежащих конкретному пользователю.
-    /// Использует первичный конструктор для внедрения зависимости <see cref="IShelvesRepository"/>.
+    /// Использует первичный конструктор для внедрения зависимости <see cref="ICommonShelvesRepository"/>.
     /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/>
     /// для обработки <see cref="GetUserShelvesQuery"/> и возврата коллекции <see cref="ShelfDetails"/>.
     /// </summary>
-    public class GetUserShelvesHandler(IShelvesRepository shelvesRepository)
+    public class GetUserShelvesHandler(IShelfRepository shelvesRepository)
     : IRequestHandler<GetUserShelvesQuery, IEnumerable<ShelfDetails>>
     {
 

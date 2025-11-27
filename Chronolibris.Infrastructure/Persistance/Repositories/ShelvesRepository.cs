@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.SystemConstants;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +13,9 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
     /// <summary>
     /// Репозиторий для управления сущностями полок (<see cref="Shelf"/>) и их содержимым.
-    /// Реализует интерфейс <see cref="IShelvesRepository"/> и использует <see cref="ApplicationDbContext"/>.
+    /// Реализует интерфейс <see cref="ICommonShelvesRepository"/> и использует <see cref="ApplicationDbContext"/>.
     /// </summary>
-    public class ShelvesRepository : IShelvesRepository
+    public class ShelvesRepository : IShelfRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -142,6 +143,30 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             var book = shelf.Books.FirstOrDefault(b => b.Id == bookId);
             if (book != null)
                 shelf.Books.Remove(book);
+        }
+
+        public async Task<bool> IsInFavorite(long userId, long bookId)
+        {
+            return await _context.Shelves
+                .AnyAsync(s =>
+                    s.UserId == userId &&
+                    s.ShelfType.Code == ShelfTypes.FAVORITES &&
+                    s.Books.Any(b => b.Id == bookId));
+        }
+
+        public async Task<bool> IsRead(long userId, long bookId)
+        {
+            return await _context.Shelves
+                .AnyAsync(s =>
+                    s.UserId == userId &&
+                    s.ShelfType.Code == ShelfTypes.READ &&
+                    s.Books.Any(b => b.Id == bookId));
+        }
+
+        public async Task<bool> IsInShelf(long userId, long shelfId)
+        {
+            return await _context.Shelves
+                .AnyAsync(s => s.UserId == userId && s.Id == shelfId);
         }
     }
 
