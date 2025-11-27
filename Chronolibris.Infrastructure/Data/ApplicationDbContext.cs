@@ -27,6 +27,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<Selection> Selections { get; set; }
         public DbSet<Series> Series { get; set; }
         public DbSet<Shelf> Shelves { get; set; }
+        public DbSet<ShelfType> ShelfTypes { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<TagType> TagTypes { get; set; }
         public DbSet<Theme> Themes { get; set; }
