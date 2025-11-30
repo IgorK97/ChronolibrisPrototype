@@ -22,6 +22,7 @@ namespace Chronolibris.Application.Models
         /// цитата или точное положение в электронном файле.
         /// </summary>
         public string Mark { get; set; }
+        public string Text { get; set; }
 
         /// <summary>
         /// Дата и время создания закладки.

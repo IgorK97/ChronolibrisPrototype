@@ -20,8 +20,8 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<IActionResult> Add([FromBody] AddBookmarkCommand command)
         {
             var result = await _mediator.Send(command);
-            if (!result) return BadRequest();
-            return Ok();
+            if (result<=0) return BadRequest();
+            return Ok(result);
         }
 
         [HttpDelete]

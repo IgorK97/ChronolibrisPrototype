@@ -12,6 +12,7 @@ namespace Chronolibris.Domain.Entities
         public required long BookId { get; set; }
         public required long UserId { get; set; }
         public required string Mark { get; set; }
+        public required string Text { get; set; }
         public required DateTime CreatedAt { get; set; }
         public Book Book { get; set; } = null!;
 
