@@ -34,5 +34,7 @@ namespace Chronolibris.Application.Interfaces
         /// <see cref="LoginResult"/>, содержащий статус входа и, при успешной аутентификации, токен доступа или информацию о пользователе.
         /// </returns>
         Task<LoginResult> LoginUserByEmailAsync(string Email, string Password);
+        Task<string?> RefreshTokenAsync(string token);
+        //Task<MeData?> GetMeDataAsync(Guid userId);
     }
 }

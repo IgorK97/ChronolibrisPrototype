@@ -1,7 +1,9 @@
-﻿using Chronolibris.Application.Requests;
+﻿using System.Security.Claims;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
+using Chronolibris.Application.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +32,24 @@ namespace ChronolibrisPrototype.Controllers
         {
             var result = await _mediator.Send(request);
             return Ok(result);
+        }
+
+        [HttpPost("refresh")]
+        public async Task<ActionResult> Refresh(string refreshToken)
+        {
+            var result = await _mediator.Send(new RefreshTokenCommand(refreshToken));
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            return Ok(new
+            {
+                Email = User.FindFirstValue(ClaimTypes.Email),
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            });
         }
     }
 }

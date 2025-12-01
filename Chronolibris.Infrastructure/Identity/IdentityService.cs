@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.Models;
 using Chronolibris.Application.Interfaces;
+using Chronolibris.Application.Models;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -60,6 +62,7 @@ namespace Chronolibris.Infrastructure.Identity
                 Name = request.Name,
                 RegisteredAt = dt,
                 Email = request.Email,
+                UserName = request.Name
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -68,7 +71,7 @@ namespace Chronolibris.Infrastructure.Identity
             {
                 Success = result.Succeeded,
                 Token = GenerateJwtToken(user),
-                Errors = result.Succeeded ? null : result.Errors.Select(e => e.Description)
+                Message = result.Succeeded ? null : result.Errors.Select(e => e.Description).FirstOrDefault()
             }; //Or Exception???
         
         }
@@ -86,16 +89,56 @@ namespace Chronolibris.Infrastructure.Identity
         public async Task<LoginResult> LoginUserByEmailAsync(string Email, string Password)
         {
             var user = await _userManager.FindByEmailAsync(Email);
-            //if (user == null) return null; //Exception???
-            var result = await _signInManager.CheckPasswordSignInAsync(user, Password, false);
+            if (user == null) 
+                return new LoginResult { Success = false,
+                    Token = string.Empty,
+                    Message = "User not found"
+                };
+            var result = await _signInManager
+                .CheckPasswordSignInAsync(user, Password, false);
 
-            //if (!result.Succeeded) return null;
+            if (!result.Succeeded) 
+                return new LoginResult 
+                { 
+                    Success = false,
+                    Token = string.Empty,
+                    Message = "Invalid credentials"
+                };
+
+            string jwt = GenerateJwtToken(user);
+            string refresh = GenerateRefreshToken();
+
+            user.RefreshToken = refresh;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
             return new LoginResult
             {
                 Success = true,
-                Token = GenerateJwtToken(user)
+                Token = jwt,
+                RefreshToken = refresh,
+                Message = "Login successful"
             };
         }
+
+        private string GenerateRefreshToken()
+        {
+            var randomBytes = RandomNumberGenerator.GetBytes(64);
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        public async Task<string?> RefreshTokenAsync(string refreshToken)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+                return null;
+
+            var newToken = GenerateJwtToken(user);
+            return newToken;
+        }
+
+
 
         /// <summary>
         /// Создает подписанный JSON Web Token (JWT) для указанного пользователя.

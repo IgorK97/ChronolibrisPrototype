@@ -24,11 +24,14 @@ namespace Chronolibris.Application.Models
         /// </summary>
         public string? Token { get; set; }
 
-        /// <summary>
-        /// Список сообщений об ошибках, возникших в процессе аутентификации 
-        /// (например, "Неверный пароль" или "Пользователь не найден").
-        /// Если вход успешен, это свойство будет <c>null</c> или пустым.
-        /// </summary>
-        public IEnumerable<string>? Errors { get; set; }
+        ///// <summary>
+        ///// Список сообщений об ошибках, возникших в процессе аутентификации 
+        ///// (например, "Неверный пароль" или "Пользователь не найден").
+        ///// Если вход успешен, это свойство будет <c>null</c> или пустым.
+        ///// </summary>
+        //public IEnumerable<string>? Errors { get; set; }
+        public string Message { get; set; } = string.Empty;
+
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251201164506_AddedTokensFieldToUserTable")]
+    partial class AddedTokensFieldToUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1180,14 +1183,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("phone_number_confirmed");
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("text")
-                        .HasColumnName("refresh_token");
-
-                    b.Property<DateTime>("RefreshTokenExpiryTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("refresh_token_expiry_time");
-
                     b.Property<DateTime>("RegisteredAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registered_at");
@@ -1204,6 +1199,14 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
+
+                    b.Property<string>("refreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("refresh_token");
+
+                    b.Property<DateTime>("refreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("refresh_token_expiry_time");
 
                     b.HasKey("Id")
                         .HasName("pk_users");
@@ -1222,7 +1225,7 @@ namespace Chronolibris.Infrastructure.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d9839f0c-e4c7-43c9-9518-a094a353a4f0",
+                            ConcurrencyStamp = "da7298f5-8eef-483b-a4c1-41d25de2d9ab",
                             Email = "mail@mail.com",
                             EmailConfirmed = true,
                             FamilyName = "KQWERTY",
@@ -1234,11 +1237,11 @@ namespace Chronolibris.Infrastructure.Migrations
                             NormalizedUserName = "MAINADMIN",
                             PasswordHash = "AQAAAAIAAYagAAAAEDJFJc162io4pjNy1E/Nf//bvX+ki234hGsZCcYkJjtPeR9CZQ1k/4T7Q2i+CWbPMg==",
                             PhoneNumberConfirmed = false,
-                            RefreshTokenExpiryTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegisteredAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SecurityStamp = "f0e2bf89-c0ca-458e-944f-e25144fa3537",
+                            SecurityStamp = "6c169f31-e30c-4ffa-b009-e0edf8ec625c",
                             TwoFactorEnabled = false,
-                            UserName = "MainAdmin"
+                            UserName = "MainAdmin",
+                            refreshTokenExpiryTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
