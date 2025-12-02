@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
 using Chronolibris.Application.Requests;
@@ -43,13 +44,15 @@ namespace ChronolibrisPrototype.Controllers
 
         [Authorize]
         [HttpGet("me")]
-        public IActionResult Me()
+        public async Task<IActionResult> Me()
         {
-            return Ok(new
-            {
-                Email = User.FindFirstValue(ClaimTypes.Email),
-                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-            });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return Unauthorized();
+
+            long parsedUserId = long.Parse(userId);
+            var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
+            return Ok(result);
         }
     }
 }

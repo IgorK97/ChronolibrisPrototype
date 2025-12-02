@@ -19,5 +19,5 @@ namespace Chronolibris.Application.Requests
     /// <param name="BookId">Идентификатор книги, для которой запрашиваются отзывы.</param>
     /// <returns>Возвращает <see cref="System.Collections.Generic.List{T}"/> 
     /// объектов <see cref="ReviewDetails"/>, содержащий все отзывы на книгу.</returns>
-    public record GetReviewsQuery(long BookId, long? lastId, int limit):IRequest<PagedResult<ReviewDetails>>;
+    public record GetReviewsQuery(long BookId, long? lastId, int limit, long? userId=null):IRequest<PagedResult<ReviewDetails>>;
 }

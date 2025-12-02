@@ -62,17 +62,33 @@ namespace Chronolibris.Infrastructure.Identity
                 Name = request.Name,
                 RegisteredAt = dt,
                 Email = request.Email,
-                UserName = request.Name
+                UserName = request.Name,
+                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
+            if (!result.Succeeded)
+            {
+                return new RegistrationResult
+                {
+                    Success = false,
+                    Message = result.Errors.Select(e => e.Description).FirstOrDefault(),
+                };
+            };
+
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+           
+            await _userManager.UpdateAsync(user);
             return new RegistrationResult
             {
                 Success = result.Succeeded,
                 Token = GenerateJwtToken(user),
+                RefreshToken = refreshToken,
                 Message = result.Succeeded ? null : result.Errors.Select(e => e.Description).FirstOrDefault()
-            }; //Or Exception???
+            };
         
         }
 
@@ -147,14 +163,19 @@ namespace Chronolibris.Infrastructure.Identity
         /// <returns>Сгенерированная строка JWT-токена.</returns>
         private string GenerateJwtToken(User user)
         {
+
+            //string res1 = _config["Jwt:Issuer"];
+            //string res2 = _config["Jwt:Audience"];
+            //string res3 = _config["Jwt:Key"];
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email!)
-        };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email!)
+            };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
@@ -164,6 +185,22 @@ namespace Chronolibris.Infrastructure.Identity
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<UserProfileResponse?> GetUserProfileAsync(long userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return null;
+            return new UserProfileResponse
+            {
+                UserId = user.Id,
+                FirstName = user.Name,
+                LastName = user.FamilyName,
+                Email = user.Email,
+                UserName = user.UserName!,
+                PhoneNumber = user.PhoneNumber!
+            };
         }
     }
 }

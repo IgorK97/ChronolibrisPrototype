@@ -44,7 +44,7 @@ namespace Chronolibris.Application.Handlers
         {
 
             var reviews = await reviewRepository.GetByBookIdAsync(request.BookId,
-                request.lastId, request.limit, cancellationToken);
+                request.lastId, request.limit,request.userId, cancellationToken);
 
             bool hasNext = reviews.Count() > request.limit;
             if (hasNext)
@@ -56,15 +56,16 @@ namespace Chronolibris.Application.Handlers
             var rDtos = reviews
             .Select(r => new ReviewDetails
             {
-                Id = r.Id,
-                AverageRating = r.AverageRating,
-                Text = r.Description, // Маппинг Description на Text
-                DislikesCount = r.DislikesCount,
-                LikesCount = r.LikesCount,
-                UserName = r.Name,
-                Score = r.Score,
-                Title = r.Title,
-                CreatedAt = r.CreatedAt,
+                Id = r.Review.Id,
+                AverageRating = r.Review.AverageRating,
+                Text = r.Review.Description, // Маппинг Description на Text
+                DislikesCount = r.Review.DislikesCount,
+                LikesCount = r.Review.LikesCount,
+                UserName = r.Review.Name,
+                Score = r.Review.Score,
+                Title = r.Review.Title,
+                CreatedAt = r.Review.CreatedAt,
+                UserVote = r.UserVote
             }).ToList();
 
 
@@ -73,7 +74,7 @@ namespace Chronolibris.Application.Handlers
                 Items = rDtos,
                 Limit = request.limit,
                 HasNext = hasNext,
-                LastId = reviews.LastOrDefault()?.Id
+                LastId = reviews.LastOrDefault()?.Review.Id
             };
         }
     }

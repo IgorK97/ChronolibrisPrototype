@@ -36,5 +36,7 @@ namespace Chronolibris.Application.Interfaces
         Task<LoginResult> LoginUserByEmailAsync(string Email, string Password);
         Task<string?> RefreshTokenAsync(string token);
         //Task<MeData?> GetMeDataAsync(Guid userId);
+
+        Task<UserProfileResponse?> GetUserProfileAsync(long userId);
     }
 }

@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 // Очистка карты клеймов до настройки аутентификации
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 // CORS
 var allowAVDCORSPolicy = "_allowAVDCORSPolicy";
@@ -45,8 +45,13 @@ builder.Services.AddIdentityRealization(builder.Configuration);
 builder.Services.AddFileProviderInfrastructure(builder.Configuration);
 
 // Конфигурация аутентификации с использованием JWT-токенов
-builder.Services.AddAuthentication(
-    JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    // Устанавливаем JWT как схему по умолчанию для всего
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -57,8 +62,7 @@ builder.Services.AddAuthentication(
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
-            GetBytes(builder.Configuration["Jwt:Key"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             RoleClaimType = ClaimsIdentity.DefaultRoleClaimType
         };
     });
@@ -81,6 +85,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(options =>
 {
     options.Title = "My API";
+    options.AddSecurity("Bearer", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
+    {
+        Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+        Description = "Введите: Bearer {ваш_токен}"
+    });
+
+    options.OperationProcessors.Add(
+        new NSwag.Generation.Processors.Security.OperationSecurityScopeProcessor("Bearer"));
 });
 
 // HTTP Logging

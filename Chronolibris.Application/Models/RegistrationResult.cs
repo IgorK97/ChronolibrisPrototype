@@ -23,6 +23,7 @@ namespace Chronolibris.Application.Models
         /// (<see cref="Success"/> = <c>true</c>) для автоматического входа пользователя.
         /// </summary>
         public string? Token { get; set; }
+        public string? RefreshToken { get; set; }
 
         /// <summary>
         /// Список сообщений об ошибках, возникших в процессе регистрации 

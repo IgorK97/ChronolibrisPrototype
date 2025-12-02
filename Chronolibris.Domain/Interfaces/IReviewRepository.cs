@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Domain.Interfaces
 {
@@ -19,7 +20,7 @@ namespace Chronolibris.Domain.Interfaces
         /// <param name="bookId">Идентификатор книги.</param>
         /// <param name="token">Токен отмены.</param>
         /// <returns>Коллекция отзывов.</returns>
-        Task<List<Review>> GetByBookIdAsync(long bookId, long? lastId, int limit, CancellationToken token = default);
+        Task<List<ReviewDetailsWithVote>> GetByBookIdAsync(long bookId, long? lastId, int limit, long? userId, CancellationToken token = default);
         //Task<long> CountLikesForReview(long reviewId, CancellationToken token = default);
         //Task<long> CountDislikesForReview(long reviewId, CancellationToken token = default);
         //Task<long> GetAverageForReview(long reviewId, CancellationToken token = default);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,7 +45,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// <param name="bookId">Идентификатор книги.</param>
         /// <param name="token">Токен отмены.</param>
         /// <returns>Коллекция отзывов.</returns>
-        public async Task<List<Review>> GetByBookIdAsync(long bookId, long? lastId, int limit, CancellationToken token)
+        public async Task<List<ReviewDetailsWithVote>> GetByBookIdAsync(long bookId, long? lastId, int limit, long? userId, CancellationToken token)
         {
 
             var query = _context.Reviews.AsNoTracking()
@@ -55,9 +56,35 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(r => r.Id > lastId.Value);
             }
 
-            return await query.OrderBy(r => r.Id)
+            var limitedReviews = await query
+                .OrderBy(r => r.Id)
                 .Take(limit + 1)
                 .ToListAsync(token);
+
+            if (!limitedReviews.Any())
+            {
+                return new List<ReviewDetailsWithVote>();
+            }
+
+            var reviewIds = limitedReviews.Select(r => r.Id).ToList();
+
+            var results = limitedReviews.AsQueryable()
+                .Select(r => new ReviewDetailsWithVote // Временный DTO
+                {
+                    Review = r,
+                    // 🌟 LEFT JOIN к таблице оценок для текущего пользователя
+                    UserVote = _context.ReviewsRatings
+                        .Where(rr => rr.ReviewId == r.Id && rr.UserId == userId)
+                        .Select(rr => (bool?)(rr.Score == 1)) // Преобразуем IsLike в nullable bool
+                        .FirstOrDefault()
+                })
+                .ToList();
+
+            return results;
+
+            //return await query.OrderBy(r => r.Id)
+            //    .Take(limit + 1)
+            //    .ToListAsync(token);
         }
 
         /// <summary>
