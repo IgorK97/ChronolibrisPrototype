@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
+using Chronolibris.Application.Requests;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -201,6 +202,64 @@ namespace Chronolibris.Infrastructure.Identity
                 UserName = user.UserName!,
                 PhoneNumber = user.PhoneNumber!
             };
+        }
+        public async Task<UserProfileResponse> UpdateUserProfileAsync(UpdateUserProfileCommand request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null)
+                throw new ApplicationException("User not found.");
+
+            // 1. Обновляем Имя/Фамилию (Name/FamilyName)
+            user.Name = request.FirstName;
+            user.FamilyName = request.LastName;
+
+            // 2. Обновляем Email
+            if (user.Email != request.Email)
+            {
+                var setEmailResult = await _userManager.SetEmailAsync(user, request.Email);
+                if (!setEmailResult.Succeeded)
+                    throw new ApplicationException($"Failed to change email: {setEmailResult.Errors.Select(e => e.Description).FirstOrDefault()}");
+
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, request.Email); // Используем Email как UserName
+                if (!setUserNameResult.Succeeded)
+                    throw new ApplicationException($"Failed to change username: {setUserNameResult.Errors.Select(e => e.Description).FirstOrDefault()}");
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+                throw new ApplicationException($"Failed to update profile: {result.Errors.Select(e => e.Description).FirstOrDefault()}");
+
+            return new UserProfileResponse
+            {
+                UserId = user.Id,
+                FirstName = user.Name,
+                LastName = user.FamilyName,
+                Email = user.Email,
+                UserName = user.UserName!,
+                PhoneNumber = user.PhoneNumber!
+            };
+        }
+
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordCommand request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null)
+                return false; // Или throw, в зависимости от политики
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(
+                user,
+                request.CurrentPassword,
+                request.NewPassword);
+
+            if (!changePasswordResult.Succeeded)
+            {
+                // Можно выбросить исключение с деталями ошибки
+                throw new ApplicationException($"Password change failed: {changePasswordResult.Errors.Select(e => e.Description).FirstOrDefault()}");
+            }
+
+            return true;
         }
     }
 }

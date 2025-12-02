@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
+using Chronolibris.Application.Requests;
 
 namespace Chronolibris.Application.Interfaces
 {
@@ -38,5 +39,14 @@ namespace Chronolibris.Application.Interfaces
         //Task<MeData?> GetMeDataAsync(Guid userId);
 
         Task<UserProfileResponse?> GetUserProfileAsync(long userId);
+        /// <summary>
+        /// Асинхронно обновляет имя и/или email пользователя.
+        /// </summary>
+        Task<UserProfileResponse> UpdateUserProfileAsync(UpdateUserProfileCommand request);
+
+        /// <summary>
+        /// Асинхронно меняет пароль пользователя.
+        /// </summary>
+        Task<bool> ChangePasswordAsync(ChangePasswordCommand request);
     }
 }

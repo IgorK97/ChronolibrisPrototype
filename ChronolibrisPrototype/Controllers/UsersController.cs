@@ -54,5 +54,51 @@ namespace ChronolibrisPrototype.Controllers
             var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
             return Ok(result);
         }
+
+        [Authorize]
+        [HttpPost("profile")] // 🌟 Новый эндпоинт для обновления профиля
+        public async Task<IActionResult> UpdateProfile(UpdateUserProfileCommand request)
+        {
+            //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //if (userId == null)
+            //    return Unauthorized();
+
+            //long parsedUserId = long.Parse(userId);
+
+            //// Создаем команду, добавляя ID пользователя из токена
+            //var command = new UpdateUserProfileCommand
+            //{
+            //    UserId = parsedUserId,
+            //    FirstName = request.FirstName,
+            //    LastName = request.LastName,
+            //    Email = request.Email
+            //};
+
+            var result = await _mediator.Send(request);
+            return Ok(result); // Возвращаем обновленный профиль
+        }
+
+        [Authorize]
+        [HttpPost("password")] // 🌟 Новый эндпоинт для смены пароля
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand request)
+        {
+            //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //if (userId == null)
+            //    return Unauthorized();
+
+            //long parsedUserId = long.Parse(userId);
+
+            //var command = new ChangePasswordCommand
+            //{
+            //    UserId = parsedUserId,
+            //    CurrentPassword = request.CurrentPassword,
+            //    NewPassword = request.NewPassword
+            //};
+
+            // MediatR отправит команду, результат (Unit) будет автоматически обработан
+            await _mediator.Send(request);
+
+            return Ok(new { success = true, message = "Password changed successfully" });
+        }
     }
 }
