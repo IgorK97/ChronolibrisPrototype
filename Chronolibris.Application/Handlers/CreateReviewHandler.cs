@@ -64,9 +64,25 @@ namespace Chronolibris.Application.Handlers
                 Name = request.UserName ?? "",
             };
 
+            var book = await _unitOfWork.Books.GetByIdAsync(request.BookId, cancellationToken);
+            long newRatingsCount = book.RatingsCount + 1;
+
+            // b) Обновление среднего рейтинга (AverageRating)
+            // Формула для пересчета среднего: (СтарыйСредний * СтароеКоличество + НоваяОценка) / НовоеКоличество
+            decimal oldTotalScore = book.AverageRating * book.RatingsCount;
+            decimal newAverageRating = (oldTotalScore + request.Score) / newRatingsCount;
+
+            book.AverageRating = newAverageRating;
+            book.RatingsCount = newRatingsCount;
+
+            // c) +1 к количеству отзывов (ReviewsCount), если есть текст отзыва
+            if (!string.IsNullOrWhiteSpace(request.Description) || !string.IsNullOrWhiteSpace(request.Title))
+            {
+                book.ReviewsCount++;
+            }
             // Добавление новой сущности в контекст отслеживания (не сохраняет в БД)
             await _unitOfWork.Reviews.AddAsync(review, cancellationToken);
-
+            _unitOfWork.Books.Update(book);
             // Сохранение изменений в базе данных и присвоение сущности сгенерированного Id
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
