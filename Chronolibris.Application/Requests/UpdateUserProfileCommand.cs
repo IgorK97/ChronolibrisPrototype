@@ -13,6 +13,6 @@ namespace Chronolibris.Application.Requests
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public long UserId { get; set; } // Добавляем ID пользователя для идентификации
+        public long UserId { get; set; } 
     }
 }

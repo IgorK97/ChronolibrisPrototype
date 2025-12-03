@@ -41,7 +41,6 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany(c => c.BookContents)
                 .HasForeignKey(bc => bc.ContentId);
 
-            // Используем HasData для заполнения таблицы связей (Join Table)
             builder.HasData(
                 // --- Книга 1 ("Буддизм в Японии") ---
                 new BookContent
@@ -59,8 +58,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Order = 1 // Контент 2 является первым контентом в Книге 2
                 }
 
-            // Если бы Контент 1 входил и в Книгу 2:
-            // new BookContent { BookId = 2, ContentId = 1, Order = 2 }
+
             );
         }
     }

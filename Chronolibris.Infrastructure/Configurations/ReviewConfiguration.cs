@@ -14,9 +14,9 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Review> builder)
         {
-            builder.HasOne<User>() // Указываем класс User как целевую сущность
-                   .WithMany()     // У пользователя много закладок
-                   .HasForeignKey(b => b.UserId) // FK в таблице bookmarks
+            builder.HasOne<User>() 
+                   .WithMany()     
+                   .HasForeignKey(b => b.UserId)
                    .HasPrincipalKey(u => u.Id);
         }
     }

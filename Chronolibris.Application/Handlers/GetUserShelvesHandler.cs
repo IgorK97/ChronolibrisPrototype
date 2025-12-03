@@ -40,15 +40,14 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<IEnumerable<ShelfDetails>> Handle(GetUserShelvesQuery request, CancellationToken ct)
         {
-            // Получение всех полок, связанных с указанным пользователем
             var shelves = await shelvesRepository.GetForUserAsync(request.UserId, ct);
 
-            // Маппинг сущностей полок на DTO ShelfDetails
             return shelves.Select(s => new ShelfDetails
             {
                 Id = s.Id,
                 Name = s.Name,
-                BooksCount = s.Books.Count
+                ShelfType = s.ShelfTypeId
+                //BooksCount = s.Books.Count
             });
         }
     }

@@ -62,18 +62,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
         public async Task<List<BookListItem>> GetBooks(long userId, long? lastId, int limit, CancellationToken ct)
         {
-            // 1. Базовый запрос
+
             var query = _context.ReadingProgresses.AsNoTracking()
                 .Where(rp => rp.UserId == userId);
 
-            // 2. Пагинация (keyset pagination)
+            // (keyset pagination)
             if (lastId.HasValue)
             {
                 query = query.Where(rp => rp.Id > lastId.Value);
             }
-
-            // Обратите внимание: Include здесь больше НЕ нужны для Book.Shelves или Book.BookContents,
-            // так как мы обращаемся к ним внутри Select. EF сам подтянет нужное.
 
             var books = await query
                 .OrderBy(rp => rp.Id)
@@ -85,21 +82,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     CoverUri = rp.Book.CoverPath,
                     RatingsCount = rp.Book.RatingsCount,
 
-                    // --- ЛОГИКА ПРОВЕРКИ СТАТУСОВ ---
-
-                    // Проверяем, есть ли у этой книги полка, которая:
-                    // 1. Принадлежит текущему пользователю (s.UserId == userId)
-                    // 2. Имеет тип с кодом "favorites"
                     IsFavorite = rp.Book.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.FAVORITES),
 
-                    // Аналогично для прочитанного
+
                     IsRead = rp.Book.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.READ),
-
-                    // -------------------------------
 
                     Authors = rp.Book.BookContents
                         .SelectMany(bc => bc.Content.Participations
@@ -107,7 +97,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         .ToList()
                 })
                 .Take(limit + 1)
-                .ToListAsync(ct); // Не забываем передать токен отмены
+                .ToListAsync(ct);
 
             return books;
         }

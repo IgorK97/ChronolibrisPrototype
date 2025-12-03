@@ -20,11 +20,11 @@ namespace Chronolibris.Infrastructure.Configurations
             //       .WithMany()
             //       .HasForeignKey(b => b.BookId);
 
-            builder.HasOne<User>() // Указываем класс User как целевую сущность
-                   .WithMany()     // У пользователя много закладок
-                   .HasForeignKey(b => b.UserId) // FK в таблице bookmarks
-                   .HasPrincipalKey(u => u.Id);  // PK в таблице AspNetUsers (Id)
-                                                 // Имя таблицы "AspNetUsers" EF Core уже знает, так как User наследует от IdentityUser.
+            builder.HasOne<User>() 
+                   .WithMany()    
+                   .HasForeignKey(b => b.UserId) 
+                   .HasPrincipalKey(u => u.Id);  
+                                                
         }
     }
 }

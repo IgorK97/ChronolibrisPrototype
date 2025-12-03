@@ -41,7 +41,6 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<PagedResult<BookListItem>> Handle(GetSelectionBooksQuery request, CancellationToken ct)
         {
-            // Получение страницы книг и общего количества записей из репозитория
             var books = await selectionsRepository
                 .GetBooksForSelection(request.SelectionId, request.LastId, request.Limit, request.userId, ct);
 
@@ -49,7 +48,6 @@ namespace Chronolibris.Application.Handlers
 
             if (hasNext)
             {
-                // Удаляем лишний элемент, который брали для проверки
                 books.RemoveAt(books.Count - 1);
             }
 

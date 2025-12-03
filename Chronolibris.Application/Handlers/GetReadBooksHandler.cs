@@ -22,7 +22,6 @@ namespace Chronolibris.Application.Handlers
 
             if (hasNext)
             {
-                // Удаляем лишний элемент, который брали для проверки
                 books.RemoveAt(books.Count - 1);
             }
 

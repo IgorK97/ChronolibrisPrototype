@@ -50,7 +50,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Person>, GenericRepository<Person>>();
             services.AddScoped<IGenericRepository<Publisher>, GenericRepository<Publisher>>();
             services.AddScoped<IGenericRepository<PersonRole>, GenericRepository<PersonRole>>();
-            //services.AddScoped<IGenericRepository<ReadingProgress>, GenericRepository<ReadingProgress>>();
+            services.AddScoped<IGenericRepository<Shelf>, GenericRepository<Shelf>>();
 
             // Регистрация специфических репозиториев (Scoped lifetime)
             services.AddScoped<IBookRepository, BookRepository>();

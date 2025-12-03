@@ -45,7 +45,6 @@ namespace Chronolibris.Application.Handlers
             long? lastId = request.lastId;
 
 
-            // Получение страницы книг и общего количества записей (total) из репозитория
             var books = await unitOfWork.Shelves.GetBooksForShelfAsync(
                 request.ShelfId, lastId, request.Limit, request.userId, ct);
 

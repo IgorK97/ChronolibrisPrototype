@@ -23,7 +23,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     CreatedAt = dt,
                     Name = "Татьяна Петровна Григорьева",
                     ImagePath = "none",
-                    Description = "Советский и российский востоковед-японист, литературовед, переводчица...", // Сокращено для краткости
+                    Description = "Советский и российский востоковед-японист, литературовед, переводчица...",
                 },
                 new Person
                 {
@@ -31,7 +31,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     CreatedAt = dt,
                     Name = "Фернан Поль Ахилл Бродель",
                     ImagePath = "Brodel/MainFile.jpeg",
-                    Description = "Французский историк, член Французской академии...", // Сокращено для краткости
+                    Description = "Французский историк, член Французской академии...",
                 }
             );
         }

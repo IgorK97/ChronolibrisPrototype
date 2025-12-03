@@ -38,12 +38,10 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<List<BookmarkDetails>> Handle(GetBookmarksQuery request, CancellationToken cancellationToken)
         {
-            // Получение всех закладок для указанной книги и пользователя
             var bookmarks = await bookmarkRepository
                                             .GetAllForBookAndUserAsync(request.Bookid, request.UserId, cancellationToken);
 
-            // Если репозиторий вернул null (хотя обычно рекомендуется возвращать пустую коллекцию),
-            // возвращаем пустой список DTO.
+
             if (bookmarks == null)
             {
                 return new List<BookmarkDetails>();

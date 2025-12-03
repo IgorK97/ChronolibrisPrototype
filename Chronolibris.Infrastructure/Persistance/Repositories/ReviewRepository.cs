@@ -69,13 +69,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             var reviewIds = limitedReviews.Select(r => r.Id).ToList();
 
             var results = limitedReviews.AsQueryable()
-                .Select(r => new ReviewDetailsWithVote // Временный DTO
+                .Select(r => new ReviewDetailsWithVote 
                 {
                     Review = r,
-                    // 🌟 LEFT JOIN к таблице оценок для текущего пользователя
                     UserVote = _context.ReviewsRatings
                         .Where(rr => rr.ReviewId == r.Id && rr.UserId == userId)
-                        .Select(rr => (bool?)(rr.Score == 1)) // Преобразуем IsLike в nullable bool
+                        .Select(rr => (bool?)(rr.Score == 1))
                         .FirstOrDefault()
                 })
                 .ToList();
@@ -100,7 +99,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// <returns>Задача, представляющая асинхронную операцию.</returns>
         public async Task RecalculateRatingAsync(long reviewId, CancellationToken token)
         {
-            // Получение новых счетчиков
             var likesQuery = _context.ReviewsRatings
                 .Where(rr => rr.ReviewId == reviewId && rr.Score == 1)
                 .LongCount();
@@ -109,13 +107,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .Where(rr => rr.ReviewId == reviewId && rr.Score == -1)
                 .LongCount();
 
-            // Вычисление среднего рейтинга (Likes - Dislikes)
             var averageQuery = _context.ReviewsRatings
                 .Where(rr => rr.ReviewId == reviewId)
                 .Sum(rr => (long?)rr.Score) ?? 0;
 
-            // Атомарное обновление сущности Review в БД с помощью ExecuteUpdateAsync
-            // Этот метод выполняет операцию на уровне БД, минуя кэш и отслеживание изменений.
             await _context.Reviews
                 .Where(r => r.Id == reviewId)
                     .ExecuteUpdateAsync(setter => setter

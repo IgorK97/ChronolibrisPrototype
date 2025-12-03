@@ -74,6 +74,7 @@ namespace Chronolibris.Infrastructure.Identity
                 return new RegistrationResult
                 {
                     Success = false,
+                    UserId=0,
                     Message = result.Errors.Select(e => e.Description).FirstOrDefault(),
                 };
             };
@@ -86,6 +87,7 @@ namespace Chronolibris.Infrastructure.Identity
             return new RegistrationResult
             {
                 Success = result.Succeeded,
+                UserId = user.Id,
                 Token = GenerateJwtToken(user),
                 RefreshToken = refreshToken,
                 Message = result.Succeeded ? null : result.Errors.Select(e => e.Description).FirstOrDefault()
@@ -246,7 +248,7 @@ namespace Chronolibris.Infrastructure.Identity
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
-                return false; // Или throw, в зависимости от политики
+                return false; 
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(
                 user,
@@ -255,7 +257,7 @@ namespace Chronolibris.Infrastructure.Identity
 
             if (!changePasswordResult.Succeeded)
             {
-                // Можно выбросить исключение с деталями ошибки
+            
                 throw new ApplicationException($"Password change failed: {changePasswordResult.Errors.Select(e => e.Description).FirstOrDefault()}");
             }
 

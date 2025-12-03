@@ -8,6 +8,9 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Queries;
 using Chronolibris.Application.Requests;
 using MediatR;
+using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.SystemConstants;
+using Chronolibris.Domain.Interfaces;
 
 namespace Chronolibris.Application.Handlers
 {
@@ -22,14 +25,17 @@ namespace Chronolibris.Application.Handlers
         /// Приватное поле только для чтения для доступа к сервису аутентификации и идентификации.
         /// </summary>
         private readonly IIdentityService _identityService;
+        private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="RegisterUserHandler"/>.
         /// </summary>
         /// <param name="identityService">Сервис, отвечающий за логику регистрации и управления пользователями.</param>
-        public RegisterUserHandler(IIdentityService identityService)
+        public RegisterUserHandler(IIdentityService identityService,
+            IUnitOfWork unitOfWork)
         {
             _identityService = identityService;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -55,6 +61,34 @@ namespace Chronolibris.Application.Handlers
                 Name = request.Name,
                 Password = request.Password
             });
+
+            if (result.Success)
+            {
+                var newUserId = result.UserId;
+                var utcNow = DateTime.UtcNow;
+
+                var defaultBelovedShelf = new Shelf
+                {
+                    CreatedAt = utcNow,
+                    Id = 0,
+                    Name = "Избранное",
+                    ShelfTypeId = ShelfTypes.FAVORITES_CODE,
+                    UserId = newUserId,
+                };
+                var defaultReadShelf = new Shelf
+                {
+                    CreatedAt = utcNow,
+                    Id = 0,
+                    Name = "Прочитанные",
+                    ShelfTypeId = ShelfTypes.READ_CODE,
+                    UserId = newUserId,
+                };
+
+                await _unitOfWork.Shelves.AddAsync(defaultBelovedShelf, cancellationToken);
+                await _unitOfWork.Shelves.AddAsync(defaultReadShelf, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+
             return result;
         }
     }

@@ -32,5 +32,6 @@ namespace Chronolibris.Application.Models
         /// </summary>
         //public IEnumerable<string>? Errors { get; set; }
         public string? Message { get; set; }
+        public required long UserId { get; init; }
     }
 }

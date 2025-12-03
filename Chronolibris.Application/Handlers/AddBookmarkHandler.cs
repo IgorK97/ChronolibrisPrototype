@@ -38,7 +38,7 @@ namespace Chronolibris.Application.Handlers
         /// <returns>Задача, представляющая асинхронную операцию. Результат задачи — <c>true</c> при успехе.</returns>
         public async Task<long> Handle(AddBookmarkCommand request, CancellationToken cancellationToken)
         {
-            //IT WONT WORK, 100%, AAAAAAAAAAAAAAAA
+            //AAAAAAAAAAAAAAAA
             //TODO: FIX THIS!!! - нет проверки на то, что такая закладка уже есть (потом исправлю тип сущности и все будет работать)
 
             var bookmark = new Bookmark
@@ -50,11 +50,10 @@ namespace Chronolibris.Application.Handlers
                 CreatedAt = DateTime.UtcNow,
                 Id = 0,
             };
-            // Добавление закладки в контекст (не сохраняется в БД, пока не вызван SaveChangesAsync)
             await _unitOfWork.Bookmarks.AddAsync(bookmark, cancellationToken);
-            // Сохранение изменений в базе данных
+            
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            // Возврат true (что не идеально, так как не сообщает о типе ошибки)
+           
             return bookmark.Id;
         }
     }

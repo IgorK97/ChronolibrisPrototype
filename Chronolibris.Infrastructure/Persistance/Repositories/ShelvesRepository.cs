@@ -16,18 +16,18 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
     /// Репозиторий для управления сущностями полок (<see cref="Shelf"/>) и их содержимым.
     /// Реализует интерфейс <see cref="ICommonShelvesRepository"/> и использует <see cref="ApplicationDbContext"/>.
     /// </summary>
-    public class ShelvesRepository : IShelfRepository
+    public class ShelvesRepository : GenericRepository<Shelf>, IShelfRepository
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ShelvesRepository"/>.
         /// </summary>
         /// <param name="context">Контекст базы данных приложения, используемый для доступа к данным.</param>
-        public ShelvesRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public ShelvesRepository(ApplicationDbContext context) : base(context) { }
+        //{
+        //    _context = context;
+        //}
 
         /// <summary>
         /// Асинхронно получает сущность полки по ее уникальному идентификатору, включая связанные книги.
@@ -76,19 +76,13 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<List<BookListItem>>
             GetBooksForShelfAsync(long shelfId, long? lastId, int limit, long userId, CancellationToken ct)
         {
-            // Шаг 1: Определяем базовый запрос
             var query = _context.Books
                 .AsNoTracking()
-                // Фильтруем по полке
                 .Where(b => b.Shelves.Any(s => s.Id == shelfId));
 
-            // Шаг 2: Применяем пагинацию (Keyset)
             if (lastId.HasValue)
                 query = query.Where(b => b.Id > lastId.Value);
 
-            // Шаг 3: Проекция (Select) на BookListItem DTO
-            // EF Core сам сгенерирует все необходимые JOIN'ы для получения данных авторов,
-            // но только для тех полей, которые нужны в DTO.
             var books = await query
                 .OrderBy(b => b.Id)
                 .Select(b => new BookListItem
@@ -103,7 +97,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.FAVORITES),
 
-                    // Аналогично для прочитанного
                     IsRead = b.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.READ),

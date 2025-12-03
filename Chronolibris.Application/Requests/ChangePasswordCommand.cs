@@ -7,10 +7,10 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public class ChangePasswordCommand : IRequest<Unit> // Unit означает, что команда не возвращает данных
+    public class ChangePasswordCommand : IRequest<Unit>
     {
         public string CurrentPassword { get; set; }
         public string NewPassword { get; set; }
-        public long UserId { get; set; } // Добавляем ID пользователя
+        public long UserId { get; set; }
     }
 }

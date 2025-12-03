@@ -16,8 +16,8 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.HasData(
                 new IdentityUserRole<long>
                 {
-                    UserId = 1, // ID пользователя MainAdmin
-                    RoleId = 1  // ID роли admin
+                    UserId = 1, 
+                    RoleId = 1  
                 }
             );
         }

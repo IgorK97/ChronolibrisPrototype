@@ -128,22 +128,13 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     AverageRating = b.AverageRating,
                     CoverUri = b.CoverPath,
                     RatingsCount = b.RatingsCount,
-
-                    // --- ЛОГИКА ПРОВЕРКИ СТАТУСОВ ---
-
-                    // Проверяем, есть ли у этой книги полка, которая:
-                    // 1. Принадлежит текущему пользователю (s.UserId == userId)
-                    // 2. Имеет тип с кодом "favorites"
                     IsFavorite = b.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.FAVORITES),
 
-                    // Аналогично для прочитанного
                     IsRead = b.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.READ),
-
-                    // -------------------------------
 
                     Authors = b.BookContents
                         .SelectMany(bc => bc.Content.Participations
@@ -151,7 +142,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         .ToList()
                 })
                 .Take(limit + 1)
-                .ToListAsync(ct); // Не забываем передать токен отмены
+                .ToListAsync(ct);
 
             return books;
 

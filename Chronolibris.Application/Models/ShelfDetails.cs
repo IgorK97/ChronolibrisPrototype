@@ -21,11 +21,12 @@ namespace Chronolibris.Application.Models
         /// Обязательное название полки, заданное пользователем (например, "Избранное", "Хочу прочитать").
         /// </summary>
         public required string Name { get; set; }
+        public required long ShelfType { get; set; }
 
         /// <summary>
         /// Общее количество книг, содержащихся на этой полке.
         /// </summary>
-        public int BooksCount { get; set; }
+        //public int BooksCount { get; set; }
     }
 
 }

@@ -52,18 +52,16 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken cancellationToken)
         {
-            // 1. Получение отзыва. Используем AsNoTracking, так как нам не нужно его изменять сразу, 
-            // а атомарное обновление все равно обойдет его.
-            // Однако, для проверки существования GetByIdAsync без AsNoTracking - нормально.
+
             var review = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
             if (review == null)
                 return null;
 
-            // 2. Получение существующей оценки от этого пользователя
+            
             var rating = await _unitOfWork.ReviewsRatings.GetReviewsRatingByUserIdAsync(request.ReviewId,
                 request.UserId, cancellationToken);
 
-            // --- Логика изменения/удаления оценки (ReviewsRating) ---
+            
             if (request.Score == 0) // Снятие оценки
             {
                 if (rating != null)
@@ -88,35 +86,27 @@ namespace Chronolibris.Application.Handlers
                 }
             }
 
-            // 3. Сохранение изменения оценки ReviewsRating
-            // Это сохраняет новую/измененную запись ReviewsRating в БД.
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            // ПРИМЕЧАНИЕ: Теперь изменение оценки ГАРАНТИРОВАННО присутствует в БД.
 
-            // 4. Атомарный пересчет счетчиков Review (выполняется на уровне БД)
-            // Это решает проблему Lost Update.
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             await _unitOfWork.Reviews.RecalculateRatingAsync(request.ReviewId, cancellationToken);
 
-            // 5. ПЕРЕЗАГРУЗКА: Получение обновленных данных отзыва из БД
-            // Поскольку RecalculateRatingAsync миновал ORM, нужно загрузить свежую сущность.
-            // Используем FindAsync или GetByIdAsync. Если отзыв уже отслеживался (в шаге 1), 
-            // его нужно явно перезагрузить или очистить отслеживание.
+
             _unitOfWork.Reviews.Detach(review);
             review = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
 
-            // Если GetByIdAsync возвращает null (что маловероятно), нужно обработать
             if (review == null) return null;
 
-            // 6. Возврат DTO
+
             return new ReviewDetails
             {
                 Id = review.Id,
-                // Теперь эти значения АКТУАЛЬНЫ, так как review был получен заново из БД
+
                 AverageRating = review.AverageRating,
                 DislikesCount = review.DislikesCount,
                 LikesCount = review.LikesCount,
 
-                // Прочие свойства
+
                 CreatedAt = review.CreatedAt,
                 Score = review.Score,
                 Text = review.Description,

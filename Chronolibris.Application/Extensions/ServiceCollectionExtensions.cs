@@ -29,9 +29,6 @@ namespace Chronolibris.Application.Extensions
                 cfg.RegisterServicesFromAssembly(applicationAssembly);
             });
 
-            // Добавьте сюда регистрацию других сервисов Application-слоя, если необходимо.
-            // services.AddScoped<IMyAppService, MyAppService>();
-
             return services;
         }
     }

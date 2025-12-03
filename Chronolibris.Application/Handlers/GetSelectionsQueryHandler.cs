@@ -37,10 +37,8 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<IEnumerable<SelectionDetails>> Handle(GetSelectionsQuery request, CancellationToken ct)
         {
-            // Получение всех активных подборок из репозитория
             var selections = await selectionsRepository.GetActiveSelectionsAsync(ct);
 
-            // Маппинг сущностей подборок на DTO SelectionDetails
             return selections.Select(s => new SelectionDetails
             {
                 Id = s.Id,

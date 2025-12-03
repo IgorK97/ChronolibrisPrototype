@@ -11,7 +11,6 @@ namespace Chronolibris.Infrastructure.Configurations
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        // 🛑 ВСТАВЬТЕ СЮДА СГЕНЕРИРОВАННЫЙ ХЕШ (ПРИМЕР!)
         private const string AdminPasswordHash = "AQAAAAIAAYagAAAAEDJFJc162io4pjNy1E/Nf//bvX+ki234hGsZCcYkJjtPeR9CZQ1k/4T7Q2i+CWbPMg==";
 
         public void Configure(EntityTypeBuilder<User> builder)

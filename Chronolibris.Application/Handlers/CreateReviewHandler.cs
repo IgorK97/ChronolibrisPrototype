@@ -57,7 +57,6 @@ namespace Chronolibris.Application.Handlers
                 Description = request.Description ?? "",
                 Score = request.Score,
                 CreatedAt = DateTime.UtcNow,
-                // Эти поля должны быть инициализированы нулем
                 AverageRating = 0,
                 DislikesCount = 0,
                 Id = 0,

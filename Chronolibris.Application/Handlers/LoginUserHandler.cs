@@ -47,7 +47,6 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<LoginResult> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            // Делегирование фактической логики аутентификации внешнему сервису
             var result = await _identityService.LoginUserByEmailAsync(request.Email, request.Password);
             return result;
         }

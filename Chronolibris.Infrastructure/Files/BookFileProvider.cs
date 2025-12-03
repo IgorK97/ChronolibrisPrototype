@@ -37,7 +37,7 @@ namespace Chronolibris.Infrastructure.Files
 
         public async Task<Stream?> OpenReadStreamAsync(string fileName, CancellationToken token)
         {
-            // 1. Убираем возможные "грязные" слеши и приводим к системному виду
+
             // Path.DirectorySeparatorChar в Windows это '\', в Linux '/'
             var safeRoot = _booksDirectory.Replace('/', Path.DirectorySeparatorChar)
                                           .Replace('\\', Path.DirectorySeparatorChar);
@@ -45,19 +45,17 @@ namespace Chronolibris.Infrastructure.Files
             var safeFileName = fileName.Replace('/', Path.DirectorySeparatorChar)
                                        .Replace('\\', Path.DirectorySeparatorChar);
 
-            // 2. Если в fileName в начале есть слеш (например "/Buddism..."), 
+            // Если в fileName в начале есть слеш (например "/Buddism..."), 
             // Path.Combine может проигнорировать первую часть (root). Убираем начальный слеш.
             safeFileName = safeFileName.TrimStart(Path.DirectorySeparatorChar);
 
-            // 3. Объединяем
+
             var bookPath = Path.Combine(safeRoot, safeFileName);
 
-            // 4. (ВАЖНО) Логируем или смотрим в отладчике, что получилось!
-            // Console.WriteLine($"Looking for file at: {bookPath}"); 
 
             if (!File.Exists(bookPath))
             {
-                // Поставьте здесь точку останова (breakpoint) и посмотрите переменную bookPath
+
                 return null;
             }
 
