@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Domain.Interfaces
 {
@@ -25,5 +26,7 @@ namespace Chronolibris.Domain.Interfaces
         /// сущность <see cref="Book"/> или <c>null</c>, если книга не найдена.
         /// </returns>
         Task<Book?> GetBookWithRelationsAsync(long id, CancellationToken token = default);
+        Task<List<BookListItem>>
+            GetSearchedBooks(string query, long? lastId, int limit, long userId, CancellationToken token = default);
     }
 }

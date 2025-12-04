@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
+using Chronolibris.Domain.SystemConstants;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +53,59 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .Include(b => b.Participations)
                 .Include(b => b.Persons)
                 .FirstOrDefaultAsync(b => b.Id == id, token);
+        }
+
+        public async Task<List<BookListItem>>
+            GetSearchedBooks(string query, long? lastId, int limit, long userId, CancellationToken token)
+        {
+            var request = _context.Books.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                var term = query.Trim();
+                request = request.Where(b =>
+                    b.Title.Contains(term) ||
+                    b.BookContents.Any(bc =>
+                        bc.Content.Participations.Any(p =>
+                            p.Person.Name.Contains(term)
+                        )
+                    )
+                );
+            }
+
+            if (lastId.HasValue)
+            {
+                request = request.Where(b => b.Id > lastId.Value);
+            }
+
+       
+
+            var books = await request
+                .OrderBy(rp => rp.Id)
+                .Select(b => new BookListItem
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    AverageRating = b.AverageRating,
+                    CoverUri = b.CoverPath,
+                    RatingsCount = b.RatingsCount,
+                    IsFavorite = b.Shelves.Any(s =>
+                        s.UserId == userId &&
+                        s.ShelfType.Code == ShelfTypes.FAVORITES),
+
+                    IsRead = b.Shelves.Any(s =>
+                        s.UserId == userId &&
+                        s.ShelfType.Code == ShelfTypes.READ),
+
+                    Authors = b.BookContents
+                        .SelectMany(bc => bc.Content.Participations
+                            .Select(p => p.Person.Name))
+                        .ToList()
+                })
+                .Take(limit + 1)
+                .ToListAsync(token);
+
+            return books;
         }
     }
 }

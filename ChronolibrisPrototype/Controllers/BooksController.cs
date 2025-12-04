@@ -56,5 +56,12 @@ namespace ChronolibrisPrototype.Controllers
             var result = await _mediator.Send(new GetReadBooksQuery(userId, lastId, limit));
             return Ok(result);
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string query, long userId, long? lastId, int limit=20)
+        {
+            var result = await _mediator.Send(new SearchBooksQuery(userId, lastId, limit, query));
+            return Ok(result);
+        }
     }
 }
