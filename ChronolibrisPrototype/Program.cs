@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 using Chronolibris.Application.Extensions;
@@ -23,7 +24,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(allowAVDCORSPolicy,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173", "http://localhost:45457")
+            policy.WithOrigins("http://localhost:5173", "http://localhost:45457", "https://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -64,6 +65,19 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             RoleClaimType = ClaimsIdentity.DefaultRoleClaimType
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Cookies["token"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 

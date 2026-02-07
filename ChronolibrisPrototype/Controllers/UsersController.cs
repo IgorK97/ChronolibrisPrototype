@@ -25,14 +25,42 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult> Register(RegisterUserCommand request)
         {
             var result = await _mediator.Send(request);
-            return Ok(result);
+            if (!result.Success || string.IsNullOrEmpty(result.Token))
+            {
+                return Unauthorized(new { message = result.Message });
+            }
+            var token = result.Token;
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+
+            Response.Cookies.Append("token", token, cookieOptions);
+            return Ok();
         }
 
         [HttpPost("login")]
         public async Task<ActionResult> Login(LoginUserCommand request)
         {
             var result = await _mediator.Send(request);
-            return Ok(result);
+            if(!result.Success || string.IsNullOrEmpty(result.Token))
+            {
+                return Unauthorized(new { message = result.Message });
+            }
+            var token = result.Token;
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+
+            Response.Cookies.Append("token", token, cookieOptions);
+            return Ok();
         }
 
         [HttpPost("refresh")]
@@ -47,12 +75,19 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<IActionResult> Me()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId) || !long.TryParse(userId, out long parsedUserId))
                 return Unauthorized();
 
-            long parsedUserId = long.Parse(userId);
-            var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
-            return Ok(result);
+            //long parsedUserId = long.Parse(userId);
+            try
+            {
+                var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
+                return result !=null ? Ok(result): NotFound();
+
+            }
+            catch (Exception ex) {
+                return StatusCode(500, "Ошибка при получении профиля");
+            }
         }
 
         [Authorize]
@@ -98,5 +133,19 @@ namespace ChronolibrisPrototype.Controllers
 
             return Ok(new { success = true, message = "Password changed successfully" });
         }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("token", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            });
+            return Ok();
+        }
     }
 }
+
+   
