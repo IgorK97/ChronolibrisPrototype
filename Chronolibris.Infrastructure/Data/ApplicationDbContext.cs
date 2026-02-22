@@ -12,7 +12,7 @@ namespace Chronolibris.Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<long>, long>
     {
-
+        public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Bookmark> Bookmarks { get; set; }
@@ -49,6 +49,10 @@ namespace Chronolibris.Infrastructure.Data
             modelBuilder.Entity<IdentityUserLogin<long>>().ToTable("user_logins");
             modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("role_claims");
             modelBuilder.Entity<IdentityUserToken<long>>().ToTable("user_tokens");
+
+            modelBuilder.Entity<TokenBlacklist>()
+                .HasIndex(t => t.Expiry)
+                .HasDatabaseName("IX_TokenBlacklist_Expiry");
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 

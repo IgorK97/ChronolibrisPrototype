@@ -9,6 +9,7 @@ using Chronolibris.Infrastructure.DependencyInjection;
 using ChronolibrisPrototype.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
@@ -77,7 +78,27 @@ builder.Services.AddAuthentication(options =>
                     context.Token = token;
                 }
                 return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                {
+                    context.Response.Cookies.Delete("token");
+                }
+                return Task.CompletedTask;
             }
+            //TODO: Реализовать черный список токенов (например, при выходе пользователя из системы) и проверять его здесь
+            //OnTokenValidated = context =>
+            //{
+            //    var jti = context.SecurityToken.Id;
+            //    var cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
+
+            //    if (cache.TryGetValue(jti, out _))
+            //    {
+            //        context.Fail("Token is blacklisted");
+            //    }
+            //    return Task.CompletedTask;
+            //}
         };
     });
 

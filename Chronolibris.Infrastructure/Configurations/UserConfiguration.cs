@@ -31,7 +31,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     UserName = "MainAdmin",
                     NormalizedUserName = "MAINADMIN",
                     EmailConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString(), 
+                    SecurityStamp = "0d832e3a-efd3-490a-8572-c544467f8d83",
+                    ConcurrencyStamp = "88d4f82e-f15b-4d84-8bba-6875af640148",
                     PasswordHash = AdminPasswordHash
                 }
             );

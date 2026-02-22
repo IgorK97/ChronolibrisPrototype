@@ -7,6 +7,7 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
+using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
 using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
 using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Identity;
@@ -80,10 +81,19 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IIdentityService, IdentityService>();
 
             // Регистрация стандартной реализации Identity
-            services.AddIdentity<User, IdentityRole<long>>()
+            services.AddIdentity<User, IdentityRole<long>>(
+                //options =>
+                //{
+                //    options.Password.RequiredLength = 8;
+                //    options.Password.RequireUppercase = true;
+                //    options.User.RequireUniqueEmail = true;
+                //}
+                )
                 // Указывает, что Identity будет использовать ApplicationDbContext
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddHostedService<TokenCleanupService>();
 
             return services;
         }

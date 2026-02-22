@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
@@ -7,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using YamlDotNet.Core.Tokens;
 
 namespace ChronolibrisPrototype.Controllers
 {
@@ -137,6 +139,27 @@ namespace ChronolibrisPrototype.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
+            //TODO:
+            //var token = Request.Cookies["token"];
+            //if (!string.IsNullOrEmpty(token))
+            //{
+            //    var handler = new JwtSecurityTokenHandler();
+            //    var jwtToken = handler.ReadJwtToken(token);
+            //    var jti = jwtToken.Id; // This gets the JTI claim
+            //    var expiry = jwtToken.ValidTo;
+
+            //    // 1. Add to PostgreSQL
+            //    await _db.TokenBlacklist.AddAsync(new BlacklistedToken { Id = jti, Expiry = expiry });
+            //    await _db.SaveChangesAsync();
+
+            //    // 2. Add to IMemoryCache (for fast checking)
+            //    _memoryCache.Set(jti, true, expiry - DateTime.UtcNow);
+            //}
+
+            //Response.Cookies.Delete("token", new CookieOptions { /* your options */ });
+            //return Ok();
+
+
             Response.Cookies.Delete("token", new CookieOptions
             {
                 HttpOnly = true,
