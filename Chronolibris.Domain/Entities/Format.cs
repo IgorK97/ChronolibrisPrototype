@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
-    public class ShelfType
+    public class Format
     {
-        public long Id { get; set; }
-        //public string Name { get; set; }
+        [Key]
+        public required int Id { get; set; }
         [MaxLength(50)]
-        public string Code { get; set; }
-
+        public required string Name { get; set; }
     }
 }

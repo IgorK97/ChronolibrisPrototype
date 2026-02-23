@@ -11,6 +11,7 @@ namespace Chronolibris.Domain.Entities
     public class Tag
     {
         public required long Id { get; set; }
+        [MaxLength(500)]
         public required string Name { get; set; }
         public required long TagTypeId { get; set; }
         public required TagType TagType { get; set; }

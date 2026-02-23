@@ -24,6 +24,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "Экономическая история",
+                    SelectionTypeId=3
                 },
                 new Selection
                 {
@@ -32,6 +33,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "История культуры",
+                    SelectionTypeId = 3
+
                 },
                 new Selection
                 {
@@ -40,6 +43,25 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "История мира",
+                    SelectionTypeId = 3
+
+                },
+                new Selection
+                {
+                    Id = 4,
+                    CreatedAt = dt,
+                    Description = "",
+                    IsActive = true,
+                    Name = "Новое",
+                    SelectionTypeId = 1
+                },
+                new Selection {                     
+                    Id = 5,
+                    CreatedAt = dt,
+                    Description = "",
+                    IsActive = true,
+                    Name = "Часто читают",
+                    SelectionTypeId = 2
                 }
             );
         }

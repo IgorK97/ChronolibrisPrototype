@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Chronolibris.Domain.Entities
         public required long UserId { get; set; }
         public required long BookId { get; set; }
         public required string Title { get; set; }
+        [MaxLength(50)]
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required short Score { get; set; }

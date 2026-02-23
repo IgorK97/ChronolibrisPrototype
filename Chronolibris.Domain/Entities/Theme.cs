@@ -12,6 +12,7 @@ namespace Chronolibris.Domain.Entities
     {
         [Key]
         public required long Id { get; set; }
+        [MaxLength(500)]
         public required string Name { get; set; }
         public long? ParentThemeId { get; set; }
         [ForeignKey("ParentThemeId")]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace Chronolibris.Domain.Entities
     public class Publisher
     {
         public required long Id { get; set; }
+        [MaxLength(255)]
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required DateTime CreatedAt { get; set; }

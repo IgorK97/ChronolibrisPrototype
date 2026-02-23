@@ -12,6 +12,10 @@ namespace Chronolibris.Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<long>, long>
     {
+        public DbSet<Format> Formats { get; set; }
+        //public DbSet<MediaType> MediaTypes { get; set; }
+        public DbSet<SelectionType> SelectionTypes { get; set; }
+        public DbSet<DigitalFile> DigitalFiles { get; set; }
         public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<Book> Books { get; set; }
