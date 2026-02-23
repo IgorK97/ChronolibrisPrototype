@@ -16,6 +16,6 @@ namespace Chronolibris.Domain.Entities
         public required string Name { get; set; }
         public required DateTime CreatedAt { get; set; }
         public ICollection<Book> Books { get; set; } = new List<Book>();
-        public ShelfType ShelfType { get; set; }
+        public ShelfType ShelfType { get; set; } = null!;
     }
 }

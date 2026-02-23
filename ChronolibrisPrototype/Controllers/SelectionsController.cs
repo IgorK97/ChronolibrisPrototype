@@ -1,4 +1,5 @@
-﻿using Chronolibris.Application.Requests;
+﻿using System.Security.Claims;
+using Chronolibris.Application.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,8 +27,12 @@ namespace ChronolibrisPrototype.Controllers
 
         [HttpGet("{selectionId}/books")]
         [Authorize]
-        public async Task<IActionResult> GetBooks(long userId, long selectionId, long? lastId, int limit = 20)
+        public async Task<IActionResult> GetBooks(long selectionId, long? lastId, int limit = 20)
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
             if (limit < 1) limit = 20;
             else if (limit > 100) limit = 100;
 

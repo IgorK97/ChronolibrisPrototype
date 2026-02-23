@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
@@ -18,6 +19,10 @@ namespace Chronolibris.Infrastructure.Configurations
                    .WithMany()     
                    .HasForeignKey(b => b.UserId) 
                    .HasPrincipalKey(u => u.Id);
+
+            builder
+            .HasIndex(s => new { s.UserId, s.ShelfTypeId })
+            .HasDatabaseName("IX_Shelves_UserId_ShelfTypeId");
         }
     }
 }
