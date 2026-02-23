@@ -79,6 +79,8 @@ namespace Chronolibris.Infrastructure.Identity
                 };
             };
 
+            await _userManager.AddToRoleAsync(user, "Reader");
+
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
@@ -88,7 +90,7 @@ namespace Chronolibris.Infrastructure.Identity
             {
                 Success = result.Succeeded,
                 UserId = user.Id,
-                Token = GenerateJwtToken(user),
+                Token = await GenerateJwtToken(user),
                 RefreshToken = refreshToken,
                 Message = result.Succeeded ? null : result.Errors.Select(e => e.Description).FirstOrDefault()
             };
@@ -124,7 +126,7 @@ namespace Chronolibris.Infrastructure.Identity
                     Message = "Invalid credentials"
                 };
 
-            string jwt = GenerateJwtToken(user);
+            string jwt = await GenerateJwtToken(user);
             string refresh = GenerateRefreshToken();
 
             user.RefreshToken = refresh;
@@ -153,7 +155,7 @@ namespace Chronolibris.Infrastructure.Identity
             if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
                 return null;
 
-            var newToken = GenerateJwtToken(user);
+            var newToken = await GenerateJwtToken(user);
             return newToken;
         }
 
@@ -164,7 +166,7 @@ namespace Chronolibris.Infrastructure.Identity
         /// </summary>
         /// <param name="user">Сущность <see cref="User"/>, для которого создается токен.</param>
         /// <returns>Сгенерированная строка JWT-токена.</returns>
-        private string GenerateJwtToken(User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
 
             //string res1 = _config["Jwt:Issuer"];
@@ -180,6 +182,12 @@ namespace Chronolibris.Infrastructure.Identity
                 new Claim(JwtRegisteredClaimNames.Email, user.Email!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Append(new Claim(ClaimTypes.Role, role));
+            }
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],

@@ -1,5 +1,6 @@
 ﻿using Chronolibris.Application.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{selectionId}/books")]
+        [Authorize]
         public async Task<IActionResult> GetBooks(long userId, long selectionId, long? lastId, int limit = 20)
         {
             if (limit < 1) limit = 20;
