@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ChronolibrisPrototype.Middleware
 {
@@ -42,7 +44,22 @@ namespace ChronolibrisPrototype.Middleware
 
             try
             {
+                _logger.LogInformation("➡️ {Method} {Path} | Query: {Query} | User: {User}",
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Request.QueryString,
+                    context.User.Identity?.Name ?? "anonymous");
+
+                var sw = Stopwatch.StartNew();
                 await _next(context);
+
+                sw.Stop();
+
+                _logger.LogInformation("✅ {Method} {Path} → {StatusCode} ({Elapsed}ms)",
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Response.StatusCode,
+                    sw.ElapsedMilliseconds);
             }
 
             catch (Exception exception)
