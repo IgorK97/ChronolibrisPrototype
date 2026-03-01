@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
+    public enum PersonRoles
+    {
+        Author = 1,
+        Translator = 2,
+        Editor = 3,
+
+    }
     public class PersonRole
     {
         public required long Id { get; set; }

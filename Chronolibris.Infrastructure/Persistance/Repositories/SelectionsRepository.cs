@@ -138,7 +138,9 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
                     Authors = b.BookContents
                         .SelectMany(bc => bc.Content.Participations
+                        .Where(p => p.PersonRoleId == (Int64) PersonRoles.Author)
                             .Select(p => p.Person.Name))
+                        .Distinct()
                         .ToList()
                 })
                 .Take(limit + 1)
