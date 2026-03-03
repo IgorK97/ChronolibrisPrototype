@@ -22,12 +22,12 @@ namespace Chronolibris.Application.Models
         /// <summary>
         /// Обязательный заголовок отзыва (рецензии).
         /// </summary>
-        public required string Title { get; set; }
+        //public required string Title { get; set; }
 
         /// <summary>
         /// Обязательное отображаемое имя пользователя, оставившего отзыв.
         /// </summary>
-        public required string UserName { get; set; }
+        //public required string UserName { get; set; }
 
         /// <summary>
         /// Обязательный полный текст отзыва.
@@ -43,17 +43,17 @@ namespace Chronolibris.Application.Models
         /// <summary>
         /// Обязательный общий средний рейтинг книги, актуальный на момент публикации отзыва или просмотра.
         /// </summary>
-        public required decimal AverageRating { get; set; }
+        //public required decimal AverageRating { get; set; }
 
         /// <summary>
         /// Обязательное количество положительных оценок (лайков), полученных этим отзывом от других пользователей.
         /// </summary>
-        public required long LikesCount { get; set; }
+        //public required long LikesCount { get; set; }
 
         /// <summary>
         /// Обязательное количество отрицательных оценок (дизлайков), полученных этим отзывом от других пользователей.
         /// </summary>
-        public required long DislikesCount { get; set; }
+        //public required long DislikesCount { get; set; }
 
         /// <summary>
         /// Обязательная дата и время создания отзыва.

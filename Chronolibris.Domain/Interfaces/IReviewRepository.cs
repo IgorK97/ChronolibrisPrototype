@@ -35,6 +35,6 @@ namespace Chronolibris.Domain.Interfaces
         /// <param name="reviewId">Идентификатор отзыва для пересчета.</param>
         /// <param name="token">Токен отмены.</param>
         /// <returns>Задача, представляющая асинхронную операцию.</returns>
-        Task RecalculateRatingAsync(long reviewId, CancellationToken token = default);
+        //Task RecalculateRatingAsync(long reviewId, CancellationToken token = default);
     }
 }

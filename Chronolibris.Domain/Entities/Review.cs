@@ -12,16 +12,9 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         public required long UserId { get; set; }
         public required long BookId { get; set; }
-        public required string Title { get; set; }
-        [MaxLength(50)]
-        public required string Name { get; set; }
-        public required string Description { get; set; }
+        public string? ReviewText { get; set; }
         public required short Score { get; set; }
-        public required long AverageRating { get; set; }
-        public required long LikesCount { get; set; }
-        public required long DislikesCount { get; set; }
         public required DateTime CreatedAt { get; set; }
-        //public Book Book { get; set; } = null!;
-        public ICollection<ReviewsRating> ReviewsRatings { get; set; } = new List<ReviewsRating>();
+        public ICollection<ReviewsReaction> ReviewsRatings { get; set; } = new List<ReviewsReaction>();
     }
 }

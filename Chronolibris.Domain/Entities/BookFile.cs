@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
-    public class DigitalFile
+    public class BookFile
     {
         [Key]
         public required long Id { get; set; }

@@ -1,5 +1,8 @@
-﻿using Chronolibris.Application.Models;
+﻿using System.Security.Claims;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
+using Chronolibris.Infrastructure.Data;
+using ChronolibrisPrototype.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +31,18 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateReview(CreateReviewCommand command)
+        public async Task<IActionResult> CreateReview(CreateReviewRequest request)
         {
-            
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+            var command = new CreateReviewCommand
+            {
+                BookId = request.BookId,
+                UserId = userId,
+                ReviewText = request.ReviewText,
+                Score = request.Score
+            };
             var reviewId = await _mediator.Send(command);
             return Ok(reviewId);
         }

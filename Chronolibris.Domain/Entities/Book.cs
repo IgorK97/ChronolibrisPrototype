@@ -29,9 +29,6 @@ namespace Chronolibris.Domain.Entities
         public required bool IsAvailable { get; set; }
 
         public required bool IsReviewable { get; set; }
-        public required decimal AverageRating { get; set; }
-        public required long RatingsCount { get; set; }
-        public required long ReviewsCount { get; set; }
         public long? PublisherId { get; set; }
         public Publisher? Publisher { get; set; }
         public long? SeriesId { get; set; }

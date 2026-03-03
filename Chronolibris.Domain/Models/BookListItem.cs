@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Domain.Entities;
 
 namespace Chronolibris.Domain.Models
 {
@@ -44,6 +45,7 @@ namespace Chronolibris.Domain.Models
         public required bool IsFavorite { get; set; }
 
         public required bool IsRead { get; set; }
+        public required bool IsReviewable { get; set; }
 
         /// <summary>
         /// Список имен авторов книги. Инициализируется пустым списком строк, если не указано иное.

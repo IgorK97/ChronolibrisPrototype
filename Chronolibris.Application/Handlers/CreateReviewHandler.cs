@@ -53,36 +53,36 @@ namespace Chronolibris.Application.Handlers
                 BookId = request.BookId,
                 UserId = request.UserId,
                 // Используем оператор объединения с null (??) для обеспечения не-null значений для строк
-                Title = request.Title ?? "",
-                Description = request.Description ?? "",
+                //Title = request.Title ?? "",
+                ReviewText = request.ReviewText ?? "",
                 Score = request.Score,
                 CreatedAt = DateTime.UtcNow,
-                AverageRating = 0,
-                DislikesCount = 0,
+                //AverageRating = 0,
+                //DislikesCount = 0,
                 Id = 0,
-                LikesCount = 0,
-                Name = request.UserName ?? "",
+                //LikesCount = 0,
+                //Name = request.UserName ?? "",
             };
 
-            var book = await _unitOfWork.Books.GetByIdAsync(request.BookId, cancellationToken);
-            long newRatingsCount = book.RatingsCount + 1;
+            //var book = await _unitOfWork.Books.GetByIdAsync(request.BookId, cancellationToken);
+            //long newRatingsCount = book.RatingsCount + 1;
 
             // b) Обновление среднего рейтинга (AverageRating)
             // Формула для пересчета среднего: (СтарыйСредний * СтароеКоличество + НоваяОценка) / НовоеКоличество
-            decimal oldTotalScore = book.AverageRating * book.RatingsCount;
-            decimal newAverageRating = (oldTotalScore + request.Score) / newRatingsCount;
+            //decimal oldTotalScore = book.AverageRating * book.RatingsCount;
+            //decimal newAverageRating = (oldTotalScore + request.Score) / newRatingsCount;
 
-            book.AverageRating = newAverageRating;
-            book.RatingsCount = newRatingsCount;
+            //book.AverageRating = newAverageRating;
+            //book.RatingsCount = newRatingsCount;
 
             // c) +1 к количеству отзывов (ReviewsCount), если есть текст отзыва
-            if (!string.IsNullOrWhiteSpace(request.Description) || !string.IsNullOrWhiteSpace(request.Title))
-            {
-                book.ReviewsCount++;
-            }
+            //if (!string.IsNullOrWhiteSpace(request.Description) || !string.IsNullOrWhiteSpace(request.Title))
+            //{
+            //    book.ReviewsCount++;
+            //}
             // Добавление новой сущности в контекст отслеживания (не сохраняет в БД)
             await _unitOfWork.Reviews.AddAsync(review, cancellationToken);
-            _unitOfWork.Books.Update(book);
+            //_unitOfWork.Books.Update(book);
             // Сохранение изменений в базе данных и присвоение сущности сгенерированного Id
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

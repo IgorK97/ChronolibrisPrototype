@@ -15,7 +15,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<Format> Formats { get; set; }
         //public DbSet<MediaType> MediaTypes { get; set; }
         public DbSet<SelectionType> SelectionTypes { get; set; }
-        public DbSet<DigitalFile> DigitalFiles { get; set; }
+        public DbSet<BookFile> DigitalFiles { get; set; }
         public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<Book> Books { get; set; }
@@ -29,7 +29,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<PersonRole> PersonRoles { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<ReviewsRating> ReviewsRatings { get; set; }
+        public DbSet<ReviewsReaction> ReviewsRatings { get; set; }
         public DbSet<Selection> Selections { get; set; }
         public DbSet<Series> Series { get; set; }
         public DbSet<Shelf> Shelves { get; set; }

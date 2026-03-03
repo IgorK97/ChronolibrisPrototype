@@ -56,30 +56,41 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(r => r.Id > lastId.Value);
             }
 
-            var limitedReviews = await query
-                .OrderBy(r => r.Id)
-                .Take(limit + 1)
-                .ToListAsync(token);
-
-            if (!limitedReviews.Any())
-            {
-                return new List<ReviewDetailsWithVote>();
-            }
-
-            var reviewIds = limitedReviews.Select(r => r.Id).ToList();
-
-            var results = limitedReviews.AsQueryable()
-                .Select(r => new ReviewDetailsWithVote 
+            return await query.OrderBy(r => r.Id).Take(limit+1)
+                .Select(r => new ReviewDetailsWithVote
                 {
                     Review = r,
-                    UserVote = _context.ReviewsRatings
-                        .Where(rr => rr.ReviewId == r.Id && rr.UserId == userId)
-                        .Select(rr => (bool?)(rr.Score == 1))
-                        .FirstOrDefault()
-                })
-                .ToList();
+                    DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
+                    LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
+                    UserVote = userId ==null? null
+                    : r.ReviewsRatings.Where(rr=>rr.UserId==userId.Value)
+                    .Select(rr=>(bool?)(rr.ReactionType == 1)).FirstOrDefault()
+                }).ToListAsync(token);
 
-            return results;
+            //var limitedReviews = await query
+            //    .OrderBy(r => r.Id)
+            //    .Take(limit + 1)
+            //    .ToListAsync(token);
+
+            //if (!limitedReviews.Any())
+            //{
+            //    return new List<ReviewDetailsWithVote>();
+            //}
+
+            //var reviewIds = limitedReviews.Select(r => r.Id).ToList();
+
+            //var results = limitedReviews.AsQueryable()
+            //    .Select(r => new ReviewDetailsWithVote 
+            //    {
+            //        Review = r,
+            //        UserVote = _context.ReviewsRatings
+            //            .Where(rr => rr.ReviewId == r.Id && rr.UserId == userId)
+            //            .Select(rr => (bool?)(rr.ReactionType == 1))
+            //            .FirstOrDefault()
+            //    })
+            //    .ToList();
+
+            //return results;
 
             //return await query.OrderBy(r => r.Id)
             //    .Take(limit + 1)
@@ -97,27 +108,27 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// <param name="reviewId">Идентификатор отзыва для пересчета.</param>
         /// <param name="token">Токен отмены.</param>
         /// <returns>Задача, представляющая асинхронную операцию.</returns>
-        public async Task RecalculateRatingAsync(long reviewId, CancellationToken token)
-        {
-            var likesQuery = _context.ReviewsRatings
-                .Where(rr => rr.ReviewId == reviewId && rr.Score == 1)
-                .LongCount();
+        //public async Task RecalculateRatingAsync(long reviewId, CancellationToken token)
+        //{
+        //    var likesQuery = _context.ReviewsRatings
+        //        .Where(rr => rr.ReviewId == reviewId && rr.ReactionType == 1)
+        //        .LongCount();
 
-            var dislikesQuery = _context.ReviewsRatings
-                .Where(rr => rr.ReviewId == reviewId && rr.Score == -1)
-                .LongCount();
+        //    var dislikesQuery = _context.ReviewsRatings
+        //        .Where(rr => rr.ReviewId == reviewId && rr.ReactionType == -1)
+        //        .LongCount();
 
-            var averageQuery = _context.ReviewsRatings
-                .Where(rr => rr.ReviewId == reviewId)
-                .Sum(rr => (long?)rr.Score) ?? 0;
+        //    var averageQuery = _context.ReviewsRatings
+        //        .Where(rr => rr.ReviewId == reviewId)
+        //        .Sum(rr => (long?)rr.ReactionType) ?? 0;
 
-            await _context.Reviews
-                .Where(r => r.Id == reviewId)
-                    .ExecuteUpdateAsync(setter => setter
-                        .SetProperty(r => r.LikesCount, (long) likesQuery)
-                        .SetProperty(r => r.DislikesCount, (long) dislikesQuery)
-                        .SetProperty(r => r.AverageRating, averageQuery),
-                        token);
-        }
+        //    //await _context.Reviews
+        //    //    .Where(r => r.Id == reviewId)
+        //    //        .ExecuteUpdateAsync(setter => setter
+        //    //            .SetProperty(r => r.LikesCount, (long) likesQuery)
+        //    //            .SetProperty(r => r.DislikesCount, (long) dislikesQuery)
+        //    //            .SetProperty(r => r.AverageRating, averageQuery),
+        //    //            token);
+        //}
 }
 }

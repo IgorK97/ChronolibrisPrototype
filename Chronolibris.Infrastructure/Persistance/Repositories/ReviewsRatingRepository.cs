@@ -11,12 +11,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
     /// <summary>
-    /// Репозиторий для управления сущностями оценок отзывов (<see cref="ReviewsRating"/>), 
+    /// Репозиторий для управления сущностями оценок отзывов (<see cref="ReviewsReaction"/>), 
     /// которые представляют собой голос пользователя (например, лайк или дизлайк) за конкретный отзыв.
     /// Предоставляет специализированные методы доступа к данным, расширяя <see cref="GenericRepository{TEntity}"/>.
     /// Реализует интерфейс <see cref="IReviewsRatingRepository"/>.
     /// </summary>
-    public class ReviewsRatingRepository : GenericRepository<ReviewsRating>, IReviewsRatingRepository
+    public class ReviewsRatingRepository : GenericRepository<ReviewsReaction>, IReviewsRatingRepository
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ReviewsRatingRepository"/>.
@@ -25,7 +25,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public ReviewsRatingRepository(ApplicationDbContext context) : base(context) { }
 
         /// <summary>
-        /// Асинхронно получает существующую оценку отзыва (<see cref="ReviewsRating"/>), 
+        /// Асинхронно получает существующую оценку отзыва (<see cref="ReviewsReaction"/>), 
         /// поставленную конкретным пользователем.
         /// </summary>
         /// <param name="reviewId">Идентификатор отзыва, для которого ищется оценка.</param>
@@ -33,10 +33,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// <param name="token">Токен отмены для прерывания запроса.</param>
         /// <returns>
         /// Задача, которая представляет асинхронную операцию. Результат задачи — 
-        /// сущность <see cref="ReviewsRating"/> (существующий голос) или <c>null</c>, 
+        /// сущность <see cref="ReviewsReaction"/> (существующий голос) или <c>null</c>, 
         /// если пользователь еще не голосовал за этот отзыв.
         /// </returns>
-        public async Task<ReviewsRating?> GetReviewsRatingByUserIdAsync(long reviewId, long userId, CancellationToken token)
+        public async Task<ReviewsReaction?> GetReviewsRatingByUserIdAsync(long reviewId, long userId, CancellationToken token)
         {
             return await _context.ReviewsRatings.FirstOrDefaultAsync(rr => rr.UserId == userId && rr.ReviewId==reviewId, token);
         }

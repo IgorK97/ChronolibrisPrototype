@@ -71,25 +71,25 @@ namespace Chronolibris.Application.Handlers
             {
                 if (rating == null)
                 {
-                    rating = new ReviewsRating
+                    rating = new ReviewsReaction
                     {
                         Id = 0,
                         ReviewId = request.ReviewId,
-                        Score = request.Score,
+                        ReactionType = request.Score,
                         UserId = request.UserId,
                     };
                     await _unitOfWork.ReviewsRatings.AddAsync(rating, cancellationToken);
                 }
                 else
                 {
-                    rating.Score = request.Score;
+                    rating.ReactionType = request.Score;
                 }
             }
 
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _unitOfWork.Reviews.RecalculateRatingAsync(request.ReviewId, cancellationToken);
+            //await _unitOfWork.Reviews.RecalculateRatingAsync(request.ReviewId, cancellationToken);
 
 
             _unitOfWork.Reviews.Detach(review);
@@ -102,16 +102,16 @@ namespace Chronolibris.Application.Handlers
             {
                 Id = review.Id,
 
-                AverageRating = review.AverageRating,
-                DislikesCount = review.DislikesCount,
-                LikesCount = review.LikesCount,
+                //AverageRating = review.AverageRating,
+                //DislikesCount = review.DislikesCount,
+                //LikesCount = review.LikesCount,
 
 
                 CreatedAt = review.CreatedAt,
                 Score = review.Score,
-                Text = review.Description,
-                Title = review.Title,
-                UserName = review.Name,
+                Text = review.ReviewText,
+                //Title = review.Title,
+                //UserName = review.Name,
                 UserVote = request.Score switch
                 {
                     1 => true,

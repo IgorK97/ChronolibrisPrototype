@@ -8,10 +8,10 @@ using Chronolibris.Domain.Entities;
 namespace Chronolibris.Domain.Interfaces
 {
     /// <summary>
-    /// Определяет контракт для репозитория, управляющего сущностями <see cref="ReviewsRating"/> (оценки отзывов).
+    /// Определяет контракт для репозитория, управляющего сущностями <see cref="ReviewsReaction"/> (оценки отзывов).
     /// Наследует базовые операции CRUD от <see cref="IGenericRepository{T}"/>.
     /// </summary>
-    public interface IReviewsRatingRepository : IGenericRepository<ReviewsRating>
+    public interface IReviewsRatingRepository : IGenericRepository<ReviewsReaction>
     {
         /// <summary>
         /// Асинхронно получает существующую оценку отзыва, поставленную конкретным пользователем.
@@ -22,8 +22,8 @@ namespace Chronolibris.Domain.Interfaces
         /// <param name="token">Токен отмены для прерывания операции. По умолчанию — <c>default</c>.</param>
         /// <returns>
         /// Задача, которая представляет асинхронную операцию. Результат задачи — 
-        /// сущность <see cref="ReviewsRating"/> или <c>null</c>, если пользователь еще не голосовал за этот отзыв.
+        /// сущность <see cref="ReviewsReaction"/> или <c>null</c>, если пользователь еще не голосовал за этот отзыв.
         /// </returns>
-        Task<ReviewsRating?> GetReviewsRatingByUserIdAsync(long reviewId, long userId, CancellationToken token = default);
+        Task<ReviewsReaction?> GetReviewsRatingByUserIdAsync(long reviewId, long userId, CancellationToken token = default);
     }
 }

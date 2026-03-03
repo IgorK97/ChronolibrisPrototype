@@ -32,13 +32,13 @@ namespace Chronolibris.Application.Requests
         /// Заголовок отзыва (необязательный).
         /// Свойство доступно только для инициализации (<c>init</c>).
         /// </summary>
-        public string? Title { get; init; }
+        //public string? Title { get; init; }
 
         /// <summary>
         /// Текст отзыва или рецензии (необязательный).
         /// Свойство доступно только для инициализации (<c>init</c>).
         /// </summary>
-        public string? Description { get; init; }
+        public string? ReviewText { get; init; }
 
         /// <summary>
         /// Оценка, которую пользователь ставит книге в этом отзыве (например, от 1 до 5).
@@ -50,6 +50,6 @@ namespace Chronolibris.Application.Requests
         /// Имя пользователя, которое будет отображаться рядом с отзывом (необязательный).
         /// Свойство доступно только для инициализации (<c>init</c>).
         /// </summary>
-        public string? UserName { get; init; }
+        //public string? UserName { get; init; }
     }
 }

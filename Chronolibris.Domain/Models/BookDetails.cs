@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.Models
+namespace Chronolibris.Domain.Models
 {
     /// <summary>
     /// Представляет подробную информацию о конкретной книге, используемую в приложении 
@@ -52,6 +52,7 @@ namespace Chronolibris.Application.Models
         /// Обязательное общее количество написанных отзывов (рецензий) на книгу.
         /// </summary>
         public required long ReviewsCount { get; set; }
+        public required decimal UserRating { get; set; }
 
         // <summary>
         /// URI (Uniform Resource Identifier) или URL обложки книги. Может быть null.
@@ -65,6 +66,7 @@ namespace Chronolibris.Application.Models
 
         public required bool IsFavorite { get; set; }
         public required bool IsRead { get; set; }
+        public required bool IsReviewable { get; set; }
 
         /// <summary>
         /// Детали издателя книги. Может быть null, если издатель неизвестен.

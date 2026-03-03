@@ -78,10 +78,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 {
                     Id = rp.Id,
                     Title = rp.Book.Title,
-                    AverageRating = rp.Book.AverageRating,
+                    //AverageRating = rp.Book.AverageRating,
                     CoverUri = rp.Book.CoverPath,
-                    RatingsCount = rp.Book.RatingsCount,
-
+                    IsReviewable=rp.Book.IsReviewable,
+                    //RatingsCount = rp.Book.RatingsCount,
+                    AverageRating = rp.Book.Reviews.Any() ? rp.Book.Reviews.Average(r => (decimal)r.Score) : 0.0M,
+                    RatingsCount = rp.Book.IsReviewable ? rp.Book.Reviews.Count() : 0,
                     IsFavorite = rp.Book.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.FAVORITES),

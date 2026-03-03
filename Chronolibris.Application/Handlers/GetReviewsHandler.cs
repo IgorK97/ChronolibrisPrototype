@@ -57,13 +57,13 @@ namespace Chronolibris.Application.Handlers
             .Select(r => new ReviewDetails
             {
                 Id = r.Review.Id,
-                AverageRating = r.Review.AverageRating,
-                Text = r.Review.Description, // Маппинг Description на Text
-                DislikesCount = r.Review.DislikesCount,
-                LikesCount = r.Review.LikesCount,
-                UserName = r.Review.Name,
+                //AverageRating = r.Review.AverageRating,
+                Text = r.Review.ReviewText, // Маппинг Description на Text
+                //DislikesCount = r.Review.DislikesCount,
+                //LikesCount = r.Review.LikesCount,
+                //UserName = r.Review.Name,
                 Score = r.Review.Score,
-                Title = r.Review.Title,
+                //Title = r.Review.Title,
                 CreatedAt = r.Review.CreatedAt,
                 UserVote = r.UserVote
             }).ToList();

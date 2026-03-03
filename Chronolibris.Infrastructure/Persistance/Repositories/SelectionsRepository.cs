@@ -125,9 +125,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 {
                     Id = b.Id,
                     Title = b.Title,
-                    AverageRating = b.AverageRating,
+                    //AverageRating = b.AverageRating,
+                    IsReviewable=b.IsReviewable,
                     CoverUri = b.CoverPath,
-                    RatingsCount = b.RatingsCount,
+                    AverageRating = b.Reviews.Any() ? b.Reviews.Average(r => (decimal)r.Score) : 0.0M,
+                    RatingsCount = b.IsReviewable ? b.Reviews.Count() : 0,
+                    //RatingsCount = b.RatingsCount,
                     IsFavorite = b.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.FAVORITES),

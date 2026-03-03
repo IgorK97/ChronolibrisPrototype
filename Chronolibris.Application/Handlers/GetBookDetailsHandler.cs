@@ -8,6 +8,7 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Queries;
 using Chronolibris.Domain.Interfaces;
 using MediatR;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers
 {
@@ -51,87 +52,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<BookDetails?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
         {
             // Получение книги с необходимыми связанными сущностями из репозитория
-            var book = await unitOfWork.Books.GetBookWithRelationsAsync(request.bookId, cancellationToken);
-            if (book == null)
-                return null;
-
-            //var bookParticipations = book.Participations;
-            //var contentParticipations = book.BookContents
-            //    .SelectMany(bc => bc.Content.Participations)
-            //    .ToList();
-
-            //var allParticipations = bookParticipations
-            //    .Concat(contentParticipations) 
-            //    .ToList();
-
-            var bookParticipations = book.Participations
-                .Select(p => new { p.PersonId, p.PersonRoleId, p.Person });
-
-            var contentParticipations = book.BookContents
-                .SelectMany(bc => bc.Content.Participations)
-                .Select(p => new { p.PersonId, p.PersonRoleId, p.Person });
-
-            var allParticipations = bookParticipations
-                .Concat(contentParticipations)
-                .ToList();
-
-            var allThemes = book.BookContents
-                .SelectMany(bc => bc.Content.Themes)
-                .ToList();
-
-            var participantsGrouped = allParticipations
-                .DistinctBy(p => new { p.PersonRoleId, p.PersonId })
-                .GroupBy(p => p.PersonRoleId)
-                .Select(g => new BookPersonGroupDetails
-                {
-                    Role = g.Key,
-                    // RoleName = g.First().PersonRole.Name, 
-                    Persons = g.Select(p => new PersonDetails
-                    {
-                        Id = p.PersonId,
-                        FullName = p.Person.Name
-                    }).ToList()
-                })
-                .ToList();
-
-            bool isFavorite = await unitOfWork.Shelves.IsInFavorite(request.userId, request.bookId);
-            bool isRead = await unitOfWork.Shelves.IsRead(request.userId, request.bookId);
-
-            // Создание DTO (Data Transfer Object) BookDetails
-            var dto = new BookDetails
-            {
-                Id = book.Id,
-                Title = book.Title,
-                Description = book.Description,
-                Year = book.Year,
-                ISBN = book.ISBN,
-                AverageRating = book.AverageRating,
-                RatingsCount = book.RatingsCount,
-                ReviewsCount = book.ReviewsCount,
-                IsAvailable = book.IsAvailable,
-                IsFavorite=isFavorite,
-                IsRead = isRead,
-                // Проверка на null для Publisher перед маппингом
-                Publisher = book.Publisher != null ? new PublisherDetails
-                {
-                    Id = book.Publisher.Id,
-                    Name = book.Publisher.Name
-                } : null,
-
-                // Маппинг простых связанных свойств
-                Country = book.Country.Name,
-                Language = book.Language.Name,
-
-                // Присвоение сгруппированных участников
-                Participants = participantsGrouped,
-                //CoverUri = _cdnService.GetCoverUrl(book.CoverPath),
-                CoverUri = book.CoverPath,
-                Themes = allThemes.Select(th =>new ThemeDetails { Id = th.Id, Name  = th.Name }).ToList(),
-                
-            };
-
-            return dto;
-
+            return await unitOfWork.Books.GetBookWithRelationsAsync(request.bookId, request.userId, cancellationToken);
         }
     }
 }

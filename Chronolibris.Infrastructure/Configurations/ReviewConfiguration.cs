@@ -14,10 +14,18 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Review> builder)
         {
+            builder.ToTable(r => r.HasCheckConstraint("ck_review_rating", 
+                "score >=0.0 AND score<=5.0"));
+
             builder.HasOne<User>() 
                    .WithMany()     
                    .HasForeignKey(b => b.UserId)
                    .HasPrincipalKey(u => u.Id);
+
+            builder.HasIndex(r => new { r.UserId, r.BookId })
+               .IsUnique();
+
+            //builder.HasCheckConstraint("CK_Review_Rating", "[Score] >=0.0 AND [Score]<=5.0");
         }
     }
 }
