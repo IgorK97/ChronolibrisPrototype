@@ -8,6 +8,6 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public record GetUserReviewForBookQuery(long BookId, long UserId) : IRequest<ReviewDetails?>;
+    public record GetUserReviewForBookQuery(long BookId, long UserId) : IRequest<MyReviewDetails?>;
 
 }

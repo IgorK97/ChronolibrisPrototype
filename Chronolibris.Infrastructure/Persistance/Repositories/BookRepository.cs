@@ -146,8 +146,8 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     Stats = b.IsReviewable ? new
                     {
                         AverageRating = b.Reviews.Any() ? b.Reviews.Average(r => (decimal)r.Score) : 0M,
-                        RatingsCount = b.Reviews.Count(),
-                        ReviewsCount = b.Reviews.Count(r => r.ReviewText != null),
+                        RatingsCount = b.Reviews.Count(r => r.ReviewStatusId==2),
+                        ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && r.ReviewStatusId==2),
                         UserRating = b.Reviews.Where(r => r.UserId == userId).Select(r => (decimal?)r.Score).FirstOrDefault()
                     } : null,
                     IsFavorite = b.Shelves.Any(s => s.UserId == userId && s.ShelfTypeId == ShelfTypes.FAVORITES_CODE),

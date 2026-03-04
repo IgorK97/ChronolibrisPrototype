@@ -10,9 +10,9 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetUserReviewForBookHandler(IReviewRepository reviewRepository) : IRequestHandler<GetUserReviewForBookQuery, ReviewDetails?>
+    public class GetUserReviewForBookHandler(IReviewRepository reviewRepository) : IRequestHandler<GetUserReviewForBookQuery, MyReviewDetails?>
     {
-        public async Task<ReviewDetails?> Handle(GetUserReviewForBookQuery request, CancellationToken cancellationToken)
+        public async Task<MyReviewDetails?> Handle(GetUserReviewForBookQuery request, CancellationToken cancellationToken)
         {
 
             var review = await reviewRepository.GetActiveByUserAndBookAsync(request.UserId, request.BookId, cancellationToken);
@@ -21,7 +21,7 @@ namespace Chronolibris.Application.Handlers
             {
                 return null;
             }
-            return new ReviewDetails
+            return new MyReviewDetails
             {
                 Id = review.Review.Id,
                 Text = review.Review.ReviewText,
@@ -29,7 +29,8 @@ namespace Chronolibris.Application.Handlers
                 LikesCount = review.LikesCount,
                 DislikesCount = review.DislikesCount,
                 CreatedAt = review.Review.CreatedAt,
-                UserVote = review.UserVote
+                UserVote = review.UserVote,
+                Status = review.Review.ReviewStatus.Name
             };
 
         }

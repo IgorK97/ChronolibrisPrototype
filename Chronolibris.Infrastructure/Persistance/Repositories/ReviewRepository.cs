@@ -26,10 +26,24 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<ReviewDetailsWithVote?> GetActiveByUserAndBookAsync(long userId, long bookId, CancellationToken token = default)
         {
             return await _context.Reviews.AsNoTracking()
-                .Where(r => r.UserId == userId && r.BookId == bookId && r.ReviewStatusId != 4)
+                .Where(r => r.UserId == userId && r.BookId == bookId && r.ReviewStatusId != 4).OrderByDescending(r => r.CreatedAt)
                 .Select(r => new ReviewDetailsWithVote
                 {
-                    Review = r,
+                    Review = new Review
+                    {
+                        Id = r.Id,
+                        UserId = r.UserId,
+                        BookId = r.BookId,
+                        ReviewText = r.ReviewText,
+                        Score = r.Score,
+                        ReviewStatusId = r.ReviewStatusId,
+                        CreatedAt = r.CreatedAt,
+                        UpdatedAt = r.UpdatedAt,
+                        ModeratedAt = r.ModeratedAt,
+                        DeletedAt = r.DeletedAt,
+                        ReviewStatus = r.ReviewStatus
+                    },
+
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)
