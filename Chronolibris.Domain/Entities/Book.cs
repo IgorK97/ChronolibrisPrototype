@@ -42,6 +42,8 @@ namespace Chronolibris.Domain.Entities
         public ICollection<Person> Persons { get; set; } = [];
         public ICollection<BookParticipation> Participations { get; set; } = [];
         public ICollection<Selection> Selections { get; set; } = [];
+
+        public ICollection<Comment> Comments { get; set; } = [];
         
     }
 }

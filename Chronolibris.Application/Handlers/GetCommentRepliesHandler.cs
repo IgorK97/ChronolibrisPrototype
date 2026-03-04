@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Chronolibris.Application.Models;
+using Chronolibris.Domain.Interfaces;
+using MediatR;
+
+namespace Chronolibris.Application.Handlers
+{
+    public record GetCommentRepliesQuery(
+        long ParentCommentId,
+        long? LastId,
+        int Limit
+    ) : IRequest<List<CommentDto>>;
+    public class GetCommentRepliesHandler : IRequestHandler<GetCommentRepliesQuery, List<CommentDto>>
+    {
+        private readonly ICommentRepository _repository;
+
+        public GetCommentRepliesHandler(ICommentRepository repository) => _repository = repository;
+
+        public async Task<List<CommentDto>> Handle(GetCommentRepliesQuery request, CancellationToken ct)
+        {
+            var replies = await _repository.GetRepliesByParentIdAsync(
+                request.ParentCommentId, request.LastId, request.Limit, ct);
+
+            return replies.Select(r => new CommentDto(
+                r.Id, r.Text, r.CreatedAt, r.UserId, r.ParentCommentId
+            )).ToList();
+        }
+    }
+}

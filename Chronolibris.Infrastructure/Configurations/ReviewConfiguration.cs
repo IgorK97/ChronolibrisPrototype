@@ -28,7 +28,7 @@ namespace Chronolibris.Infrastructure.Configurations
                .HasPrincipalKey(u => u.Id);
 
             builder.HasIndex(r => new { r.UserId, r.BookId })
-               .IsUnique();
+               .IsUnique().HasFilter("\"review_status_id\" != 4"); ;
 
             //builder.HasCheckConstraint("CK_Review_Rating", "[Score] >=0.0 AND [Score]<=5.0");
         }

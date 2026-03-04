@@ -40,6 +40,7 @@ namespace Chronolibris.Infrastructure.Persistance
         /// Получает репозиторий для управления отзывами (рецензиями).
         /// </summary>
         public IReviewRepository Reviews { get; }
+        public ICommentRepository Comments { get; }
 
         /// <summary>
         /// Получает репозиторий для управления подборками книг.

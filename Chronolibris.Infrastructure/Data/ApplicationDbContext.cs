@@ -19,6 +19,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<Comment> Comments { get; set; }
         public DbSet<Bookmark> Bookmarks { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Language> Languages { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304193419_AddComments")]
+    partial class AddComments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -399,18 +402,18 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_comments");
+                        .HasName("pk_comment");
 
                     b.HasIndex("ParentCommentId")
-                        .HasDatabaseName("ix_comments_parent_comment_id");
+                        .HasDatabaseName("ix_comment_parent_comment_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_comments_user_id");
+                        .HasDatabaseName("ix_comment_user_id");
 
                     b.HasIndex("BookId", "CreatedAt")
-                        .HasDatabaseName("ix_comments_book_id_created_at");
+                        .HasDatabaseName("ix_comment_book_id_created_at");
 
-                    b.ToTable("comments", (string)null);
+                    b.ToTable("comment", (string)null);
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Content", b =>
@@ -1097,8 +1100,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.HasIndex("UserId", "BookId")
                         .IsUnique()
-                        .HasDatabaseName("ix_reviews_user_id_book_id")
-                        .HasFilter("\"review_status_id\" != 4");
+                        .HasDatabaseName("ix_reviews_user_id_book_id");
 
                     b.ToTable("reviews", null, t =>
                         {
@@ -2077,20 +2079,20 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_comments_books_book_id");
+                        .HasConstraintName("fk_comment_books_book_id");
 
                     b.HasOne("Chronolibris.Domain.Entities.Comment", "ParentComment")
                         .WithMany("Replies")
                         .HasForeignKey("ParentCommentId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_comments_comments_parent_comment_id");
+                        .HasConstraintName("fk_comment_comment_parent_comment_id");
 
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_comments_users_user_id");
+                        .HasConstraintName("fk_comment_users_user_id");
 
                     b.Navigation("Book");
 

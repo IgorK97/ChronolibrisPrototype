@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304195513_CorrectComment")]
+    partial class CorrectComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1097,8 +1100,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.HasIndex("UserId", "BookId")
                         .IsUnique()
-                        .HasDatabaseName("ix_reviews_user_id_book_id")
-                        .HasFilter("\"review_status_id\" != 4");
+                        .HasDatabaseName("ix_reviews_user_id_book_id");
 
                     b.ToTable("reviews", null, t =>
                         {

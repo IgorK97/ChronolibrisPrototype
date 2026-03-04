@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Chronolibris.Domain.Entities;
+using Chronolibris.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Chronolibris.Infrastructure.DataAccess.Configurations
+{
+    public class CommentConfiguration : IEntityTypeConfiguration<Comment>
+    {
+        public void Configure(EntityTypeBuilder<Comment> builder)
+        {
+            builder.HasKey(c => c.Id);
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasPrincipalKey(u => u.Id);
+
+            builder.HasOne(c => c.Book)
+                .WithMany(b => b.Comments)
+                .HasForeignKey(b => b.BookId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(c => c.ParentComment)
+                .WithMany(c => c.Replies)
+                .HasForeignKey(c => c.ParentCommentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(c => new { c.BookId, c.CreatedAt });
+            builder.HasIndex(c => c.ParentCommentId);
+            //builder.HasIndex(c => c.UserId);
+        }
+    }
+}
