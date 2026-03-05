@@ -11,21 +11,21 @@ using Microsoft.EntityFrameworkCore;
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
     /// <summary>
-    /// Репозиторий для управления сущностями оценок отзывов (<see cref="ReviewsReaction"/>), 
+    /// Репозиторий для управления сущностями оценок отзывов (<see cref="ReviewReactions"/>), 
     /// которые представляют собой голос пользователя (например, лайк или дизлайк) за конкретный отзыв.
     /// Предоставляет специализированные методы доступа к данным, расширяя <see cref="GenericRepository{TEntity}"/>.
-    /// Реализует интерфейс <see cref="IReviewsRatingRepository"/>.
+    /// Реализует интерфейс <see cref="IReviewReactionsRepository"/>.
     /// </summary>
-    public class ReviewsRatingRepository : GenericRepository<ReviewsReaction>, IReviewsRatingRepository
+    public class ReviewReactionsRepository : GenericRepository<ReviewReactions>, IReviewReactionsRepository
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ReviewsRatingRepository"/>.
+        /// Инициализирует новый экземпляр класса <see cref="ReviewReactionsRepository"/>.
         /// </summary>
         /// <param name="context">Контекст базы данных приложения, используемый для доступа к данным.</param>
-        public ReviewsRatingRepository(ApplicationDbContext context) : base(context) { }
+        public ReviewReactionsRepository(ApplicationDbContext context) : base(context) { }
 
         /// <summary>
-        /// Асинхронно получает существующую оценку отзыва (<see cref="ReviewsReaction"/>), 
+        /// Асинхронно получает существующую оценку отзыва (<see cref="ReviewReactions"/>), 
         /// поставленную конкретным пользователем.
         /// </summary>
         /// <param name="reviewId">Идентификатор отзыва, для которого ищется оценка.</param>
@@ -33,12 +33,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// <param name="token">Токен отмены для прерывания запроса.</param>
         /// <returns>
         /// Задача, которая представляет асинхронную операцию. Результат задачи — 
-        /// сущность <see cref="ReviewsReaction"/> (существующий голос) или <c>null</c>, 
+        /// сущность <see cref="ReviewReactions"/> (существующий голос) или <c>null</c>, 
         /// если пользователь еще не голосовал за этот отзыв.
         /// </returns>
-        public async Task<ReviewsReaction?> GetReviewsRatingByUserIdAsync(long reviewId, long userId, CancellationToken token)
+        public async Task<ReviewReactions?> GetReviewReactionByUserIdAsync(long reviewId, long userId, CancellationToken token)
         {
-            return await _context.ReviewsRatings.FirstOrDefaultAsync(rr => rr.UserId == userId && rr.ReviewId==reviewId, token);
+            return await _context.ReviewReactions.FirstOrDefaultAsync(rr => rr.UserId == userId && rr.ReviewId==reviewId, token);
         }
     }
 }

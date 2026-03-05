@@ -22,6 +22,6 @@ namespace Chronolibris.Domain.Entities
         public DateTime? ModeratedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public ReviewStatus ReviewStatus { get; set; } = null!;
-        public ICollection<ReviewsReaction> ReviewsRatings { get; set; } = new List<ReviewsReaction>();
+        public ICollection<ReviewReactions> ReviewsRatings { get; set; } = new List<ReviewReactions>();
     }
 }

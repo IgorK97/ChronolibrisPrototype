@@ -30,7 +30,8 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<PersonRole> PersonRoles { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<ReviewsReaction> ReviewsRatings { get; set; }
+        public DbSet<ReviewReactions> ReviewReactions { get; set; }
+        public DbSet<CommentReactions> CommentReactions { get; set; }
         public DbSet<Selection> Selections { get; set; }
         public DbSet<Series> Series { get; set; }
         public DbSet<Shelf> Shelves { get; set; }

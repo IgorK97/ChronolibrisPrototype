@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305160730_AddCommentReactionsChangeReviewReactions")]
+    partial class AddCommentReactionsChangeReviewReactions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -436,9 +439,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_comment_reactions");
-
-                    b.HasIndex("CommentId")
-                        .HasDatabaseName("ix_comment_reactions_comment_id");
 
                     b.HasIndex("UserId", "CommentId")
                         .IsUnique()
@@ -2137,13 +2137,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.CommentReactions", b =>
                 {
-                    b.HasOne("Chronolibris.Domain.Entities.Comment", null)
-                        .WithMany("CommentReactions")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_comment_reactions_comments_comment_id");
-
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -2436,8 +2429,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Comment", b =>
                 {
-                    b.Navigation("CommentReactions");
-
                     b.Navigation("Replies");
                 });
 

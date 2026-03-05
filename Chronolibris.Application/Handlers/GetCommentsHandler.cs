@@ -14,7 +14,8 @@ namespace Chronolibris.Application.Handlers
     public record GetBookCommentsQuery(
         long BookId,
         long? LastId,
-        int Limit
+        int Limit,
+        long UserId
     ) : IRequest<List<CommentDto>>;
     public class GetBookCommentsHandler : IRequestHandler<GetBookCommentsQuery, List<CommentDto>>
     {
@@ -25,7 +26,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<List<CommentDto>> Handle(GetBookCommentsQuery request, CancellationToken ct)
         {
             var comments = await _repository.GetRootCommentsByBookIdAsync(
-                request.BookId, request.LastId, request.Limit,ct);
+                request.BookId, request.LastId, request.Limit, request.UserId, ct);
 
             return comments;
         }

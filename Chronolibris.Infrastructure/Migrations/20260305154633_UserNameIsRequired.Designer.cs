@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305154633_UserNameIsRequired")]
+    partial class UserNameIsRequired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -411,43 +414,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasDatabaseName("ix_comments_book_id_created_at");
 
                     b.ToTable("comments", (string)null);
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.CommentReactions", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CommentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("comment_id");
-
-                    b.Property<short>("ReactionType")
-                        .HasColumnType("smallint")
-                        .HasColumnName("reaction_type");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_comment_reactions");
-
-                    b.HasIndex("CommentId")
-                        .HasDatabaseName("ix_comment_reactions_comment_id");
-
-                    b.HasIndex("UserId", "CommentId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_comment_reactions_user_id_comment_id");
-
-                    b.ToTable("comment_reactions", null, t =>
-                        {
-                            t.HasCheckConstraint("ck_comment_reactions_reaction_type", "reaction_type IN (1, -1, 0)");
-                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Content", b =>
@@ -1143,43 +1109,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Chronolibris.Domain.Entities.ReviewReactions", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<short>("ReactionType")
-                        .HasColumnType("smallint")
-                        .HasColumnName("reaction_type");
-
-                    b.Property<long>("ReviewId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("review_id");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_review_reactions");
-
-                    b.HasIndex("ReviewId")
-                        .HasDatabaseName("ix_review_reactions_review_id");
-
-                    b.HasIndex("UserId", "ReviewId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_review_reactions_user_id_review_id");
-
-                    b.ToTable("review_reactions", null, t =>
-                        {
-                            t.HasCheckConstraint("ck_review_reactions_reaction_type", "reaction_type IN (1, -1, 0)");
-                        });
-                });
-
             modelBuilder.Entity("Chronolibris.Domain.Entities.ReviewStatus", b =>
                 {
                     b.Property<long>("Id")
@@ -1220,6 +1149,43 @@ namespace Chronolibris.Infrastructure.Migrations
                         {
                             Id = 4L,
                             Name = "Удален"
+                        });
+                });
+
+            modelBuilder.Entity("Chronolibris.Domain.Entities.ReviewsReaction", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<short>("ReactionType")
+                        .HasColumnType("smallint")
+                        .HasColumnName("reaction_type");
+
+                    b.Property<long>("ReviewId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("review_id");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_reviews_ratings");
+
+                    b.HasIndex("ReviewId")
+                        .HasDatabaseName("ix_reviews_ratings_review_id");
+
+                    b.HasIndex("UserId", "ReviewId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_reviews_ratings_user_id_review_id");
+
+                    b.ToTable("reviews_ratings", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_reviews_reactions_reaction_type", "reaction_type IN (1, -1, 0)");
                         });
                 });
 
@@ -2135,23 +2101,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Navigation("ParentComment");
                 });
 
-            modelBuilder.Entity("Chronolibris.Domain.Entities.CommentReactions", b =>
-                {
-                    b.HasOne("Chronolibris.Domain.Entities.Comment", null)
-                        .WithMany("CommentReactions")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_comment_reactions_comments_comment_id");
-
-                    b.HasOne("Chronolibris.Infrastructure.Data.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_comment_reactions_users_user_id");
-                });
-
             modelBuilder.Entity("Chronolibris.Domain.Entities.Content", b =>
                 {
                     b.HasOne("Chronolibris.Domain.Entities.ContentType", "ContentType")
@@ -2265,21 +2214,21 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Navigation("ReviewStatus");
                 });
 
-            modelBuilder.Entity("Chronolibris.Domain.Entities.ReviewReactions", b =>
+            modelBuilder.Entity("Chronolibris.Domain.Entities.ReviewsReaction", b =>
                 {
                     b.HasOne("Chronolibris.Domain.Entities.Review", null)
                         .WithMany("ReviewsRatings")
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_review_reactions_reviews_review_id");
+                        .HasConstraintName("fk_reviews_ratings_reviews_review_id");
 
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_review_reactions_users_user_id");
+                        .HasConstraintName("fk_reviews_ratings_users_user_id");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Selection", b =>
@@ -2436,8 +2385,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Comment", b =>
                 {
-                    b.Navigation("CommentReactions");
-
                     b.Navigation("Replies");
                 });
 

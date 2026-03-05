@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Handlers;
 using Chronolibris.Application.Models;
+using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Models;
 using ChronolibrisPrototype.Models;
 using MediatR;
@@ -44,7 +45,8 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult<List<CommentDto>>> GetBookComments(
             long bookId, long? lastId, int limit = 20)
         {
-            var result = await _mediator.Send(new GetBookCommentsQuery(bookId, lastId, limit));
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+            var result = await _mediator.Send(new GetBookCommentsQuery(bookId, lastId, limit, userId));
             return Ok(result);
         }
 
@@ -53,13 +55,31 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult<List<CommentDto>>> GetReplies(
             long parentId, long? lastId, int limit = 20)
         {
-            var result = await _mediator.Send(new GetCommentRepliesQuery(parentId, lastId, limit));
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+            var result = await _mediator.Send(new GetCommentRepliesQuery(parentId, lastId, limit, userId));
             return Ok(result);
         }
 
         private bool TryGetUserId(out long userId)
         {
             return long.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
+        }
+
+        [Authorize]
+        [HttpPost("rate")]
+        public async Task<IActionResult> RateComment(RateCommentRequest request)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
+            var result = await _mediator.Send(
+                new RateCommentCommand
+                {
+                    CommentId = request.CommentId,
+                    Score = request.Score,
+                    UserId = userId
+                });
+
+            return Ok(result);
         }
     }
 }

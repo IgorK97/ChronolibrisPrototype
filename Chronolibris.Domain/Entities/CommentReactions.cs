@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Chronolibris.Domain.Entities
+{
+    public class CommentReactions
+    {
+
+        public required long Id { get; set; }
+        public required long CommentId { get; set; }
+        public required long UserId { get; set; }
+        public required short ReactionType { get; set; }
+
+    }
+}

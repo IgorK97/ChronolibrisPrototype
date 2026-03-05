@@ -15,6 +15,11 @@ namespace Chronolibris.Infrastructure.Configurations
 
         public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder
+                .Property(u => u.UserName)
+                .IsRequired()
+                .HasMaxLength(256);
+
             var dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 
             builder.HasData(

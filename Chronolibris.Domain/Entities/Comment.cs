@@ -26,5 +26,7 @@ namespace Chronolibris.Domain.Entities
         public Comment? ParentComment { get; set; }
 
         public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+        public ICollection<CommentReactions> CommentReactions { get; set; } = new List<CommentReactions>();
+
     }
 }

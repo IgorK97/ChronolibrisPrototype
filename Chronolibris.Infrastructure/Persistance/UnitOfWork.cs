@@ -34,7 +34,8 @@ namespace Chronolibris.Infrastructure.Persistance
         /// <summary>
         /// Получает репозиторий для управления оценками отзывов.
         /// </summary>
-        public IReviewsRatingRepository ReviewsRatings { get; }
+        public IReviewReactionsRepository ReviewReactions { get; }
+        public ICommentReactionsRepository CommentReactions { get; }
 
         /// <summary>
         /// Получает репозиторий для управления отзывами (рецензиями).
@@ -90,10 +91,10 @@ namespace Chronolibris.Infrastructure.Persistance
             IBookmarkRepository bookmarks,
             IGenericRepository<Person> personRepository, IGenericRepository<Content> contentRepository,
             IGenericRepository<Publisher> publisherRepository,
-            IReviewsRatingRepository reviewsRatings,
+            IReviewReactionsRepository reviewsRatings,
             IReviewRepository reviewRepository,
             ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
-            IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses)
+            IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, ICommentReactionsRepository commentReactions)
         {
             _context = context;
 
@@ -103,12 +104,13 @@ namespace Chronolibris.Infrastructure.Persistance
             Contents = contentRepository;
             Reviews = reviewRepository;
             Publishers = publisherRepository;
-            ReviewsRatings = reviewsRatings;
+            ReviewReactions = reviewsRatings;
             Selections = selections;
             Shelves = shelves;
             PersonRoles = personRoles;
             ReadingProgresses = readingProgresses;
             Comments = comments;
+            CommentReactions = commentReactions;
         }
 
         /// <summary>

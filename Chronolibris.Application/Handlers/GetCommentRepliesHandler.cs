@@ -13,7 +13,8 @@ namespace Chronolibris.Application.Handlers
     public record GetCommentRepliesQuery(
         long ParentCommentId,
         long? LastId,
-        int Limit
+        int Limit,
+        long UserId
     ) : IRequest<List<CommentDto>>;
     public class GetCommentRepliesHandler : IRequestHandler<GetCommentRepliesQuery, List<CommentDto>>
     {
@@ -24,7 +25,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<List<CommentDto>> Handle(GetCommentRepliesQuery request, CancellationToken ct)
         {
             var replies = await _repository.GetRepliesByParentIdAsync(
-                request.ParentCommentId, request.LastId, request.Limit, ct);
+                request.ParentCommentId, request.LastId, request.Limit, request.UserId, ct);
 
             return replies;
         }

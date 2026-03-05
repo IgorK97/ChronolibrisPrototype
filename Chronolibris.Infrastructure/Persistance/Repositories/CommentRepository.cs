@@ -16,7 +16,28 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
     {
         public CommentRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<List<CommentDto>> GetRootCommentsByBookIdAsync(long bookId, long? lastId, int limit, CancellationToken token)
+        public async Task<CommentDto?> GetByIdWithVotesAsync(long reviewId, long userId, CancellationToken token = default)
+        {
+            return await _context.Comments.AsNoTracking()
+                .Where(r => r.Id == reviewId)
+               .Join(_context.Users, c => c.UserId, u => u.Id, (c, u) => new CommentDto
+               {
+                   CreatedAt = c.CreatedAt,
+                   Id = c.Id,
+                   Text = c.Text,
+                   UserLogin = u.UserName,
+                   ParentCommentId = c.ParentCommentId,
+                   RepliesCount = c.Replies.Count(),
+                   DislikesCount = c.CommentReactions.LongCount(rr => rr.ReactionType == -1),
+                   LikesCount = c.CommentReactions.LongCount(rr => rr.ReactionType == 1),
+                   UserVote =c.CommentReactions.Where(rr => rr.UserId == userId)
+                        .Select(rr => rr.ReactionType == 1 ? (bool?)true : (rr.ReactionType == 0 ? null : (bool?)false))
+                        .FirstOrDefault()
+               })
+                .FirstOrDefaultAsync(token);
+        }
+
+        public async Task<List<CommentDto>> GetRootCommentsByBookIdAsync(long bookId, long? lastId, int limit, long userId, CancellationToken token)
         {
             var query = _context.Comments
                 .AsNoTracking()
@@ -43,10 +64,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 Text = c.DeletedAt==null ? c.Text : null,
                 RepliesCount = c.Replies.Count(),
                 UserLogin = c.DeletedAt==null ? u.UserName : null,
+                DislikesCount = c.CommentReactions.LongCount(rr => rr.ReactionType == -1),
+                LikesCount = c.CommentReactions.LongCount(rr => rr.ReactionType == 1),
+                UserVote = c.CommentReactions.Where(rr => rr.UserId == userId)
+                        .Select(rr => rr.ReactionType == 1 ? (bool?)true : (rr.ReactionType == 0 ? null : (bool?)false))
+                        .FirstOrDefault()
             }).ToListAsync(token);
         }
 
-        public async Task<List<CommentDto>> GetRepliesByParentIdAsync(long parentCommentId, long? lastId, int limit, CancellationToken token)
+        public async Task<List<CommentDto>> GetRepliesByParentIdAsync(long parentCommentId, long? lastId, int limit, long userId, CancellationToken token)
         {
             var query = _context.Comments
                 .AsNoTracking()
@@ -66,6 +92,11 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     Text = c.DeletedAt == null ? c.Text : null,
                     RepliesCount = c.Replies.Count(),
                     UserLogin = c.DeletedAt == null ? u.UserName : null,
+                    DislikesCount = c.CommentReactions.LongCount(rr => rr.ReactionType == -1),
+                    LikesCount = c.CommentReactions.LongCount(rr => rr.ReactionType == 1),
+                    UserVote = c.CommentReactions.Where(rr => rr.UserId == userId)
+                        .Select(rr => rr.ReactionType == 1 ? (bool?)true : (rr.ReactionType == 0 ? null : (bool?)false))
+                        .FirstOrDefault()
                 })
                 .ToListAsync(token);
         }

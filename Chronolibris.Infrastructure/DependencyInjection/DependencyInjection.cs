@@ -57,7 +57,8 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             // Регистрация специфических репозиториев (Scoped lifetime)
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IBookmarkRepository, BookmarkRepository>();
-            services.AddScoped<IReviewsRatingRepository,  ReviewsRatingRepository>();
+            services.AddScoped<IReviewReactionsRepository,  ReviewReactionsRepository>();
+            services.AddScoped<ICommentReactionsRepository, CommentReactionsRepository>();
             services.AddScoped<IReviewRepository,  ReviewRepository>();
             services.AddScoped<ISelectionsRepository, SelectionsRepository>();
             services.AddScoped<IShelfRepository, ShelvesRepository>();

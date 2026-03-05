@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
-    public class ReviewsReaction
+    public class ReviewReactions
     {
         public required long Id { get; set; }
         public required long ReviewId { get; set; }

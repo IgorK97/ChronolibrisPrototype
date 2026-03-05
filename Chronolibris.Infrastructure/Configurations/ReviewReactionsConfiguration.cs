@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chronolibris.Infrastructure.Configurations
 {
-    public class ReviewsRatingConfiguration : IEntityTypeConfiguration<ReviewsReaction>
+    public class ReviewReactionsConfiguration : IEntityTypeConfiguration<ReviewReactions>
     {
-        public void Configure(EntityTypeBuilder<ReviewsReaction> builder)
+        public void Configure(EntityTypeBuilder<ReviewReactions> builder)
         {
-            builder.ToTable(rr=>rr.HasCheckConstraint("ck_reviews_reactions_reaction_type",
+            builder.ToTable(rr=>rr.HasCheckConstraint("ck_review_reactions_reaction_type",
                 "reaction_type IN (1, -1, 0)"));
 
             builder.HasOne<User>() 

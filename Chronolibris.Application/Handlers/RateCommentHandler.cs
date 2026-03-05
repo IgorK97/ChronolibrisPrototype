@@ -7,16 +7,12 @@ using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    /// <summary>
-    /// Обработчик команды для оценки отзыва пользователем (Like, Dislike или снятие оценки).
-    /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/>
-    /// для обработки <see cref="RateReviewCommand"/> и возврата обновленного <see cref="ReviewDetails"/> DTO.
-    /// </summary>
-    public class RateReviewHandler : IRequestHandler<RateReviewCommand, ReviewDetails?>
+    public class RateCommentHandler : IRequestHandler<RateCommentCommand, CommentDto?>
     {
         /// <summary>
         /// Приватное поле только для чтения для доступа к паттерну Unit of Work.
@@ -26,7 +22,7 @@ namespace Chronolibris.Application.Handlers
         /// Инициализирует новый экземпляр класса <see cref="RateReviewHandler"/>.
         /// </summary>
         /// <param name="unitOfWork">Интерфейс Unit of Work для взаимодействия с базой данных.</param>
-        public RateReviewHandler(IUnitOfWork unitOfWork)
+        public RateCommentHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -50,29 +46,29 @@ namespace Chronolibris.Application.Handlers
         /// Задача, представляющая асинхронную операцию.
         /// Результат задачи — обновленный объект <see cref="ReviewDetails"/> с актуальными счетчиками, или <c>null</c>, если отзыв не найден.
         /// </returns>
-        public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<CommentDto?> Handle(RateCommentCommand request, CancellationToken cancellationToken)
         {
             if (request.Score != 1 && request.Score != -1)
                 throw new Exception("Неверная оценка");
 
-            var review = await _unitOfWork.Reviews.GetByIdWithVotesAsync(request.ReviewId, request.UserId, cancellationToken);
-            if (review == null)
+            var comment = await _unitOfWork.Comments.GetByIdWithVotesAsync(request.CommentId, request.UserId, cancellationToken);
+            if (comment == null)
                 return null;
 
             //Потом разблокировать
             //if(review.Review.UserId == request.UserId) 
             //    return null;
 
-            
-            var rating = await _unitOfWork.ReviewReactions.GetReviewReactionByUserIdAsync(request.ReviewId,
+
+            var rating = await _unitOfWork.CommentReactions.GetCommentReactionByUserIdAsync(request.CommentId,
                 request.UserId, cancellationToken);
 
             if (rating is null)
             {
-                rating = new ReviewReactions
+                rating = new CommentReactions
                 {
                     Id = 0,
-                    ReviewId = request.ReviewId,
+                    CommentId = request.CommentId,
                     ReactionType = request.Score,
                     UserId = request.UserId,
                 };
@@ -82,64 +78,65 @@ namespace Chronolibris.Application.Handlers
                 rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score;
             }
 
-                //if (request.Score == 0) // Снятие оценки
-                //{
-                //    if (rating != null)
-                //        _unitOfWork.ReviewsRatings.Delete(rating);
-                //}
-                //else // Установка или изменение оценки
-                //{
-                //    if (rating == null)
-                //    {
-                //        rating = new ReviewsReaction
-                //        {
-                //            Id = 0,
-                //            ReviewId = request.ReviewId,
-                //            ReactionType = request.Score,
-                //            UserId = request.UserId,
-                //        };
-                //        await _unitOfWork.ReviewsRatings.AddAsync(rating, cancellationToken);
-                //    }
-                //    else
-                //    {
-                //        rating.ReactionType = request.Score;
-                //    }
-                //}
+            //if (request.Score == 0) // Снятие оценки
+            //{
+            //    if (rating != null)
+            //        _unitOfWork.ReviewsRatings.Delete(rating);
+            //}
+            //else // Установка или изменение оценки
+            //{
+            //    if (rating == null)
+            //    {
+            //        rating = new ReviewsReaction
+            //        {
+            //            Id = 0,
+            //            ReviewId = request.ReviewId,
+            //            ReactionType = request.Score,
+            //            UserId = request.UserId,
+            //        };
+            //        await _unitOfWork.ReviewsRatings.AddAsync(rating, cancellationToken);
+            //    }
+            //    else
+            //    {
+            //        rating.ReactionType = request.Score;
+            //    }
+            //}
 
 
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            return comment;
 
             //await _unitOfWork.Reviews.RecalculateRatingAsync(request.ReviewId, cancellationToken);
 
 
-            _unitOfWork.Reviews.Detach(review.Review);
-            var newReview = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
+            //_unitOfWork.Comments.Detach(comment);
+            //var newReview = await _unitOfWork.Reviews.GetByIdAsync(request.CommentId, cancellationToken);
 
-            if (review == null) return null;
-
-
-            return new ReviewDetails
-            {
-                Id = review.Review.Id,
-
-                //AverageRating = review.AverageRating,
-                DislikesCount = review.DislikesCount,
-                LikesCount = review.LikesCount,
+            //if (comment == null) return null;
 
 
-                CreatedAt = review.Review.CreatedAt,
-                Score = review.Review.Score,
-                Text = review.Review.ReviewText,
-                UserName = review.UserName,
-                //Title = review.Title,
-                //UserName = review.Name,
-                UserVote = request.Score switch
-                {
-                    1 => true,
-                    -1 => false,
-                    _ => null
-                }
-            };
+            //return new ReviewDetails
+            //{
+            //    Id = comment.Review.Id,
+
+            //    //AverageRating = review.AverageRating,
+            //    DislikesCount = comment.DislikesCount,
+            //    LikesCount = comment.LikesCount,
+
+
+            //    CreatedAt = comment.Review.CreatedAt,
+            //    Score = comment.Review.Score,
+            //    Text = comment.Review.ReviewText,
+            //    UserName = comment.UserName,
+            //    //Title = review.Title,
+            //    //UserName = review.Name,
+            //    UserVote = request.Score switch
+            //    {
+            //        1 => true,
+            //        -1 => false,
+            //        _ => null
+            //    }
+            //};
         }
 
 

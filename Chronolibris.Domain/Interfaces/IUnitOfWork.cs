@@ -27,9 +27,12 @@ namespace Chronolibris.Domain.Interfaces
         IBookmarkRepository Bookmarks { get; }
 
         /// <summary>
-        /// Получает репозиторий для управления сущностями <see cref="Chronolibris.Domain.Interfaces.IReviewsRatingRepository"/> (оценки отзывов).
+        /// Получает репозиторий для управления сущностями <see cref="Chronolibris.Domain.Interfaces.IReviewReactionsRepository"/> (оценки отзывов).
         /// </summary>
-        IReviewsRatingRepository ReviewsRatings { get; }
+        IReviewReactionsRepository ReviewReactions { get; }
+        ICommentReactionsRepository CommentReactions { get; }
+
+
 
         /// <summary>
         /// Получает репозиторий для управления сущностями <see cref="IReviewRepository"/> (отзывы).
