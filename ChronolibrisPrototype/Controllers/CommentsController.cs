@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Handlers;
 using Chronolibris.Application.Models;
+using Chronolibris.Domain.Models;
 using ChronolibrisPrototype.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -41,9 +42,9 @@ namespace ChronolibrisPrototype.Controllers
         // 3. Получение комментариев книги (с опциональной подгрузкой 1 уровня ответов)
         [HttpGet("book/{bookId}")]
         public async Task<ActionResult<List<CommentDto>>> GetBookComments(
-            long bookId, long? lastId, int limit = 20, bool includeReplies = false)
+            long bookId, long? lastId, int limit = 20)
         {
-            var result = await _mediator.Send(new GetBookCommentsQuery(bookId, lastId, limit, includeReplies));
+            var result = await _mediator.Send(new GetBookCommentsQuery(bookId, lastId, limit));
             return Ok(result);
         }
 

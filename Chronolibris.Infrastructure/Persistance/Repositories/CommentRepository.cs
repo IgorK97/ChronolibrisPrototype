@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
     {
         public CommentRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<List<Comment>> GetRootCommentsByBookIdAsync(long bookId, long? lastId, int limit, bool includeReplies, CancellationToken token)
+        public async Task<List<CommentDto>> GetRootCommentsByBookIdAsync(long bookId, long? lastId, int limit, CancellationToken token)
         {
             var query = _context.Comments
                 .AsNoTracking()
@@ -26,22 +27,30 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             var resultQuery = query.OrderByDescending(c => c.Id).Take(limit);
 
-            if (includeReplies)
-            {
-                // Загружаем первый уровень дочерних комментариев (только активные)
-                return await resultQuery
-                    .Include(c => c.Replies.Where(r => r.DeletedAt == null).OrderByDescending(r => r.Id).Take(5))
-                    .ToListAsync(token);
-            }
+            //if (includeReplies)
+            //{
+            //    // Загружаем первый уровень дочерних комментариев (только активные)
+            //    return await resultQuery
+            //        .Include(c => c.Replies.Where(r => r.DeletedAt == null).OrderByDescending(r => r.Id).Take(5))
+            //        .ToListAsync(token);
+            //}
 
-            return await resultQuery.ToListAsync(token);
+            return await resultQuery.Join(_context.Users, c => c.UserId, u => u.Id, (c, u) => new CommentDto
+            {
+                Id = c.Id,
+                CreatedAt = c.CreatedAt,
+                ParentCommentId = c.ParentCommentId,
+                Text = c.DeletedAt==null ? c.Text : null,
+                RepliesCount = c.Replies.Count(),
+                UserLogin = c.DeletedAt==null ? u.UserName : null,
+            }).ToListAsync(token);
         }
 
-        public async Task<List<Comment>> GetRepliesByParentIdAsync(long parentCommentId, long? lastId, int limit, CancellationToken token)
+        public async Task<List<CommentDto>> GetRepliesByParentIdAsync(long parentCommentId, long? lastId, int limit, CancellationToken token)
         {
             var query = _context.Comments
                 .AsNoTracking()
-                .Where(c => c.ParentCommentId == parentCommentId && c.DeletedAt == null);
+                .Where(c => c.ParentCommentId == parentCommentId);
 
             if (lastId.HasValue)
                 query = query.Where(c => c.Id < lastId.Value);
@@ -49,6 +58,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             return await query
                 .OrderByDescending(c => c.Id)
                 .Take(limit)
+                .Join(_context.Users, c => c.UserId, u => u.Id, (c, u) => new CommentDto
+                {
+                    Id = c.Id,
+                    CreatedAt = c.CreatedAt,
+                    ParentCommentId = c.ParentCommentId,
+                    Text = c.DeletedAt == null ? c.Text : null,
+                    RepliesCount = c.Replies.Count(),
+                    UserLogin = c.DeletedAt == null ? u.UserName : null,
+                })
                 .ToListAsync(token);
         }
     }

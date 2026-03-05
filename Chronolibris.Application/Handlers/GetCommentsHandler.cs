@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
@@ -13,8 +14,7 @@ namespace Chronolibris.Application.Handlers
     public record GetBookCommentsQuery(
         long BookId,
         long? LastId,
-        int Limit,
-        bool IncludeReplies
+        int Limit
     ) : IRequest<List<CommentDto>>;
     public class GetBookCommentsHandler : IRequestHandler<GetBookCommentsQuery, List<CommentDto>>
     {
@@ -25,14 +25,11 @@ namespace Chronolibris.Application.Handlers
         public async Task<List<CommentDto>> Handle(GetBookCommentsQuery request, CancellationToken ct)
         {
             var comments = await _repository.GetRootCommentsByBookIdAsync(
-                request.BookId, request.LastId, request.Limit, request.IncludeReplies, ct);
+                request.BookId, request.LastId, request.Limit,ct);
 
-            return comments.Select(MapToDto).ToList();
+            return comments;
         }
 
-        private CommentDto MapToDto(Comment c) => new CommentDto(
-            c.Id, c.Text, c.CreatedAt, c.UserId, c.ParentCommentId,
-            c.Replies?.Where(r => r.DeletedAt == null).Select(MapToDto).ToList()
-        );
+
     }
 }

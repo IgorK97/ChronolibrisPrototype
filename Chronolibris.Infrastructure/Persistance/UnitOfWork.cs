@@ -92,7 +92,7 @@ namespace Chronolibris.Infrastructure.Persistance
             IGenericRepository<Publisher> publisherRepository,
             IReviewsRatingRepository reviewsRatings,
             IReviewRepository reviewRepository,
-            ISelectionsRepository selections, IShelfRepository shelves,
+            ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses)
         {
             _context = context;
@@ -108,6 +108,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Shelves = shelves;
             PersonRoles = personRoles;
             ReadingProgresses = readingProgresses;
+            Comments = comments;
         }
 
         /// <summary>

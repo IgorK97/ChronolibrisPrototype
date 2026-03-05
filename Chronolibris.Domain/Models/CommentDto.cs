@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Chronolibris.Domain.Models
+{
+    public class CommentDto
+    {
+        public required long Id { get; set; }
+        public string? Text { get; set; }
+        public required DateTime CreatedAt { get; set; }
+        public string? UserLogin { get; set; }
+        public long? ParentCommentId { get; set; }
+        public required long RepliesCount { get; set; }
+        //List<CommentDto>? Replies = null
+        }
+        
+}

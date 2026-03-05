@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Domain.Interfaces
 {
     public interface ICommentRepository : IGenericRepository<Comment>
     {
         // Получение корневых комментариев книги
-        Task<List<Comment>> GetRootCommentsByBookIdAsync(long bookId, long? lastId, int limit, bool includeReplies, CancellationToken token);
+        Task<List<CommentDto>> GetRootCommentsByBookIdAsync(long bookId, long? lastId, int limit, CancellationToken token);
 
         // Получение ответов на конкретный комментарий
-        Task<List<Comment>> GetRepliesByParentIdAsync(long parentCommentId, long? lastId, int limit, CancellationToken token);
+        Task<List<CommentDto>> GetRepliesByParentIdAsync(long parentCommentId, long? lastId, int limit, CancellationToken token);
     }
 }

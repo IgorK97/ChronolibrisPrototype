@@ -46,6 +46,8 @@ namespace Chronolibris.Domain.Interfaces
         /// </summary>
         IShelfRepository Shelves { get; }
 
+        ICommentRepository Comments { get; }
+
         /// <summary>
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Person"/>.
         /// </summary>

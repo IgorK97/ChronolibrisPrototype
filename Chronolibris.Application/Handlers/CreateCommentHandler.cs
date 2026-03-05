@@ -13,8 +13,8 @@ namespace Chronolibris.Application.Handlers
 
     public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, long>
     {
-        private readonly ICommentRepository _repository;
-        public CreateCommentHandler(ICommentRepository repository) => _repository = repository;
+        private readonly IUnitOfWork _uow;
+        public CreateCommentHandler(IUnitOfWork uow) => _uow = uow;
 
         public async Task<long> Handle(CreateCommentCommand request, CancellationToken ct)
         {
@@ -26,7 +26,8 @@ namespace Chronolibris.Application.Handlers
                 ParentCommentId = request.ParentCommentId,
                 CreatedAt = DateTime.UtcNow
             };
-            await _repository.AddAsync(comment, ct);
+            await _uow.Comments.AddAsync(comment, ct);
+            await _uow.SaveChangesAsync();
             // Предполагается, что UnitOfWork сохранит изменения
             return comment.Id;
         }

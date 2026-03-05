@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers
@@ -25,9 +26,7 @@ namespace Chronolibris.Application.Handlers
             var replies = await _repository.GetRepliesByParentIdAsync(
                 request.ParentCommentId, request.LastId, request.Limit, ct);
 
-            return replies.Select(r => new CommentDto(
-                r.Id, r.Text, r.CreatedAt, r.UserId, r.ParentCommentId
-            )).ToList();
+            return replies;
         }
     }
 }
