@@ -76,6 +76,7 @@ namespace Chronolibris.Application.Handlers
                     ReactionType = request.Score,
                     UserId = request.UserId,
                 };
+                await _unitOfWork.ReviewReactions.AddAsync(rating, cancellationToken);
             }
             else
             {
