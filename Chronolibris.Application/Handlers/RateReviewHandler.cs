@@ -59,6 +59,10 @@ namespace Chronolibris.Application.Handlers
             if (review == null)
                 return null;
 
+            //Потом разблокировать
+            //if(review.Review.UserId == request.UserId) 
+            //    return null;
+
             
             var rating = await _unitOfWork.ReviewsRatings.GetReviewsRatingByUserIdAsync(request.ReviewId,
                 request.UserId, cancellationToken);
@@ -126,6 +130,7 @@ namespace Chronolibris.Application.Handlers
                 CreatedAt = review.Review.CreatedAt,
                 Score = review.Review.Score,
                 Text = review.Review.ReviewText,
+                UserName = review.UserName,
                 //Title = review.Title,
                 //UserName = review.Name,
                 UserVote = request.Score switch

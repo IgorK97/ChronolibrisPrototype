@@ -27,7 +27,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         {
             return await _context.Reviews.AsNoTracking()
                 .Where(r => r.UserId == userId && r.BookId == bookId && r.ReviewStatusId != 4).OrderByDescending(r => r.CreatedAt)
-                .Select(r => new ReviewDetailsWithVote
+                .Join(_context.Users, r => r.UserId, u => u.Id, (r, u) => new ReviewDetailsWithVote
                 {
                     Review = new Review
                     {
@@ -43,7 +43,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         DeletedAt = r.DeletedAt,
                         ReviewStatus = r.ReviewStatus
                     },
-
+                    UserName = u.UserName,
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)
@@ -88,9 +88,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             }
 
             return await query.Where(r => r.ReviewStatusId == 2 && r.ReviewText!= null).OrderBy(r => r.Id).Take(limit+1)
-                .Select(r => new ReviewDetailsWithVote
+                .Join(_context.Users, r => r.UserId, u => u.Id, (r, u) => new ReviewDetailsWithVote
                 {
                     Review = r,
+                    UserName = u.UserName,
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = (userId == null) ? null : r.ReviewsRatings.Where(rr => rr.UserId == userId)
@@ -132,9 +133,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         {
             return await _context.Reviews.AsNoTracking()
                 .Where(r => r.Id == reviewId)
-                .Select(r => new ReviewDetailsWithVote
+               .Join(_context.Users, r => r.UserId, u => u.Id, (r, u) => new ReviewDetailsWithVote
                 {
                     Review = r,
+                    UserName = u.UserName,
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)

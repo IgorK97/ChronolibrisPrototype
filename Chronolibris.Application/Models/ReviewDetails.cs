@@ -16,6 +16,7 @@ namespace Chronolibris.Application.Models
         /// Обязательный уникальный идентификатор отзыва.
         /// </summary>
         public required long Id { get; set; }
+        public required string UserName { get; set; }
         //public long UserId { get; set; }
         //public long BookId { get; set; }
 

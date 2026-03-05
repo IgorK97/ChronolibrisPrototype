@@ -65,7 +65,8 @@ namespace Chronolibris.Application.Handlers
                 Score = r.Review.Score,
                 //Title = r.Review.Title,
                 CreatedAt = r.Review.CreatedAt,
-                UserVote = r.UserVote
+                UserVote = r.UserVote,
+                UserName=r.UserName,
             }).ToList();
 
 
