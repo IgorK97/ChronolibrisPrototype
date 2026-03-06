@@ -15,7 +15,9 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(255)]
         public required string Name { get; set; }
         public required DateTime CreatedAt { get; set; }
-        public ICollection<Book> Books { get; set; } = new List<Book>();
         public ShelfType ShelfType { get; set; } = null!;
+
+        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public ICollection<BookShelf> BookShelves { get; set; } = new List<BookShelf>();
     }
 }

@@ -39,6 +39,7 @@ namespace Chronolibris.Domain.Entities
         public ICollection<Review> Reviews { get; set; } = [];
         public ICollection<BookContent> BookContents { get; set; } = [];
         public ICollection<Shelf> Shelves { get; set; } = [];
+        public ICollection<BookShelf> BookShelves { get; set; } = [];
         public ICollection<Person> Persons { get; set; } = [];
         public ICollection<BookParticipation> Participations { get; set; } = [];
         public ICollection<Selection> Selections { get; set; } = [];

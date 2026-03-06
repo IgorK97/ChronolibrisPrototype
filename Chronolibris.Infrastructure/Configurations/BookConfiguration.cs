@@ -23,16 +23,35 @@ namespace Chronolibris.Infrastructure.Configurations
             //    j => j.HasOne<Shelf>().WithMany().HasForeignKey("shelf_id"),
             //    j => j.HasOne<Book>().WithMany().HasForeignKey("book_id"));
 
+            //builder.HasMany(b => b.Shelves)
+            //    .WithMany(s => s.Books)
+            //    .UsingEntity(
+            //        r => r.HasOne(typeof(Shelf))
+            //              .WithMany()
+            //              .HasForeignKey("shelf_id"),
+            //        l => l.HasOne(typeof(Book))
+            //              .WithMany()
+            //              .HasForeignKey("book_id"),
+            //        j => j.ToTable("book_shelf")
+            //    );
+
             builder.HasMany(b => b.Shelves)
                 .WithMany(s => s.Books)
-                .UsingEntity(
-                    r => r.HasOne(typeof(Shelf))
-                          .WithMany()
-                          .HasForeignKey("shelf_id"),
-                    l => l.HasOne(typeof(Book))
-                          .WithMany()
-                          .HasForeignKey("book_id"),
-                    j => j.ToTable("book_shelf")
+                .UsingEntity<BookShelf>(
+                    l => l.HasOne(bs => bs.Shelf)
+                          .WithMany(s => s.BookShelves)
+                          .HasForeignKey(bs => bs.ShelfId),
+                    r => r.HasOne(bs => bs.Book)
+                          .WithMany(b => b.BookShelves)
+                          .HasForeignKey(bs => bs.BookId),
+                    j =>
+                    {
+                        j.ToTable("book_shelf");
+                        j.HasKey(bs => new { bs.BookId, bs.ShelfId });
+
+                        j.Property(bs => bs.AddedAt)
+                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                    }
                 );
 
             //builder.HasMany(b => b.Selections)
