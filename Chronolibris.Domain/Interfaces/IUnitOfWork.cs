@@ -56,6 +56,7 @@ namespace Chronolibris.Domain.Interfaces
         /// </summary>
         IGenericRepository<Person> Persons { get; }
         IGenericRepository<Country> Countries { get; }
+        IGenericRepository<Format> Formats { get; }
         ILanguageRepository Languages { get; }
 
         /// <summary>

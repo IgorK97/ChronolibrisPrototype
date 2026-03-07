@@ -193,5 +193,89 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Получает список всех форматов книг
+        /// </summary>
+        [HttpGet("formats")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<FormatDto>))]
+        public async Task<ActionResult<IEnumerable<FormatDto>>> GetAllFormats(CancellationToken cancellationToken)
+        {
+            var query = new GetAllFormatsQuery();
+            var formats = await _mediator.Send(query, cancellationToken);
+            return Ok(formats);
+        }
+
+        /// <summary>
+        /// Получает формат по идентификатору
+        /// </summary>
+        [HttpGet("formats/{id}")]
+        public async Task<ActionResult<FormatDto>> GetFormatById(int id, CancellationToken cancellationToken)
+        {
+            var query = new GetFormatByIdQuery(id);
+            var format = await _mediator.Send(query, cancellationToken);
+
+            if (format == null)
+                return NotFound(new { message = $"Формат с ID {id} не найден" });
+
+            return Ok(format);
+        }
+
+        /// <summary>
+        /// Создает новую запись формата
+        /// </summary>
+        [Authorize]
+        [HttpPost("formats")]
+        public async Task<ActionResult<int>> CreateFormat([FromBody] CreateFormatRequest request, CancellationToken cancellationToken)
+        {
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return BadRequest(new { message = "Название формата обязательно" });
+
+            var command = new CreateFormatCommand(request.Name);
+            var id = await _mediator.Send(command, cancellationToken);
+
+            return CreatedAtAction(nameof(GetFormatById), new { id = id }, id);
+        }
+
+        /// <summary>
+        /// Обновляет существующую запись формата
+        /// </summary>
+        [Authorize]
+        [HttpPut("formats/{id}")]
+        public async Task<ActionResult> UpdateFormat(int id, [FromBody] UpdateFormatRequest request, CancellationToken cancellationToken)
+        {
+
+            if (id != request.Id)
+                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return BadRequest(new { message = "Название формата обязательно" });
+
+            var command = new UpdateFormatCommand(request.Id, request.Name);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return NotFound(new { message = $"Формат с ID {id} не найден" });
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Удаляет запись формата
+        /// </summary>
+        [Authorize]
+        [HttpDelete("formats/{id}")]
+        public async Task<ActionResult> DeleteFormat(int id, CancellationToken cancellationToken)
+        {
+            var command = new DeleteFormatCommand(id);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return NotFound(new { message = $"Формат с ID {id} не найден" });
+
+            return NoContent();
+        }
+
+
     }
 }

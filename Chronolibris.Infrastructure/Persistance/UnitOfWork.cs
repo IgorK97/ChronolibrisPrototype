@@ -65,6 +65,7 @@ namespace Chronolibris.Infrastructure.Persistance
         /// </summary>
         public IGenericRepository<Content> Contents { get; }
         public IGenericRepository<Country> Countries { get; }
+        public IGenericRepository<Format> Formats { get; }
         //public IGenericRepository<Review> Reviews { get; }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace Chronolibris.Infrastructure.Persistance
             ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
             ICommentReactionsRepository commentReactions, ILanguageRepository languages,
-            IGenericRepository<Country> countries)
+            IGenericRepository<Country> countries, IGenericRepository<Format> formats)
         {
             _context = context;
 
@@ -118,6 +119,7 @@ namespace Chronolibris.Infrastructure.Persistance
             CommentReactions = commentReactions;
             Languages = languages;
             Countries = countries;
+            Formats = formats;
         }
 
         /// <summary>
