@@ -15,6 +15,7 @@ using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Identity;
 using Chronolibris.Infrastructure.Persistance;
 using Chronolibris.Infrastructure.Persistance.Repositories;
+using Chronolibris.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -73,6 +74,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<ILanguageRepository, LanguageRepository>();
+            services.AddScoped<IThemeRepository, ThemeRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

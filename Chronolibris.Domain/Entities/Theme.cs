@@ -17,6 +17,7 @@ namespace Chronolibris.Domain.Entities
         public long? ParentThemeId { get; set; }
         [ForeignKey("ParentThemeId")]
         public Theme? ParentTheme { get; set; }
+        public ICollection<Theme>? SubThemes { get; set; }
         public ICollection<Content>? Contents { get; set; }
     }
 }
