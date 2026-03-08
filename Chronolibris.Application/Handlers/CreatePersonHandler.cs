@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Services;
+using MediatR;
+
+namespace Chronolibris.Application.Handlers
+{
+    public record CreatePersonCommand(
+    string Name,
+    string Description,
+    byte[]? ImageData,
+    string? FileName) : IRequest<long>;
+
+    public class CreatePersonHandler : IRequestHandler<CreatePersonCommand, long>
+    {
+        private readonly IGenericRepository<Person> _repository; // Используем твой GenericRepository
+        private readonly IFileService _fileService;
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CreatePersonHandler(IGenericRepository<Person> repository, IFileService fileService, IUnitOfWork unitOfWork)
+        {
+            _repository = repository;
+            _fileService = fileService;
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<long> Handle(CreatePersonCommand request, CancellationToken token)
+        {
+            string imagePath = "default_avatar.png";
+
+            if (request.ImageData != null && request.ImageData.Length > 0)
+            {
+                using var stream = new MemoryStream(request.ImageData);
+                // Допустим, MIME-тип определяем по расширению или хардкодим image/jpeg
+                imagePath = await _fileService.UploadFileAsync(stream, request.FileName ?? "upload.jpg", "image/jpeg", token);
+            }
+
+            var person = new Person
+            {
+                Id = 0,
+                Name = request.Name,
+                Description = request.Description,
+                ImagePath = imagePath,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _repository.AddAsync(person, token);
+            await _unitOfWork.SaveChangesAsync(token);
+
+            return person.Id;
+        }
+    }
+}

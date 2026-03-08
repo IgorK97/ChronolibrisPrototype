@@ -45,6 +45,7 @@ builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
 builder.Services.AddFileProviderInfrastructure(builder.Configuration);
+builder.Services.AddFileServices(builder.Configuration);
 
 // Конфигурация аутентификации с использованием JWT-токенов
 builder.Services.AddAuthentication(options =>

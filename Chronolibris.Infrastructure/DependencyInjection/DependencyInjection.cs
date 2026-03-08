@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
+using Chronolibris.Infrastructure.DataAccess.Files;
 using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
 using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Identity;
@@ -17,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Minio;
 
 namespace Chronolibris.Infrastructure.DependencyInjection
 {
@@ -73,6 +76,30 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddFileServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            // 1. Привязываем настройки из JSON к классу MinioOptions
+            var minioOptions = configuration.GetSection("MinioOptions").Get<MinioOptions>();
+            services.Configure<MinioOptions>(configuration.GetSection("MinioOptions"));
+
+            // 2. Регистрируем IMinioClient как Singleton или Scoped
+            services.AddSingleton<IMinioClient>(sp =>
+            {
+                var client = new MinioClient()
+                    .WithEndpoint(minioOptions!.Endpoint)
+                    .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey);
+
+                if (minioOptions.UseSSL) client.WithSSL();
+
+                return client.Build();
+            });
+
+            // 3. Регистрируем твой сервис для работы с файлами
+            services.AddScoped<IFileService, MinioFileService>();
 
             return services;
         }
