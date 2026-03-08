@@ -1,6 +1,9 @@
-﻿using Chronolibris.Application.Queries;
+﻿using Chronolibris.Application.Models;
+using Chronolibris.Application.Queries;
 using Chronolibris.Application.Requests;
+using Chronolibris.Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +18,149 @@ namespace ChronolibrisPrototype.Controllers
         {
             _mediator = mediator;
         }
+
+        /// <summary>
+        /// Получает список книг с фильтрацией и пагинацией
+        /// </summary>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookListResponse))]
+        public async Task<ActionResult<BookListResponse>> GetBooks(
+            [FromQuery] BookFilterRequest filter, CancellationToken cancellationToken)
+        {
+            var query = new GetBooksQuery(filter);
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получает книгу по идентификатору
+        /// </summary>
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<BookDto>> GetBookById(long id, CancellationToken cancellationToken)
+        {
+            var query = new GetBookByIdQuery(id);
+            var book = await _mediator.Send(query, cancellationToken);
+
+            if (book == null)
+                return NotFound(new { message = $"Книга с ID {id} не найдена" });
+
+            return Ok(book);
+        }
+
+        /// <summary>
+        /// Создает новую книгу
+        /// </summary>
+        [Authorize]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<long>> CreateBook(
+            [FromBody] CreateBookRequest request, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
+
+            try
+            {
+                var command = new CreateBookCommand(
+                    request.Title,
+                    request.Description,
+                    request.CountryId,
+                    request.LanguageId,
+                    request.Year,
+                    request.ISBN,
+                    request.FilePath,
+                    request.CoverPath,
+                    request.IsAvailable,
+                    request.IsReviewable,
+                    request.PublisherId,
+                    request.SeriesId,
+                    request.PersonIds,
+                    request.ThemeIds
+                );
+
+                var id = await _mediator.Send(command, cancellationToken);
+                return CreatedAtAction(nameof(GetBookById), new { id = id }, id);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Обновляет существующую книгу
+        /// </summary>
+        [Authorize]
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UpdateBook(long id,
+            [FromBody] UpdateBookRequest request, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
+
+            if (id != request.Id)
+                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
+
+            try
+            {
+                var command = new UpdateBookCommand(
+                    id,
+                    request.Title,
+                    request.Description,
+                    request.CountryId,
+                    request.LanguageId,
+                    request.Year,
+                    request.ISBN,
+                    request.FilePath,
+                    request.CoverPath,
+                    request.IsAvailable,
+                    request.IsReviewable,
+                    request.PublisherId,
+                    request.SeriesId,
+                    request.PersonIds,
+                    request.ThemeIds
+                );
+
+                await _mediator.Send(command, cancellationToken);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = $"Книга с ID {id} не найдена" });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Удаляет книгу
+        /// </summary>
+        [Authorize]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteBook(long id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new DeleteBookCommand(id);
+                await _mediator.Send(command, cancellationToken);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = $"Книга с ID {id} не найдена" });
+            }
+        }
+
 
         [HttpGet("{bookId}/read")]
         public async Task<ActionResult> GetBook(long bookId)

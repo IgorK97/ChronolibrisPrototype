@@ -75,6 +75,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<ILanguageRepository, LanguageRepository>();
             services.AddScoped<IThemeRepository, ThemeRepository>();
+            services.AddScoped<IContentRepository, ContentRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -20,12 +20,13 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
     /// </summary>
     public class BookRepository : GenericRepository<Book>, IBookRepository
     {
+        private readonly DbSet<Book> _set;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="BookRepository"/>.
         /// </summary>
         /// <param name="context">Контекст базы данных приложения, используемый для доступа к данным.</param>
-        public BookRepository(ApplicationDbContext context) : base(context) { }
+        public BookRepository(ApplicationDbContext context) : base(context) { _set = context.Set<Book>(); }
 
         /// <summary>
         /// Асинхронно получает полную сущность книги по ее идентификатору, 
@@ -302,5 +303,185 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 //.Include(b => b.Persons)
                 .FirstOrDefaultAsync(b => b.Id == id, token);
         }
+
+        public async Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+        {
+            return await _set
+                .Include(b => b.Country)
+                .Include(b => b.Language)
+                .Include(b => b.Publisher)
+                .Include(b => b.Series)
+                .Include(b => b.Participations)
+                    .ThenInclude(p => p.Person)
+                    .Include(b => b.BookContents)
+                    .ThenInclude(bc => bc.Content)
+                        .ThenInclude(c => c.Themes)
+                .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            return await _set.ToListAsync(cancellationToken);
+        }
+
+        public async Task<(List<Book> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
+            BookFilterRequest filter, CancellationToken cancellationToken = default)
+        {
+            var query = _set
+                .Include(b => b.Country)
+                .Include(b => b.Language)
+                .Include(b => b.Publisher)
+                .Include(b => b.Series)
+                .Include(b => b.Participations)
+                    .ThenInclude(p => p.Person)
+                .Include(b=>b.BookContents)
+                    .ThenInclude(bc=>bc.Content)
+                        .ThenInclude(c=>c.Themes)
+                .AsQueryable();
+
+            // Поиск по названию
+            if (!string.IsNullOrWhiteSpace(filter.SearchQuery))
+            {
+                query = query.Where(b => b.Title.Contains(filter.SearchQuery));
+            }
+
+            // Фильтр по автору
+            if (!string.IsNullOrWhiteSpace(filter.AuthorName))
+            {
+                query = query.Where(b => b.Participations.Any(p =>
+                    p.Person.Name.Contains(filter.AuthorName)));
+            }
+
+            // Включение тем
+            //if (filter.IncludeThemeIds != null && filter.IncludeThemeIds.Any())
+            //{
+            //    query = query.Where(b => b.BookContents.Content.Themes.Any(t =>
+            //        filter.IncludeThemeIds.Contains(t.Id)));
+            //}
+
+            // Включение тем (через BookContent → Content → Themes)
+            if (filter.IncludeThemeIds != null && filter.IncludeThemeIds.Any())
+            {
+                query = query.Where(b => b.BookContents.Any(bc =>
+                    bc.Content.Themes.Any(t => filter.IncludeThemeIds.Contains(t.Id))));
+            }
+
+            // Исключение тем
+            //if (filter.ExcludeThemeIds != null && filter.ExcludeThemeIds.Any())
+            //{
+            //    query = query.Where(b => !b.Themes.Any(t =>
+            //        filter.ExcludeThemeIds.Contains(t.Id)));
+            //}
+            if (filter.ExcludeThemeIds != null && filter.ExcludeThemeIds.Any())
+            {
+                query = query.Where(b => !b.BookContents.Any(bc =>
+                    bc.Content.Themes.Any(t => filter.ExcludeThemeIds.Contains(t.Id))));
+            }
+
+            // Фильтр по издательству
+            if (filter.PublisherId.HasValue)
+            {
+                query = query.Where(b => b.PublisherId == filter.PublisherId.Value);
+            }
+
+            // Фильтр по серии
+            if (filter.SeriesId.HasValue)
+            {
+                query = query.Where(b => b.SeriesId == filter.SeriesId.Value);
+            }
+
+            // Фильтр по языку
+            if (filter.LanguageId.HasValue)
+            {
+                query = query.Where(b => b.LanguageId == filter.LanguageId.Value);
+            }
+
+            // Фильтр по году
+            if (filter.YearFrom.HasValue)
+            {
+                query = query.Where(b => b.Year >= filter.YearFrom.Value);
+            }
+            if (filter.YearTo.HasValue)
+            {
+                query = query.Where(b => b.Year <= filter.YearTo.Value);
+            }
+
+            // Фильтр по доступности
+            if (filter.IsAvailable.HasValue)
+            {
+                query = query.Where(b => b.IsAvailable == filter.IsAvailable.Value);
+            }
+
+
+            // Получаем общее количество
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            // Курсорная пагинация
+            if (!string.IsNullOrWhiteSpace(filter.Cursor))
+            {
+                if (long.TryParse(filter.Cursor, out var cursorId))
+                {
+                    query = query.Where(b => b.Id > cursorId);
+                }
+            }
+
+            query = query.OrderBy(b => b.Id);
+
+            var items = await query.Take(filter.Limit + 1).ToListAsync(cancellationToken);
+
+            var hasMore = items.Count > filter.Limit;
+            if (hasMore)
+            {
+                items.RemoveAt(items.Count - 1);
+            }
+
+            var nextCursor = hasMore ? items.Last().Id.ToString() : null;
+            var prevCursor = filter.Cursor != null ? filter.Cursor : null;
+
+            return (items, totalCount, nextCursor, prevCursor);
+        }
+
+        public async Task AddAsync(Book book, CancellationToken cancellationToken = default)
+        {
+            await _set.AddAsync(book, cancellationToken);
+        }
+
+        public void Update(Book book)
+        {
+            _set.Update(book);
+        }
+
+        public void Delete(Book book)
+        {
+            _set.Remove(book);
+        }
+
+        public async Task<List<string>> GetAuthorNamesByBookIdAsync(long bookId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<BookParticipation>()
+                .Include(bp => bp.Person)
+                .Where(bp => bp.BookId == bookId)
+                .Select(bp => bp.Person.Name)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<Theme>> GetThemesByBookIdAsync(long bookId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<BookContent>()
+                .Include(bc => bc.Content)
+                    .ThenInclude(c => c.Themes)
+                .Where(bc => bc.BookId == bookId)
+                .SelectMany(bc => bc.Content.Themes)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<bool> IsLinkedToContentAsync(long bookId, long contentId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<BookContent>()
+                .AnyAsync(bc => bc.BookId == bookId && bc.ContentId == contentId, cancellationToken);
+        }
+
+
     }
 }

@@ -14,6 +14,16 @@ namespace Chronolibris.Domain.Interfaces
     /// </summary>
     public interface IBookRepository : IGenericRepository<Book>
     {
+        Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<(List<Book> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
+            BookFilterRequest filter, CancellationToken cancellationToken = default);
+        Task AddAsync(Book book, CancellationToken cancellationToken = default);
+        void Update(Book book);
+        void Delete(Book book);
+        Task<List<string>> GetAuthorNamesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
+        Task<List<Theme>> GetThemesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
+        Task<bool> IsLinkedToContentAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
         /// <summary>
         /// Асинхронно получает сущность книги по ее идентификатору, включая все связанные 
         /// с ней данные (например, авторов, издателя, рецензии и т.д.).
