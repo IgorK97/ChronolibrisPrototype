@@ -17,7 +17,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 new Format
                 {
                     Id = 1,
-                    Name = "txt"
+                    Name = "fb2"
                 },
                 new Format
                 {
@@ -28,8 +28,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 {
                     Id = 3,
                     Name = "pdf"
+                },
+                new Format 
+                { 
+                    Id=4,
+                    Name="txt"
                 }
-                );
+            );
         }
     }
 }
