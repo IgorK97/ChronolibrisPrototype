@@ -482,6 +482,55 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .AnyAsync(bc => bc.BookId == bookId && bc.ContentId == contentId, cancellationToken);
         }
 
+        public async Task<int> GetContentsCountAsync(long bookId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<BookContent>()
+                .CountAsync(bc => bc.BookId == bookId, cancellationToken);
+        }
+
+        public async Task<List<Content>> GetContentsByBookIdAsync(long bookId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<BookContent>()
+                .Include(bc => bc.Content)
+                    .ThenInclude(c => c.Country)
+                .Include(bc => bc.Content)
+                    .ThenInclude(c => c.Language)
+                .Include(bc => bc.Content)
+                    .ThenInclude(c => c.ContentType)
+                .Include(bc => bc.Content)
+                    .ThenInclude(c => c.Themes)
+                .Include(bc => bc.Content)
+                    .ThenInclude(c => c.Participations)
+                        .ThenInclude(cp => cp.Person)
+                .Where(bc => bc.BookId == bookId)
+                .OrderBy(bc => bc.Order)
+                .Select(bc => bc.Content)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task LinkContentToBookAsync(long bookId, long contentId, int order, CancellationToken cancellationToken = default)
+        {
+            var bookContent = new BookContent
+            {
+                BookId = bookId,
+                ContentId = contentId,
+                Order = order
+            };
+
+            await _context.Set<BookContent>().AddAsync(bookContent, cancellationToken);
+        }
+
+        public async Task UnlinkContentFromBookAsync(long bookId, long contentId, CancellationToken cancellationToken = default)
+        {
+            var bookContent = await _context.Set<BookContent>()
+                .FirstOrDefaultAsync(bc => bc.BookId == bookId && bc.ContentId == contentId, cancellationToken);
+
+            if (bookContent != null)
+            {
+                _context.Set<BookContent>().Remove(bookContent);
+            }
+        }
+
 
     }
 }

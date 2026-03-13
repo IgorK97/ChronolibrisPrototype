@@ -20,11 +20,15 @@ namespace Chronolibris.Domain.Entities
 
         public required bool IsReadable { get; set; }
         public required DateTime CreatedAt { get; set; }
-        public required DateTime UpdatedAt { get; set; }
+        //public required DateTime UpdatedAt { get; set; }
+        public DateTime? ProcessedAt { get; set; }
+        public required long CreatedBy { get; set; }
+        public required int Version { get; set; } = 0;
 
         public Book Book { get; set; } = null!;
         public Format Format { get; set; } = null!;
         //public MediaType MediaType { get; set; } = null!;
+        public ICollection<BookFragment> Fragments { get; set; }
 
     }
 }

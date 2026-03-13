@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260313183904_RenameDbSetForBookFiles")]
+    partial class RenameDbSetForBookFiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,10 +234,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by");
-
                     b.Property<long>("FileSizeBytes")
                         .HasColumnType("bigint")
                         .HasColumnName("file_size_bytes");
@@ -247,19 +246,15 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_readable");
 
-                    b.Property<DateTime?>("ProcessedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("processed_at");
-
                     b.Property<string>("StorageUrl")
                         .IsRequired()
                         .HasMaxLength(2048)
                         .HasColumnType("character varying(2048)")
                         .HasColumnName("storage_url");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("integer")
-                        .HasColumnName("version");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
                         .HasName("pk_book_files");
@@ -276,50 +271,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         {
                             t.HasCheckConstraint("ck_book_files_readable_format", "NOT (\"is_readable\" = true) OR (\"format_id\" IN (1, 2))");
                         });
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.BookFragment", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("BookFileId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("book_file_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("EndPos")
-                        .HasColumnType("integer")
-                        .HasColumnName("end_pos");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer")
-                        .HasColumnName("position");
-
-                    b.Property<int>("StartPos")
-                        .HasColumnType("integer")
-                        .HasColumnName("start_pos");
-
-                    b.Property<string>("StorageUrl")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("storage_url");
-
-                    b.HasKey("Id")
-                        .HasName("pk_book_fragments");
-
-                    b.HasIndex("BookFileId", "Position")
-                        .IsUnique()
-                        .HasDatabaseName("ix_book_fragments_book_file_id_position");
-
-                    b.ToTable("book_fragments", (string)null);
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.BookParticipation", b =>
@@ -2371,18 +2322,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Navigation("Format");
                 });
 
-            modelBuilder.Entity("Chronolibris.Domain.Entities.BookFragment", b =>
-                {
-                    b.HasOne("Chronolibris.Domain.Entities.BookFile", "BookFile")
-                        .WithMany("Fragments")
-                        .HasForeignKey("BookFileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_book_fragments_book_files_book_file_id");
-
-                    b.Navigation("BookFile");
-                });
-
             modelBuilder.Entity("Chronolibris.Domain.Entities.BookParticipation", b =>
                 {
                     b.HasOne("Chronolibris.Domain.Entities.Book", "Book")
@@ -2780,11 +2719,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Navigation("Participations");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.BookFile", b =>
-                {
-                    b.Navigation("Fragments");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Comment", b =>

@@ -14,6 +14,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<BookFile> builder)
         {
+            builder.ToTable("book_files");
             builder
                 .HasIndex(bf => new { bf.BookId, bf.IsReadable })
                 .IsUnique()

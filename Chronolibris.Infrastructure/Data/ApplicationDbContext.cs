@@ -16,7 +16,8 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<Format> Formats { get; set; }
         //public DbSet<MediaType> MediaTypes { get; set; }
         public DbSet<SelectionType> SelectionTypes { get; set; }
-        public DbSet<BookFile> DigitalFiles { get; set; }
+        public DbSet<BookFile> BookFiles { get; set; }
+        public DbSet<BookFragment> BookFragments { get; set; }
         public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<Book> Books { get; set; }

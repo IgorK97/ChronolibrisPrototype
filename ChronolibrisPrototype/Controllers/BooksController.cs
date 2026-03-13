@@ -209,5 +209,68 @@ namespace ChronolibrisPrototype.Controllers
             var result = await _mediator.Send(new SearchBooksQuery(userId, lastId, limit, query));
             return Ok(result);
         }
+
+        /// <summary>
+        /// Получает список контентов для книги
+        /// </summary>
+        [HttpGet("{id}/contents")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ContentDto>))]
+        public async Task<ActionResult<List<ContentDto>>> GetBookContents(long id, CancellationToken cancellationToken)
+        {
+            var query = new GetBookContentsQuery(id);
+            var contents = await _mediator.Send(query, cancellationToken);
+            return Ok(contents);
+        }
+
+        /// <summary>
+        /// Привязывает контент к книге
+        /// </summary>
+        [Authorize]
+        [HttpPost("{bookId}/contents/{contentId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> LinkContentToBook(long bookId, long contentId,
+            [FromBody] BookContentLinkRequest request, CancellationToken cancellationToken)
+        {
+            if (request.BookId != bookId || request.ContentId != contentId)
+                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
+
+            try
+            {
+                var command = new LinkContentToBookCommand(bookId, contentId, request.Order);
+                await _mediator.Send(command, cancellationToken);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Отвязывает контент от книги
+        /// </summary>
+        [Authorize]
+        [HttpDelete("{bookId}/contents/{contentId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UnlinkContentFromBook(long bookId, long contentId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new UnlinkContentFromBookCommand(bookId, contentId);
+                await _mediator.Send(command, cancellationToken);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = $"Связь не найдена" });
+            }
+        }
+
+
+
+
     }
 }

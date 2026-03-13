@@ -23,6 +23,12 @@ namespace Chronolibris.Application.Requests
         public GetBookByIdQuery(long id) => Id = id;
     }
 
+    public class GetBookContentsQuery : IRequest<List<ContentDto>>
+    {
+        public long BookId { get; set; }
+        public GetBookContentsQuery(long bookId) => BookId = bookId;
+    }
+
     // Commands
     public class CreateBookCommand : IRequest<long>
     {
@@ -109,4 +115,32 @@ namespace Chronolibris.Application.Requests
         public long Id { get; set; }
         public DeleteBookCommand(long id) => Id = id;
     }
+
+    public class LinkContentToBookCommand : IRequest<Unit>
+    {
+        public long BookId { get; set; }
+        public long ContentId { get; set; }
+        public int Order { get; set; }
+
+        public LinkContentToBookCommand(long bookId, long contentId, int order)
+        {
+            BookId = bookId;
+            ContentId = contentId;
+            Order = order;
+        }
+    }
+
+    public class UnlinkContentFromBookCommand : IRequest<Unit>
+    {
+        public long BookId { get; set; }
+        public long ContentId { get; set; }
+
+        public UnlinkContentFromBookCommand(long bookId, long contentId)
+        {
+            BookId = bookId;
+            ContentId = contentId;
+        }
+    }
+
+
 }

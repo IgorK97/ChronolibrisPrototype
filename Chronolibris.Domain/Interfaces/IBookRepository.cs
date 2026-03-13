@@ -23,6 +23,11 @@ namespace Chronolibris.Domain.Interfaces
         void Delete(Book book);
         Task<List<string>> GetAuthorNamesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
         Task<List<Theme>> GetThemesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
+
+        Task<int> GetContentsCountAsync(long bookId, CancellationToken cancellationToken = default);
+        Task<List<Content>> GetContentsByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
+        Task LinkContentToBookAsync(long bookId, long contentId, int order, CancellationToken cancellationToken = default);
+        Task UnlinkContentFromBookAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
         Task<bool> IsLinkedToContentAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
         /// <summary>
         /// Асинхронно получает сущность книги по ее идентификатору, включая все связанные 
