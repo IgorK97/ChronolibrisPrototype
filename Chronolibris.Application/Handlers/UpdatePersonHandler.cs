@@ -13,10 +13,10 @@ public record UpdatePersonCommand(
 public class UpdatePersonHandler : IRequestHandler<UpdatePersonCommand>
 {
     private readonly IGenericRepository<Person> _repository;
-    private readonly IFileService _fileService;
+    private readonly IStorageService _fileService;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UpdatePersonHandler(IGenericRepository<Person> repository, IFileService fileService, IUnitOfWork unitOfWork)
+    public UpdatePersonHandler(IGenericRepository<Person> repository, IStorageService fileService, IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _fileService = fileService;

@@ -29,5 +29,9 @@ namespace Chronolibris.Domain.Interfaces
         /// </summary>
         Task SetStatusAsync(long bookFileId, int status,
             CancellationToken ct = default);
+
+        Task<List<BookFile>> GetByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
+        Task<BookFile?> GetByBookIdAndFormatIdAsync(long bookId, int formatId, CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default);
     }
 }

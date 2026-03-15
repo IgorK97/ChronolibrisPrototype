@@ -8,6 +8,7 @@ using Chronolibris.Application.Fb2Converter.Interfaces;
 using Chronolibris.Application.Jobs;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Services;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 
@@ -16,13 +17,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Jobs
     public sealed class BookConversionJob : IBookConversionJob
     {
         private readonly IFb2Converter _converter;
-        private readonly IBookStorage _storage;       
+        private readonly IStorageService _storage;       
         private readonly IBookFileRepository _bookFiles;
         //private readonly ILogger<BookConversionJob> _log;
 
         public BookConversionJob(
             IFb2Converter converter,
-            IBookStorage storage,
+            IStorageService storage,
             IBookFileRepository bookFiles
             //,ILogger<BookConversionJob> log
             )
@@ -52,9 +53,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Jobs
             try
             {
                 // Получаем поток через абстракцию — IMinioClient нигде не виден
-                var fb2Stream = await _storage.ReadStreamAsync(bookFile.StorageUrl)
-                    ?? throw new InvalidOperationException(
-                        $"Объект {bookFile.StorageUrl} не найден в хранилище");
+                //var fb2Stream = await _storage.ReadStreamAsync(bookFile.StorageUrl)
+                //    ?? throw new InvalidOperationException(
+                //        $"Объект {bookFile.StorageUrl} не найден в хранилище");
+
+                var fb2Stream = await _storage.ReadByStorageUrlAsync(bookFile.StorageUrl)
+    ?? throw new InvalidOperationException(
+        $"Объект {bookFile.StorageUrl} не найден в хранилище");
 
                 await using (fb2Stream)
                 {

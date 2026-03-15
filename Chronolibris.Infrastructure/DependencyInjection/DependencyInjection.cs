@@ -7,7 +7,7 @@ using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
 using Chronolibris.Infrastructure.DataAccess.Files;
 using Chronolibris.Infrastructure.DataAccess.Persistance;
 using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
-using Chronolibris.Infrastructure.Files;
+//using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Identity;
 using Chronolibris.Infrastructure.Persistance;
 using Chronolibris.Infrastructure.Persistance.Repositories;
@@ -84,23 +84,42 @@ namespace Chronolibris.Infrastructure.DependencyInjection
         public static IServiceCollection AddFileServices(this IServiceCollection services, IConfiguration configuration)
         {
             // 1. Привязываем настройки из JSON к классу MinioOptions
-            var minioOptions = configuration.GetSection("MinioOptions").Get<MinioOptions>();
-            services.Configure<MinioOptions>(configuration.GetSection("MinioOptions"));
+            //var minioOptions = configuration.GetSection("MinioOptions").Get<MinioOptions>();
+            //services.Configure<MinioOptions>(configuration.GetSection("MinioOptions"));
 
-            // 2. Регистрируем IMinioClient как Singleton или Scoped
-            services.AddScoped<IMinioClient>(sp =>
-            {
-                var client = new MinioClient()
-                    .WithEndpoint(minioOptions!.Endpoint)
-                    .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey);
+            services.Configure<BookStorageOptions>(
+                configuration.GetSection("BookStorageOptions"));
 
-                if (minioOptions.UseSSL) client.WithSSL();
+            services.Configure<UploadStorageOptions>(
+                configuration.GetSection("UploadStorageOptions"));
 
-                return client.Build();
-            });
+            var minioOpts = configuration
+                .GetSection("MinioOptions")
+                .Get<MinioOptions>()!;
+
+            services.AddScoped<IMinioClient>(_ =>
+                new MinioClient()
+                    .WithEndpoint(minioOpts.Endpoint)
+                    .WithCredentials(minioOpts.AccessKey, minioOpts.SecretKey)
+                    .WithSSL(minioOpts.UseSSL)
+                    .Build());
+
+            //// 2. Регистрируем IMinioClient как Singleton или Scoped
+            //services.AddScoped<IMinioClient>(sp =>
+            //{
+            //    var client = new MinioClient()
+            //        .WithEndpoint(minioOptions!.Endpoint)
+            //        .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey);
+
+            //    if (minioOptions.UseSSL) client.WithSSL();
+
+            //    return client.Build();
+            //});
 
             // 3. Регистрируем твой сервис для работы с файлами
-            services.AddScoped<IFileService, MinioFileService>();
+            //services.AddScoped<IFileService, MinioFileService>();
+            services.AddScoped<IMinioService, MinioService>();
+            services.AddScoped<IStorageService, StorageService>();
 
             return services;
         }
@@ -141,14 +160,14 @@ namespace Chronolibris.Infrastructure.DependencyInjection
         /// <param name="services">Коллекция служб для расширения.</param>
         /// <param name="configuration">Конфигурация приложения для получения пути к папке с книгами.</param>
         /// <returns>Обновленная коллекция служб.</returns>
-        public static IServiceCollection AddFileProviderInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            var booksFolder = configuration["BooksFolder"] ?? throw new InvalidOperationException("BooksFolder not configured.");
-            services.AddSingleton<IBookFileProvider>(new BookFileProvider(booksFolder));
+        //public static IServiceCollection AddFileProviderInfrastructure(this IServiceCollection services,
+        //    IConfiguration configuration)
+        //{
+        //    var booksFolder = configuration["BooksFolder"] ?? throw new InvalidOperationException("BooksFolder not configured.");
+        //    //services.AddSingleton<IBookFileProvider>(new BookFileProvider(booksFolder));
 
-            return services;
-        }
+        //    return services;
+        //}
 
     }
 }

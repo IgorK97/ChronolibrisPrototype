@@ -15,10 +15,10 @@ namespace Chronolibris.Application.Handlers
     public class DeletePersonHandler : IRequestHandler<DeletePersonCommand>
     {
         private readonly IGenericRepository<Person> _repository;
-        private readonly IFileService _fileService;
+        private readonly IStorageService _fileService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeletePersonHandler(IGenericRepository<Person> repository, IFileService fileService, IUnitOfWork unitOfWork)
+        public DeletePersonHandler(IGenericRepository<Person> repository, IStorageService fileService, IUnitOfWork unitOfWork)
         {
             _repository = repository;
             _fileService = fileService;

@@ -49,7 +49,7 @@ builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
 // Инфраструктурные сервисы
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
-builder.Services.AddFileProviderInfrastructure(builder.Configuration);
+//builder.Services.AddFileProviderInfrastructure(builder.Configuration);
 builder.Services.AddFileServices(builder.Configuration);
 builder.Services.AddFb2Converter(builder.Configuration);
 builder.Services.AddHangfireInfrastructure(builder.Configuration);
@@ -152,10 +152,10 @@ var app = builder.Build();
 var configuration = app.Configuration;
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
-    await TestConvertAsync(app.Services);
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    await TestConvertAsync(app.Services);
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

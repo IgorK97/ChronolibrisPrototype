@@ -7,9 +7,10 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
+using Chronolibris.Infrastructure.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chronolibris.Infrastructure.Persistance.Repositories
+namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 {
     public class BookFileRepository : GenericRepository<BookFile>, IBookFileRepository
     {
@@ -88,6 +89,27 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     setters => setters
                         .SetProperty(f => f.BookFileStatusId, status),
                     ct);
+        }
+
+        public async Task<List<BookFile>> GetByBookIdAsync(long bookId, CancellationToken cancellationToken = default)
+        {
+            return await _context.BookFiles
+                .Include(bf => bf.Format)
+                .Include(bf => bf.BookFileStatus)
+                .Where(bf => bf.BookId == bookId)
+                .OrderBy(bf => bf.FormatId)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<BookFile?> GetByBookIdAndFormatIdAsync(long bookId, int formatId, CancellationToken cancellationToken = default)
+        {
+            return await _context.BookFiles
+                .FirstOrDefaultAsync(bf => bf.BookId == bookId && bf.FormatId == formatId, cancellationToken);
+        }
+
+        public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
+        {
+            return await _context.BookFiles.AnyAsync(bf => bf.Id == id, cancellationToken);
         }
     }
 }

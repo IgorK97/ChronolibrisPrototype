@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Chronolibris.Application.Fb2Converter;
 using Chronolibris.Application.Fb2Converter.Interfaces;
+using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
 using Microsoft.AspNetCore.WebUtilities;
 
@@ -28,9 +29,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
-        private readonly IBookStorage _storage;
+        private readonly IStorageService _storage;
 
-        public Fb2ConverterXReader(IBookStorage storage)
+        public Fb2ConverterXReader(IStorageService storage)
             => _storage = storage ?? throw new ArgumentNullException(nameof(storage));
 
         // ══════════════════════════════════════════════════════════════════════════
@@ -98,7 +99,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             // ── toc.json ─────────────────────────────────────────────────────────
             var tocJson = JsonSerializer.Serialize(tocDoc, JsonOpts);
             var tocBytes = Encoding.UTF8.GetByteCount(tocJson);
-            await _storage.SaveAsync(resolvedBookId, "toc.json", tocJson, ct);
+            await _storage.SaveChunkAsync(resolvedBookId, "toc.json", tocJson, ct);
 
             return new ConversionResult
             {
@@ -247,7 +248,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
                                 try
                                 {
                                     var bytes = Convert.FromBase64String(base64);
-                                    await _storage.SaveImageAsync(
+                                    await _storage.SaveBookImageAsync(
                                         tempBookId, fileName, bytes, contentType, ct);
 
                                     imageMap[binaryId] = fileName;
@@ -655,7 +656,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             var json = JsonSerializer.Serialize(items, JsonOpts);
             var bytes = Encoding.UTF8.GetByteCount(json);
 
-            await _storage.SaveAsync(bookId, fileName, json, ct);
+            await _storage.SaveChunkAsync(bookId, fileName, json, ct);
 
             tocParts.Add(new TocPartEntry
             {
