@@ -16,7 +16,7 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.HasData(
                 new TagType { Id = 1, Name = "Место" },
                 new TagType { Id = 2, Name = "Время" },
-                new TagType { Id = 3, Name = "Персоналия" }
+                new TagType { Id = 3, Name = "Социум" }
             );
         }
     }

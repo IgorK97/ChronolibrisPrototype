@@ -14,7 +14,8 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(500)]
         public required string Name { get; set; }
         public required long TagTypeId { get; set; }
-        public required TagType TagType { get; set; }
+        //public long? ParentTagId { get; set; }
+        public TagType TagType { get; set; }
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }
