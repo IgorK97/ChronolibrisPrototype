@@ -53,6 +53,7 @@ builder.Services.AddIdentityRealization(builder.Configuration);
 builder.Services.AddFileServices(builder.Configuration);
 builder.Services.AddFb2Converter(builder.Configuration);
 builder.Services.AddHangfireInfrastructure(builder.Configuration);
+builder.Services.AddJobs(builder.Configuration);
 
 GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 3 });
 

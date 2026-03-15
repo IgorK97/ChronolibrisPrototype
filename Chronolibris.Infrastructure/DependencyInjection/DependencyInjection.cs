@@ -1,10 +1,12 @@
 ﻿using Chronolibris.Application.Interfaces;
+using Chronolibris.Application.Jobs;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
 using Chronolibris.Infrastructure.DataAccess.Files;
+using Chronolibris.Infrastructure.DataAccess.Jobs;
 using Chronolibris.Infrastructure.DataAccess.Persistance;
 using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
 //using Chronolibris.Infrastructure.Files;
@@ -45,6 +47,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
                 // Настройка для автоматического преобразования имен свойств в snake_case в БД
                 options.UseSnakeCaseNamingConvention();
             });
+
 
             // Регистрация обобщенных репозиториев (Scoped lifetime)
             services.AddScoped<IGenericRepository<Content>, GenericRepository<Content>>();
@@ -150,6 +153,17 @@ namespace Chronolibris.Infrastructure.DependencyInjection
                 .AddDefaultTokenProviders();
 
             services.AddHostedService<TokenCleanupService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddJobs(this IServiceCollection services,
+    IConfiguration configuration)
+        {
+
+            services.AddScoped<IBookConversionJob, BookConversionJob>();
+
+
 
             return services;
         }

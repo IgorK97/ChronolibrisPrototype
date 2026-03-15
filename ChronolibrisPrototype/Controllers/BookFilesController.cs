@@ -92,7 +92,7 @@ namespace ChronolibrisPrototype.Controllers
 
             try
             {
-                var command = new UploadBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.Name, file.Length,userId);
+                var command = new UploadBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length,userId);
                 var id = await _mediator.Send(command, cancellationToken);
                 return CreatedAtAction(nameof(GetBookFile), new { id = id }, id);
             }
@@ -126,7 +126,7 @@ namespace ChronolibrisPrototype.Controllers
 
             try
             {
-                var command = new UpdateBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.Name, file.Length, userId);
+                var command = new UpdateBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
                 var id = await _mediator.Send(command, cancellationToken);
                 return Ok(new { id = id });
             }

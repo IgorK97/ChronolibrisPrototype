@@ -106,6 +106,7 @@ namespace Chronolibris.Application.Handlers
         private readonly IStorageService _bookStorage;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IBookConversionJob _bookConversionJob;
+        //private readonly IBackgroundJobClient _backgroundJobs;
 
         public UploadBookFileHandler(
             IBookFileRepository bookFileRepository,
@@ -168,6 +169,10 @@ namespace Chronolibris.Application.Handlers
 
                 if (request.IsReadable)
                     await _bookConversionJob.ProcessAsync(bookFile.Id);
+                //{
+                //    if (request.IsReadable)
+                //        _bookConversionJob.Enqueue<IBookConversionJob>(job => job.ProcessAsync(bookFile.Id));
+                //}
 
                 return bookFile.Id;
             }

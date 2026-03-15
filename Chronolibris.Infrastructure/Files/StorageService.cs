@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Interfaces.Services;
 using Microsoft.Extensions.Options;
+using Minio;
+using Minio.DataModel;
+using Minio.DataModel.Args;
 
 namespace Chronolibris.Infrastructure.DataAccess.Files
 {
@@ -32,17 +35,20 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
     public sealed class StorageService : IStorageService
     {
         private readonly IMinioService _minio;
+        private readonly IMinioClient _minioClient;
         private readonly BookStorageOptions _bookOpts;
         private readonly UploadStorageOptions _uploadOpts;
 
         public StorageService(
             IMinioService minio,
+            IMinioClient minioClient,
             IOptions<BookStorageOptions> bookOpts,
             IOptions<UploadStorageOptions> uploadOpts)
         {
-            _minio = minio ?? throw new ArgumentNullException(nameof(minio));
+            _minio = minio;
             _bookOpts = bookOpts.Value;
             _uploadOpts = uploadOpts.Value;
+            _minioClient = minioClient;
         }
 
         // ── Исходники книг ────────────────────────────────────────────────────────
@@ -155,6 +161,63 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
         /// <inheritdoc/>
         public Task DeleteFileAsync(string storageUrl, CancellationToken ct = default)
             => _minio.DeleteAsync(_uploadOpts.UploadsBucket, storageUrl, ct);
+
+
+        /// <summary>
+        /// Удаляет все объекты книги из бакета books:
+        /// source-файл, все чанки (v1/{bookId}/chunks/) и все изображения (v1/{bookId}/images/).
+        /// Идемпотентен — не бросает исключение если объекты уже удалены.
+        /// </summary>
+        public async Task DeleteBookAsync(
+            string bookId, string extension,
+            CancellationToken ct = default)
+        {
+            // 1. Source-файл
+            await _minio.DeleteAsync(_bookOpts.BooksBucket, BookSourceKey(bookId, extension), ct);
+
+            // 2. Чанки и изображения — удаляем по префиксу
+            await DeleteByPrefixAsync($"{_bookOpts.Prefix}/{bookId}/chunks/", ct);
+            await DeleteByPrefixAsync($"{_bookOpts.Prefix}/{bookId}/images/", ct);
+        }
+
+        private async Task DeleteByPrefixAsync(string prefix, CancellationToken ct)
+        {
+            var listArgs = new ListObjectsArgs()
+                .WithBucket(_bookOpts.BooksBucket)
+                .WithPrefix(prefix)
+                .WithRecursive(true);
+
+            var keys = new List<string>();
+
+            // ListObjectsEnumAsync — неблокирующий стриминговый листинг
+            await foreach (var item in _minioClient.ListObjectsEnumAsync(listArgs, ct))
+                keys.Add(item.Key);
+
+            foreach (var key in keys)
+                await _minio.DeleteAsync(_bookOpts.BooksBucket, key, ct);
+        }
+
+
+        //private async Task DeleteByPrefixAsync(string prefix, CancellationToken ct)
+        //{
+        //    var listArgs = new ListObjectsArgs()
+        //        .WithBucket(_bookOpts.BooksBucket)
+        //        .WithPrefix(prefix)
+        //        .WithRecursive(true);
+
+        //    var keys = new List<DeleteObject>();
+
+        //    await foreach (var item in _minioClient.ListObjectsEnumAsync(listArgs, ct))
+        //        keys.Add(new DeleteObject(item.Key));
+
+        //    if (keys.Count == 0) return;
+
+        //    var removeArgs = new RemoveObjectsArgs()
+        //        .WithBucket(_bookOpts.BooksBucket)
+        //        .WithObjects((IList<string>)keys);
+
+        //    await _minioClient.RemoveObjectsAsync(removeArgs, ct);
+        //}
 
         // ── Ключи объектов ────────────────────────────────────────────────────────
 
