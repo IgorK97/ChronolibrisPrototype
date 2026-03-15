@@ -28,6 +28,10 @@ namespace Chronolibris.Application.Models
         public required string Description { get; set; }
 
         public required int SelectionTypeId { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt{get;set;}
+        public long? BooksCount { get; set; }
+        public bool IsActive { get; set; }
         
     }
 }

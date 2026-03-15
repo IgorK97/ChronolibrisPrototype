@@ -49,6 +49,12 @@ namespace Chronolibris.Domain.Interfaces
         /// </returns>
         Task<List<BookListItem>>
             GetBooksForSelection(long selectionId, long? lastId, int limit, long userId, CancellationToken token = default);
+
+        Task<long> CreateAsync(Selection selection, CancellationToken ct);
+        Task<bool> UpdateAsync(long selectionId, string? name, string? description, bool? isActive, CancellationToken ct);
+        Task<bool> AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct);
+        Task<bool> RemoveBookFromSelectionAsync(long selectionId, long bookId, CancellationToken ct);
+        Task<bool> DeleteAsync(long selectionId, CancellationToken ct);
     }
 
 }

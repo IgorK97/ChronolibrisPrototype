@@ -152,6 +152,74 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             return books;
 
         }
+
+        public async Task<long> CreateAsync(Selection selection, CancellationToken ct)
+        {
+            _context.Selections.Add(selection);
+            await _context.SaveChangesAsync(ct);
+            return selection.Id;
+        }
+
+        public async Task<bool> UpdateAsync(long selectionId, string? name, string? description, bool? isActive, CancellationToken ct)
+        {
+            var selection = await _context.Selections.FindAsync(new object[] { selectionId }, ct);
+            if (selection == null) return false;
+
+            if (name != null) selection.Name = name;
+            if (description != null) selection.Description = description;
+            if (isActive.HasValue) selection.IsActive = isActive.Value;
+            selection.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync(ct);
+            return true;
+        }
+        public async Task<bool> AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct)
+        {
+            var selection = await _context.Selections
+                .Include(s => s.Books)
+                .FirstOrDefaultAsync(s => s.Id == selectionId, ct);
+
+            if (selection == null) return false;
+
+            var book = await _context.Books.FindAsync(new object[] { bookId }, ct);
+            if (book == null) return false;
+
+            if (!selection.Books.Any(b => b.Id == bookId))
+            {
+                selection.Books.Add(book);
+                await _context.SaveChangesAsync(ct);
+            }
+
+            return true;
+        }
+        public async Task<bool> RemoveBookFromSelectionAsync(long selectionId, long bookId, CancellationToken ct)
+        {
+            var selection = await _context.Selections
+                .Include(s => s.Books)
+                .FirstOrDefaultAsync(s => s.Id == selectionId, ct);
+
+            if (selection == null) return false;
+
+            var book = selection.Books.FirstOrDefault(b => b.Id == bookId);
+            if (book != null)
+            {
+                selection.Books.Remove(book);
+                await _context.SaveChangesAsync(ct);
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> DeleteAsync(long selectionId, CancellationToken ct)
+        {
+            var selection = await _context.Selections.FindAsync(new object[] { selectionId }, ct);
+            if (selection == null) return false;
+
+            _context.Selections.Remove(selection);
+            await _context.SaveChangesAsync(ct);
+            return true;
+        }
     }
 
 }

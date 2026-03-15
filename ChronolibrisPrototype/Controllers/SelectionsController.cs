@@ -18,6 +18,66 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetSelections(int page = 1, int pageSize = 20)
+        {
+            var result = await _mediator.Send(new GetSelectionsRequest(page, pageSize));
+            return Ok(result);
+        }
+
+        [HttpGet("{selectionId}")]
+        public async Task<IActionResult> GetSelection(long selectionId)
+        {
+            var selection = await _mediator.Send(new GetSelectionQuery(selectionId));
+            if (selection == null) return NotFound();
+            return Ok(selection);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateSelection([FromBody] CreateSelectionRequest request)
+        {
+            var selectionId = await _mediator.Send(request);
+            return CreatedAtAction(nameof(GetSelection), new { selectionId }, selectionId);
+        }
+
+        [HttpPut("{selectionId}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateSelection(long selectionId, [FromBody] UpdateSelectionRequest request)
+        {
+            request = request with { SelectionId = selectionId };
+            var result = await _mediator.Send(request);
+            if (!result) return NotFound();
+            return NoContent();
+        }
+
+        [HttpDelete("{selectionId}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteSelection(long selectionId)
+        {
+            var result = await _mediator.Send(new DeleteSelectionRequest(selectionId));
+            if (!result) return NotFound();
+            return NoContent();
+        }
+
+        [HttpPost("{selectionId}/books/{bookId}")]
+        [Authorize]
+        public async Task<IActionResult> AddBook(long selectionId, long bookId)
+        {
+            var result = await _mediator.Send(new AddBookToSelectionRequest(selectionId, bookId));
+            if (!result) return BadRequest();
+            return NoContent();
+        }
+
+        [HttpDelete("{selectionId}/books/{bookId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveBook(long selectionId, long bookId)
+        {
+            var result = await _mediator.Send(new RemoveBookFromSelectionRequest(selectionId, bookId));
+            if (!result) return NotFound();
+            return NoContent();
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetSelections()
         {
