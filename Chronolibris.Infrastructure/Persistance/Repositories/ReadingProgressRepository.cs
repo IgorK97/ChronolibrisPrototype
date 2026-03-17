@@ -20,7 +20,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
         public async Task<ReadingProgress?> GetForBookUser(long bookId, long userId, CancellationToken token)
         {
-            return await _context.ReadingProgresses.Where(rp => rp.UserId == userId && rp.BookId == bookId).FirstOrDefaultAsync(token);
+            return await _context.ReadingProgresses.Where(rp => rp.UserId == userId && rp.BookFileId == bookId).FirstOrDefaultAsync(token);
         }
 
         //public async Task<List<BookListItem>>
@@ -66,7 +66,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             var query = _context.ReadingProgresses.AsNoTracking()
                 .Where(rp => rp.UserId == userId);
 
-            // (keyset pagination)
+            // Потом попробовать переписать логику
             if (lastId.HasValue)
             {
                 query = query.Where(rp => rp.Id > lastId.Value);
@@ -77,23 +77,23 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .Select(rp => new BookListItem
                 {
                     Id = rp.Id,
-                    Title = rp.Book.Title,
+                    Title = rp.BookFile.Book.Title,
                     //AverageRating = rp.Book.AverageRating,
-                    CoverUri = rp.Book.CoverPath,
-                    IsReviewable=rp.Book.IsReviewable,
+                    CoverUri = rp.BookFile.Book.CoverPath,
+                    IsReviewable=rp.BookFile.Book.IsReviewable,
                     //RatingsCount = rp.Book.RatingsCount,
-                    AverageRating = rp.Book.Reviews.Any() ? rp.Book.Reviews.Average(r => (decimal)r.Score) : 0.0M,
-                    RatingsCount = rp.Book.IsReviewable ? rp.Book.Reviews.Count() : 0,
-                    IsFavorite = rp.Book.Shelves.Any(s =>
+                    AverageRating = rp.BookFile.Book.Reviews.Any() ? rp.BookFile.Book.Reviews.Average(r => (decimal)r.Score) : 0.0M,
+                    RatingsCount = rp.BookFile.Book.IsReviewable ? rp.BookFile.Book.Reviews.Count() : 0,
+                    IsFavorite = rp.BookFile.Book.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.FAVORITES),
 
 
-                    IsRead = rp.Book.Shelves.Any(s =>
+                    IsRead = rp.BookFile.Book.Shelves.Any(s =>
                         s.UserId == userId &&
                         s.ShelfType.Code == ShelfTypes.READ),
 
-                    Authors = rp.Book.BookContents
+                    Authors = rp.BookFile.Book.BookContents
                         .SelectMany(bc => bc.Content.Participations
                             .Select(p => p.Person.Name))
                         .ToList()

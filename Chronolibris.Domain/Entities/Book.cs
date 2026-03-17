@@ -32,6 +32,7 @@ namespace Chronolibris.Domain.Entities
 
         public required bool IsReviewable { get; set; }
         public long? PublisherId { get; set; }
+        public string? Source { get; set; }
         public Publisher? Publisher { get; set; }
         public long? SeriesId { get; set; }
         public Series? Series { get; set; }

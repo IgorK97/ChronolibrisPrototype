@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260317222641_AddUniqueIndexReadings")]
+    partial class AddUniqueIndexReadings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1669,14 +1672,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("name");
 
-                    b.Property<long?>("ParentTagId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("parent_tag_id");
-
-                    b.Property<long?>("RelationTypeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("relation_type_id");
-
                     b.Property<long>("TagTypeId")
                         .HasColumnType("bigint")
                         .HasColumnName("tag_type_id");
@@ -1684,60 +1679,10 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_tags");
 
-                    b.HasIndex("ParentTagId")
-                        .HasDatabaseName("ix_tags_parent_tag_id");
-
-                    b.HasIndex("RelationTypeId")
-                        .HasDatabaseName("ix_tags_relation_type_id");
-
                     b.HasIndex("TagTypeId")
                         .HasDatabaseName("ix_tags_tag_type_id");
 
                     b.ToTable("tags", (string)null);
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.TagRelationType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_tag_relation_type");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_tag_relation_type_name");
-
-                    b.ToTable("tag_relation_type", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Description = "Синонимия",
-                            Name = "synonym"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Description = "Часть/целое",
-                            Name = "part_of"
-                        });
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.TagType", b =>
@@ -2808,28 +2753,12 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Tag", b =>
                 {
-                    b.HasOne("Chronolibris.Domain.Entities.Tag", "ParentTag")
-                        .WithMany("ChildTags")
-                        .HasForeignKey("ParentTagId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_tags_tags_parent_tag_id");
-
-                    b.HasOne("Chronolibris.Domain.Entities.TagRelationType", "RelationType")
-                        .WithMany("Tags")
-                        .HasForeignKey("RelationTypeId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_tags_tag_relation_type_relation_type_id");
-
                     b.HasOne("Chronolibris.Domain.Entities.TagType", "TagType")
                         .WithMany("Tags")
                         .HasForeignKey("TagTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_tags_tag_types_tag_type_id");
-
-                    b.Navigation("ParentTag");
-
-                    b.Navigation("RelationType");
 
                     b.Navigation("TagType");
                 });
@@ -3028,16 +2957,6 @@ namespace Chronolibris.Infrastructure.Migrations
             modelBuilder.Entity("Chronolibris.Domain.Entities.Shelf", b =>
                 {
                     b.Navigation("BookShelves");
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.Tag", b =>
-                {
-                    b.Navigation("ChildTags");
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.TagRelationType", b =>
-                {
-                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.TagType", b =>

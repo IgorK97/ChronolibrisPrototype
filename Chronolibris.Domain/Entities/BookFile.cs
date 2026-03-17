@@ -40,7 +40,7 @@ namespace Chronolibris.Domain.Entities
         public ICollection<BookFragment> Fragments { get; set; }
         public BookFileStatus BookFileStatus { get; set; }
         public ICollection<Bookmark> Bookmarks { get; set; } = [];
-
+        public ICollection<ReadingProgress> Readings { get; set; }
 
     }
 }

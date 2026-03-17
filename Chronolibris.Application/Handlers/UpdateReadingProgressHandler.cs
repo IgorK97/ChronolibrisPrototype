@@ -20,7 +20,7 @@ namespace Chronolibris.Application.Handlers
                 var newReadingProgress = new ReadingProgress
                 {
                     Id = 0,
-                    BookId = command.BookId,
+                    BookFileId = command.BookId,
                     UserId = command.UserId,
                     Percentage = command.ReadingProgress,
                     ReadingDate = DateTime.UtcNow

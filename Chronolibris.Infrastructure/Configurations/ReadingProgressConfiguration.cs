@@ -18,6 +18,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                .WithMany()     
                .HasForeignKey(b => b.UserId) 
                .HasPrincipalKey(u => u.Id);
+
+            builder.HasIndex(rp => new { rp.UserId, rp.BookFileId }).IsUnique();
         }
     }
 }

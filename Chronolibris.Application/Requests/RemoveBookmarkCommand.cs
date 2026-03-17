@@ -16,5 +16,5 @@ namespace Chronolibris.Application.Requests
     /// </summary>
     /// <param name="bookmarkId">Уникальный идентификатор закладки, которую необходимо удалить.</param>
     /// <returns>Возвращает <c>bool</c>, указывающий на успех выполнения операции (т.е., была ли закладка найдена и удалена).</returns>
-    public record RemoveBookmarkCommand(long bookmarkId):IRequest<bool>;
+    public record RemoveBookmarkCommand(long bookmarkId, long userId):IRequest<bool>;
 }

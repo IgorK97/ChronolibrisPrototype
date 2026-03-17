@@ -30,10 +30,14 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Remove(RemoveBookmarkCommand command)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Remove(long id)
         {
-            var result = await _mediator.Send(command);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var result = await _mediator.Send(new RemoveBookmarkCommand(id, userId));
             if (!result) return NotFound(0);
             return Ok();
         }
