@@ -39,6 +39,8 @@ namespace Chronolibris.Domain.Entities
         //public MediaType MediaType { get; set; } = null!;
         public ICollection<BookFragment> Fragments { get; set; }
         public BookFileStatus BookFileStatus { get; set; }
+        public ICollection<Bookmark> Bookmarks { get; set; } = [];
+
 
     }
 }

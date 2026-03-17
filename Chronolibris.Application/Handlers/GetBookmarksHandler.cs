@@ -51,8 +51,9 @@ namespace Chronolibris.Application.Handlers
             return bookmarks.Select(b => new BookmarkDetails
             {
                 Id = b.Id,
-                Mark = b.Mark,
-                Text = b.Text,
+                Note = b.Note,
+                BookfileId=b.BookFileId,
+                ParaIndex = b.ParaIndex,
                 СreatedAt = b.CreatedAt
             }).ToList();
         }

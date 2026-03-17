@@ -33,7 +33,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// </returns>
         public async Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId, CancellationToken token)
         {
-            return await _context.Bookmarks.Where(b => b.BookId == bookId && b.UserId == userId)
+            return await _context.Bookmarks.Where(b => b.BookFileId == bookId && b.UserId == userId)
                 .ToListAsync(token);
         }
     }

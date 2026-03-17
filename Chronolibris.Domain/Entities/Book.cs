@@ -37,7 +37,6 @@ namespace Chronolibris.Domain.Entities
         public Series? Series { get; set; }
         public Country Country { get; set; } = null!;
         public Language Language { get; set; } = null!;
-        public ICollection<Bookmark> Bookmarks { get; set; } = [];
         public ICollection<Review> Reviews { get; set; } = [];
         public ICollection<BookContent> BookContents { get; set; } = [];
         public ICollection<Shelf> Shelves { get; set; } = [];

@@ -21,8 +21,9 @@ namespace Chronolibris.Application.Models
         /// Текст или местоположение закладки, например, номер страницы,
         /// цитата или точное положение в электронном файле.
         /// </summary>
-        public string Mark { get; set; }
-        public string Text { get; set; }
+        public int ParaIndex { get; set; }
+        public string? Note { get; set; }
+        public long BookfileId { get; set; }
 
         /// <summary>
         /// Дата и время создания закладки.
