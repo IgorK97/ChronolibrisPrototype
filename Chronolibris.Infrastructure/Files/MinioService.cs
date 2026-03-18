@@ -87,9 +87,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
 
                 await _client.RemoveObjectAsync(args, ct);
             }
-            catch (ObjectNotFoundException)
+            catch (InvalidObjectNameException)
             {
-                // Идемпотентность: объект уже удалён — это не ошибка.
             }
         }
 
@@ -114,7 +113,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             }
         }
 
-        // ── Private ───────────────────────────────────────────────────────────────
 
         private async Task EnsureBucketAsync(string bucketName, CancellationToken ct)
         {

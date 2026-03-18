@@ -6,31 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Interfaces.Services
 {
-    /// <summary>
-    /// Единый высокоуровневый интерфейс хранилища.
-    /// Объединяет бывшие <c>IBookStorage</c> и <c>IFileService</c>.
-    ///
-    /// <para><b>Структура ключей в MinIO:</b></para>
-    /// <list type="bullet">
-    ///   <item>
-    ///     <b>Бакет <c>books</c></b> — всё, связанное с книгами:<br/>
-    ///     Исходник (FB2):    <c>v1/{bookId}/source.fb2</c><br/>
-    ///     Фрагменты (JSON):  <c>v1/{bookId}/chunks/{fileName}</c>  (напр. <c>000.json</c>, <c>toc.json</c>)<br/>
-    ///     Изображения:       <c>v1/{bookId}/images/{fileName}</c>  (напр. <c>1.jpg</c>)
-    ///   </item>
-    ///   <item>
-    ///     <b>Бакет <c>pcovers</c></b> — пользовательские загрузки (обложки и прочее):<br/>
-    ///     <c>uploads/{guid}_{originalFileName}</c>
-    ///   </item>
-    /// </list>
-    ///
-    /// <para>
-    /// Методы, работающие с фрагментами книги, принимают <paramref name="bookId"/>
-    /// в виде строки (GUID из БД). Методы для обычных файлов возвращают/принимают
-    /// <c>storageUrl</c> — полный ключ объекта внутри бакета, который можно
-    /// хранить в БД и передавать обратно в метод удаления.
-    /// </para>
-    /// </summary>
+
     public interface IStorageService
     {
         // ── Книги: исходники ──────────────────────────────────────────────────────
@@ -68,7 +44,6 @@ namespace Chronolibris.Domain.Interfaces.Services
             string storageUrl,
             CancellationToken ct = default);
 
-        // ── Книги: фрагменты (chunks) ─────────────────────────────────────────────
 
         /// <summary>
         /// Сохраняет JSON-фрагмент книги.
@@ -78,6 +53,7 @@ namespace Chronolibris.Domain.Interfaces.Services
             string bookId,
             string fileName,
             string content,
+            string type,
             CancellationToken ct = default);
 
         /// <summary>
@@ -87,6 +63,7 @@ namespace Chronolibris.Domain.Interfaces.Services
         Task<string?> ReadChunkAsync(
             string bookId,
             string fileName,
+            string type,
             CancellationToken ct = default);
 
         /// <summary>
@@ -95,22 +72,20 @@ namespace Chronolibris.Domain.Interfaces.Services
         Task<bool> ChunkExistsAsync(
             string bookId,
             string fileName,
+            string type,
             CancellationToken ct = default);
 
-        // ── Книги: изображения ────────────────────────────────────────────────────
 
         /// <summary>
         /// Сохраняет изображение, извлечённое из книги.
         /// Ключ объекта: <c>v1/{bookId}/images/{fileName}</c>
         /// </summary>
-        Task SaveBookImageAsync(
+        Task SavePublicBookImageAsync(
             string bookId,
             string fileName,
             byte[] data,
             string contentType,
             CancellationToken ct = default);
-
-        // ── Пользовательские загрузки ─────────────────────────────────────────────
 
         /// <summary>
         /// Загружает произвольный файл (обложку и т.п.) и возвращает его ключ

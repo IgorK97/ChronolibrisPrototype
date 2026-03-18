@@ -28,7 +28,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
         public string BooksBucket { get; set; } = "books";
 
         /// <summary>Версионный префикс пути внутри бакета: <c>v1/{bookId}/...</c></summary>
-        public string Prefix { get; set; } = "v1";
+        public string PublicImagesBucket { get; set; } = "images";
+        public string CoversBucket { get; set; } = "covers";
     }
 
     /// <summary>

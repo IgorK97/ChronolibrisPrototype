@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public class UpdateReadingProgressCommand : IRequest<bool>
+    public class UpdateReadingProgressCommand : IRequest<ReadingProgressDto>
     {
         public long UserId { get; init; }
-        public long BookId { get; init; }
-        public decimal ReadingProgress { get; init; }
+        public long BookFileId { get; init; }
+        public decimal Percentage { get; init; }
+        public int ParaIndex { get; set; }
     }
 }

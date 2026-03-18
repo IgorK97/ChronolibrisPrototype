@@ -27,7 +27,6 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает список всех файлов для книги
         /// </summary>
         [HttpGet("book/{bookId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BookFileDto>))]
         public async Task<ActionResult<List<BookFileDto>>> GetBookFiles(long bookId, CancellationToken cancellationToken)
         {
             var query = new GetBookFilesQuery(bookId);
@@ -39,8 +38,7 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает файл книги по идентификатору
         /// </summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookFileDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public async Task<ActionResult<BookFileDto>> GetBookFile(long id, CancellationToken cancellationToken)
         {
             var query = new GetBookFileQuery(id);
@@ -56,8 +54,7 @@ namespace ChronolibrisPrototype.Controllers
         /// Скачивает файл книги
         /// </summary>
         [HttpGet("{id}/download")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public async Task<ActionResult> DownloadBookFile(long id, CancellationToken cancellationToken)
         {
             var query = new GetBookFileStreamQuery(id);
@@ -75,8 +72,7 @@ namespace ChronolibrisPrototype.Controllers
         [Authorize]
         [HttpPost]
         [RequestSizeLimit(100 * 1024 * 1024)] // 100 MB
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
         public async Task<ActionResult<long>> UploadBookFile(
             [FromForm] long bookId,
             [FromForm] int formatId,
@@ -108,9 +104,7 @@ namespace ChronolibrisPrototype.Controllers
         [Authorize]
         [HttpPut("book/{bookId}/format/{formatId}")]
         [RequestSizeLimit(100 * 1024 * 1024)] // 100 MB
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public async Task<ActionResult> UpdateBookFile(
             long bookId,
             int formatId,
@@ -145,8 +139,7 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public async Task<ActionResult> DeleteBookFile(long id, CancellationToken cancellationToken)
         {
             if (!TryGetUserId(out var userId))

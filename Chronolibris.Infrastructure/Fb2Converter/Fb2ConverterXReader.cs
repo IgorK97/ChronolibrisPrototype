@@ -17,11 +17,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
 {
     public class Fb2ConverterXReader : IFb2Converter
     {
-        // ── Пространства имён FB2 ────────────────────────────────────────────────
         private const string Fb2Ns = "http://www.gribuser.ru/xml/fictionbook/2.0";
         private const string XlinkNs = "http://www.w3.org/1999/xlink";
 
-        // ── JSON ─────────────────────────────────────────────────────────────────
         private static readonly JsonSerializerOptions JsonOpts = new()
         {
             WriteIndented = true,
@@ -32,11 +30,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
         private readonly IStorageService _storage;
 
         public Fb2ConverterXReader(IStorageService storage)
-            => _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-
-        // ══════════════════════════════════════════════════════════════════════════
-        // Public API
-        // ══════════════════════════════════════════════════════════════════════════
+            => _storage = storage;
 
         public async Task<ConversionResult> ConvertAsync(
             Stream fb2Stream,
@@ -48,7 +42,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
 
             // Буферируем поток: нужно два прохода, а исходный поток может быть
             // не seekable (например, HttpResponseStream из MinIO).
-            // Для файлов до ~50 МБ это приемлемо; если нужно избежать — передавай
             // seekable FileStream или MemoryStream напрямую.
             Stream workStream;
             bool ownStream = false;
@@ -76,14 +69,11 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             }
         }
 
-        // ══════════════════════════════════════════════════════════════════════════
-        // Основной алгоритм (seekable stream)
-        // ══════════════════════════════════════════════════════════════════════════
 
         private async Task<ConversionResult> ConvertSeekableAsync(
             Stream stream, string? bookId, ConversionOptions options, CancellationToken ct)
         {
-            // ── ПРОХОД 1 ──────────────────────────────────────────────────────────
+            // ПРОХОД 1
             stream.Position = 0;
             var (rawMeta, notes, imageMap) =
                 await FirstPassAsync(stream, bookId, options, ct);
@@ -91,15 +81,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             var resolvedBookId = bookId ?? rawMeta.Uuid ?? Guid.NewGuid().ToString("D");
             var meta = rawMeta with { Uuid = resolvedBookId, Version = options.FormatVersion };
 
-            // ── ПРОХОД 2 ──────────────────────────────────────────────────────────
+            // ПРОХОД 2
             stream.Position = 0;
             var (elements, tocDoc) = await SecondPassAsync(
                 stream, resolvedBookId, meta, notes, imageMap, options, ct);
 
-            // ── toc.json ─────────────────────────────────────────────────────────
+            // toc.json
             var tocJson = JsonSerializer.Serialize(tocDoc, JsonOpts);
             var tocBytes = Encoding.UTF8.GetByteCount(tocJson);
-            await _storage.SaveChunkAsync(resolvedBookId, "toc.json", tocJson, ct);
+            await _storage.SaveChunkAsync(resolvedBookId, "toc.json", tocJson, "toc", ct);
 
             return new ConversionResult
             {
@@ -128,9 +118,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             };
         }
 
-        // ══════════════════════════════════════════════════════════════════════════
         // ПРОХОД 1: метаданные + сноски + картинки
-        // ══════════════════════════════════════════════════════════════════════════
 
         private async Task<(BookMeta meta,
                              Dictionary<string, ParsedNote> notes,
@@ -248,7 +236,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
                                 try
                                 {
                                     var bytes = Convert.FromBase64String(base64);
-                                    await _storage.SaveBookImageAsync(
+                                    await _storage.SavePublicBookImageAsync(
                                         tempBookId, fileName, bytes, contentType, ct);
 
                                     imageMap[binaryId] = fileName;
@@ -280,9 +268,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             return (meta, notes, imageMap);
         }
 
-        // ══════════════════════════════════════════════════════════════════════════
         // ПРОХОД 2: основной body → элементы + фрагменты
-        // ══════════════════════════════════════════════════════════════════════════
 
         private async Task<(int totalElements, TocDocument toc)> SecondPassAsync(
             Stream stream,
@@ -359,6 +345,50 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
                         sectionIdx++;
                         sectionStack.Push((sectionIdx, elemIdx));
                         elemIdx = 0;
+                        continue;
+                    }
+
+                    if(localName == "a" && nsUri == Fb2Ns)
+                    {
+                        var anchorId = reader.GetAttribute("id");
+                        var pageNum = TryParsePageNumber(anchorId);
+
+                        if (pageNum.HasValue)
+                        {
+                            var mySectionIdx = sectionStack.Count > 0 ? sectionStack.Peek().SectionIdx : 0;
+                            elemIdx++;
+                            var pe = new ParsedElement
+                            {
+                                Type = "pn",
+                                Content = pageNum.Value,
+                                Text = null,
+                                BodyIndex = bodyIdx,
+                                SectionIndex = mySectionIdx,
+                                ElemIndex = elemIdx,
+                                GlobalIndex = globalIdx
+                            };
+                            lastElement = pe;
+                            currentPart.Add(pe);
+                            globalIdx++;
+                            totalElements++;
+
+                            if(firstPartGlobal == null)
+                            {
+                                firstPartGlobal = pe.GlobalIndex;
+
+                                firstPartXp = [pe.BodyIndex, pe.SectionIndex, pe.ElemIndex];
+                            }
+
+                            if(currentPart.Count>= options.TargetPartSize)
+                            {
+                                partIndex = await FlushPartAsync(bookId, currentPart,
+                                    tocParts, partIndex, ct);
+                                currentPart.Clear();
+                            }
+                        }
+
+                        if (!reader.IsEmptyElement)
+                            await reader.SkipAsync();
                         continue;
                     }
 
@@ -504,10 +534,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             return (totalElements, tocDoc);
         }
 
-        // ══════════════════════════════════════════════════════════════════════════
-        // Вспомогательные методы прохода 2
-        // ══════════════════════════════════════════════════════════════════════════
-
         /// <summary>
         /// Парсит смешанный XML-фрагмент (outerXml одного &lt;p&gt; / &lt;title&gt;)
         /// в объект Content (string или List&lt;object&gt;) и plain-text.
@@ -573,26 +599,40 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
                                     var noteType = r.GetAttribute("type");
                                     var href = (r.GetAttribute("href", XlinkNs)
                                                  ?? r.GetAttribute("href"))?.TrimStart('#');
-                                    var label = r.ReadElementContentAsString();
 
-                                    if (noteType == "note" && href != null
-                                        && notes.TryGetValue(href, out var note))
+                                    var anchorId = r.GetAttribute("id");
+                                    var pageNumber = TryParsePageNumber(anchorId);
+                                    if (pageNumber.HasValue)
                                     {
                                         FlushBuf();
-                                        mixed.Add(new NoteSegment
-                                        {
-                                            C = label,
-                                            Xp = note.Xp,
-                                            F = new FootnoteContent
-                                            {
-                                                Xp = note.Xp,
-                                                C = note.Paragraphs
-                                            }
-                                        });
+                                        mixed.Add(new PageNumberSegment { Pn = pageNumber.Value });
+                                        if (!r.IsEmptyElement) r.Skip();
                                     }
+
                                     else
                                     {
-                                        buf.Append(label);
+                                        var label = r.ReadElementContentAsString();
+
+                                        if (noteType == "note" && href != null
+                                            && notes.TryGetValue(href, out var note))
+                                        {
+                                            FlushBuf();
+                                            mixed.Add(new NoteSegment
+                                            {
+                                                C = label,
+                                                Xp = note.Xp,
+                                                F = new FootnoteContent
+                                                {
+                                                    Xp = note.Xp,
+                                                    C = note.Paragraphs
+                                                }
+                                            });
+                                        }
+                                        else
+                                        {
+                                            buf.Append(label);
+                                        }
+                                        
                                     }
                                     break;
                                 }
@@ -656,7 +696,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             var json = JsonSerializer.Serialize(items, JsonOpts);
             var bytes = Encoding.UTF8.GetByteCount(json);
 
-            await _storage.SaveChunkAsync(bookId, fileName, json, ct);
+            await _storage.SaveChunkAsync(bookId, fileName, json, "chunk", ct);
 
             tocParts.Add(new TocPartEntry
             {
@@ -696,9 +736,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             });
         }
 
-        // ══════════════════════════════════════════════════════════════════════════
         // Метаданные (парсим outerXml блока description)
-        // ══════════════════════════════════════════════════════════════════════════
 
         private static BookMeta ParseMetaFromXml(string descXml)
         {
@@ -767,9 +805,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             };
         }
 
-        // ══════════════════════════════════════════════════════════════════════════
         // Helpers
-        // ══════════════════════════════════════════════════════════════════════════
+
+        private static int? TryParsePageNumber(string? id)
+        {
+            if (id is null || id.Length < 2|| id[0]!='p') return null;
+            return int.TryParse(id.AsSpan(1), out var n) && n > 0 ? n : null;
+
+        }
 
         private static XmlReader CreateXmlReader(Stream stream)
             => XmlReader.Create(stream, new XmlReaderSettings
@@ -824,7 +867,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             => WhitespaceRegex.Replace(s, " ").Trim();
     }
 
-    internal sealed class ParsedNote
+    public sealed class ParsedNote
     {
         public required string NoteId { get; init; }
         /// <summary>[notesBodyIdx, sectionIdx, elemIdx] — 1-based.</summary>
@@ -834,10 +877,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
         public required List<string> Paragraphs { get; init; }
     }
 
-    internal static class StringExtensions
+    public static class StringExtensions
     {
         public static string? NullIfEmpty(this string s)
             => string.IsNullOrEmpty(s) ? null : s;
     }
 
+    public class PageNumberSegment
+    {
+        [JsonPropertyName("pn")]
+        public int Pn { get; set; }
+    }
 }

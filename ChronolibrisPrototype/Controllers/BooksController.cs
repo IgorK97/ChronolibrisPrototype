@@ -1,4 +1,5 @@
-﻿using Chronolibris.Application.Models;
+﻿using System.Threading;
+using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Models;
@@ -23,7 +24,6 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает список книг с фильтрацией и пагинацией
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookListResponse))]
         public async Task<ActionResult<BookListResponse>> GetBooks(
             [FromQuery] BookFilterRequest filter, CancellationToken cancellationToken)
         {
@@ -36,8 +36,7 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает книгу по идентификатору
         /// </summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public async Task<ActionResult<BookDto>> GetBookById(long id, CancellationToken cancellationToken)
         {
             var query = new GetBookByIdQuery(id);
@@ -138,8 +137,7 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public async Task<ActionResult> DeleteBook(long id, CancellationToken cancellationToken)
         {
             try
@@ -188,6 +186,40 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
+        [HttpGet("files/{bookFileId}/toc")]
+        public async Task<ActionResult> GetToc(long bookFileId)
+        {
+            try
+            {
+                var json = await _mediator.Send(new GetTocQuery(bookFileId));
+                if (json is null)
+                    return NotFound(new { message = "TOC не найден" });
+
+                return Content(json, "application/json; charset=utf-8");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("files/{bookFileId}/chunks/{chunkIndex}")] //:инт можно ещЁ писать
+        public async Task<ActionResult> GetChunk(long bookFileId, string chunkIndex)
+        {
+            try
+            {
+                var json = await _mediator.Send(new GetChunkQuery(bookFileId, chunkIndex));
+                if (json is null)
+                    return NotFound(new { message = $"Фрагмент {chunkIndex} не найден" });
+
+                return Content(json, "application/json; charset=utf-8");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("readbooks")]
         public async Task<IActionResult> GetReadBooks(long userId, long? lastId, int limit=20)
         {
@@ -220,8 +252,7 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPost("{bookId}/contents/{contentId}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
         public async Task<ActionResult> LinkContentToBook(long bookId, long contentId,
             [FromBody] BookContentLinkRequest request, CancellationToken cancellationToken)
         {

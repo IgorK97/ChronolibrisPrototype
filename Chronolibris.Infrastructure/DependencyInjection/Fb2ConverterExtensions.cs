@@ -21,22 +21,6 @@ namespace Chronolibris.Infrastructure.DataAccess.DependencyInjection
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            //// 1. Привязываем BookStorageOptions из конфига
-            //services.Configure<BookStorageOptions>(
-            //    configuration.GetSection(BookStorageOptions.SectionName));
-
-            //// 2. MinioBookStorage как Singleton:
-            ////    - IMinioClient берётся из DI (уже зарегистрирован в AddFileServices)
-            ////    - bucket/prefix берутся из BookStorageOptions
-            ////    Singleton безопасен: IMinioClient thread-safe, своего состояния нет
-            //services.AddScoped<IBookStorage>(sp =>
-            //{
-            //    var minioClient = sp.GetRequiredService<IMinioClient>();
-            //    var opts = sp.GetRequiredService<IOptions<BookStorageOptions>>().Value;
-            //    return new MinioBookStorage(minioClient, opts.BucketName, opts.Prefix);
-            //});
-
-            // 3. Конвертер — Scoped (на один HTTP-запрос / единицу работы)
             services.AddScoped<IFb2Converter, Fb2ConverterXReader>();
 
             return services;
