@@ -44,6 +44,10 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<TagType> TagTypes { get; set; }
         public DbSet<Theme> Themes { get; set; }
         public DbSet<ReadingProgress> ReadingProgresses { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<ReportReasonType> ReportReasons { get; set; }
+        public DbSet<ReportStatus> ReportStatuses { get; set; }
+        public DbSet<ReportTargetType> ReportTargetTypes { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
