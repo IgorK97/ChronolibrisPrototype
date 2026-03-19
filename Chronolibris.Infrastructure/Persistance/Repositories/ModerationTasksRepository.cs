@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 {
-    public class ModerationTasksRepository : IModerationTasksRepository, GenericRepository<ModerationTask>
+    public class ModerationTasksRepository : GenericRepository<ModerationTask>, IModerationTasksRepository //Почему именно такой порядок
     {
         public ModerationTasksRepository(ApplicationDbContext context) : base(context)
         {

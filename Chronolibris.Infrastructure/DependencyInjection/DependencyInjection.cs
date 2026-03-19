@@ -3,6 +3,7 @@ using Chronolibris.Application.Jobs;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
+using Chronolibris.Domain.Options;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
 using Chronolibris.Infrastructure.DataAccess.Files;
@@ -48,6 +49,16 @@ namespace Chronolibris.Infrastructure.DependencyInjection
                 options.UseSnakeCaseNamingConvention();
             });
 
+            //services.Configure<ReportingOptions>(
+            //    configuration.GetSection(ReportingOptions.SectionName));
+
+            services.AddSingleton<ReportingOptions>(sp =>
+            {
+                var opts = new ReportingOptions();
+                configuration.GetSection(ReportingOptions.SectionName).Bind(opts);
+                return opts;
+            });
+
 
             // Регистрация обобщенных репозиториев (Scoped lifetime)
             services.AddScoped<IGenericRepository<Content>, GenericRepository<Content>>();
@@ -62,7 +73,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Series>, GenericRepository<Series>>();
             services.AddScoped<IGenericRepository<BookFile>, GenericRepository<BookFile>>();
             services.AddScoped<IGenericRepository<Report>,  GenericRepository<Report>>();
-
+            services.AddScoped<IGenericRepository<ModerationTask>, GenericRepository<ModerationTask>>();
 
             // Регистрация репозиториев
             services.AddScoped<IBookRepository, BookRepository>();
@@ -80,6 +91,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IBookFileRepository, BookFileRepository>();
             services.AddScoped<ITagsRepository, TagsRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddScoped<IModerationTasksRepository, ModerationTasksRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
