@@ -262,7 +262,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 TotalCount = totalCount,
             };
         }
-
+        /// <summary>
+        /// Расширенный поиск (пагинация по ключу) + similarity
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<PagedResult<BookSearchResult>> AdvancedSearchKeysetAsync(
             AdvancedSearchKeysetRequest request, CancellationToken token)
         {
@@ -281,463 +286,268 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     """;
 
             }
+
+            var sql = $"""
+                SELECT id, best_similarity
+                FROM ({unionSql}) sub
+                {cursorClause}
+                ORDER BY best_similarity DESC, id ASC
+                LIMIT {request.PageSize + 1}
+                """;
+
+            var pagedIds = await _context.Database.SqlQueryRaw<SearchIdScore>(sql, parameters.ToArray())
+                .ToListAsync(token);
+
+            var hasNext = pagedIds.Count > request.PageSize;
+
+            var pageItems = pagedIds.Take(request.PageSize).ToList();
+
+            if (pageItems.Count == 0)
+                return new PagedResult<BookSearchResult>
+                {
+                    Items = [],
+                    HasNext = false,
+                    LastId = null,
+                    LastBestSimilarity = null,
+                };
+
+            var ids = pageItems.Select(X500DistinguishedName => X500DistinguishedName.Id).ToList();
+            var itemsDict = await ProjectByIdsAsync(ids, request.UserId, token);
+            var items = ids.Where(ids => itemsDict.ContainsKey(ids))
+                .Select(ids => itemsDict[ids])
+                .ToList();
+
+            var last = pageItems.Last();
+            return new PagedResult<BookSearchResult>
+            {
+                Items = items,
+                HasNext = hasNext,
+                LastId = last.Id,
+                LastBestSimilarity = last.BestSimilarity,
+            };
         }
 
-
-
-
-
-
-
-
-
-
-
-
-    //    public async Task<OffsetPagedResult<BookSearchResult>> AdvancedSearchOffsetAsync(AdvancedSearchOffsetRequest request, CancellationToken token)
-    //    {
-    //        var query = request.Query.Trim();
-    //        var threshold = 0.3f;
-    //        var booksQuery = _context.Books
-    //            .AsNoTracking()
-    //            .Where(b => b.IsAvailable &&
-    //                (EF.Functions.TrigramsWordSimilarity(query, b.Title) > threshold ||
-    //                 b.BookContents.Any(bc =>
-    //                     EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title) > threshold)));
-
-    //        if (request.PublisherIds.Count > 0)
-    //            booksQuery = booksQuery
-    //                .Where(b => request.PublisherIds.Contains(b.PublisherId!.Value));
-
-    //        if (request.LanguageIds.Count > 0)
-    //            booksQuery = booksQuery
-    //                .Where(b => request.LanguageIds.Contains(b.LanguageId));
-
-    //        if (request.CountryIds.Count > 0)
-    //            booksQuery = booksQuery
-    //                .Where(b => request.CountryIds.Contains(b.CountryId));
-
-    //        if (request.YearFrom.HasValue)
-    //            booksQuery = booksQuery.Where(b => b.Year >= request.YearFrom);
-
-    //        if (request.YearTo.HasValue)
-    //            booksQuery = booksQuery.Where(b => b.Year <= request.YearTo);
-
-    //        foreach (var personFilter in request.PersonFilters)
-    //        {
-    //            var roleId = personFilter.RoleId;
-    //            var personIds = personFilter.PersonIds;
-
-    //            booksQuery = booksQuery.Where(b =>
-    //                b.Participations.Any(p =>
-    //                    p.PersonRoleId == roleId &&
-    //                    personIds.Contains(p.PersonId))
-    //                ||
-    //                b.BookContents.Any(bc =>
-    //                    bc.Content.Participations.Any(p =>
-    //                        p.PersonRoleId == roleId &&
-    //                        personIds.Contains(p.PersonId))));
-    //        }
-
-    //        if (request.RequiredThemeIds.Count > 0)
-    //        {
-    //            var requiredThemes = request.RequiredThemeIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                b.BookContents.Any(bc =>
-    //                    bc.Content.Themes.Any(t =>
-    //                        requiredThemes.Contains(t.Id))));
-    //        }
-
-    //        if (request.ExcludedThemeIds.Count > 0)
-    //        {
-    //            var excludedThemes = request.ExcludedThemeIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                !b.BookContents.Any(bc =>
-    //                    bc.Content.Themes.Any(t =>
-    //                        excludedThemes.Contains(t.Id))));
-    //        }
-    //        if (request.RequiredTagIds.Count > 0)
-    //        {
-    //            var requiredTags = request.RequiredTagIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                b.BookContents.Any(bc =>
-    //                    bc.Content.Tags.Any(t =>
-    //                        requiredTags.Contains(t.Id))));
-    //        }
-    //        if (request.ExcludedTagIds.Count > 0)
-    //        {
-    //            var excludedTags = request.ExcludedTagIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                !b.BookContents.Any(bc =>
-    //                    bc.Content.Tags.Any(t =>
-    //                        excludedTags.Contains(t.Id))));
-    //        }
-
-    //        var orderedQuery = booksQuery
-    //            .Select(b => new
-    //            {
-    //                Book = b,
-    //                // GREATEST(sim_по_книге, MAX(sim_по_контентам))
-    //                BestSimilarity = Math.Max(
-    //                    (double)EF.Functions.TrigramsWordSimilarity(query, b.Title),
-    //                    b.BookContents
-    //                        .Select(bc => (double)EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title))
-    //                            .OrderByDescending(s => s)
-    //                            .FirstOrDefault()
-    //                    )
-    //            })
-    //            .OrderByDescending(x => x.BestSimilarity)
-    //            //.OrderByDescending(b => EF.Functions.TrigramsWordSimilarity(query, b.Title))
-    //            .ThenBy(b => b.Book.Id);
-
-    //        var totalCount = await orderedQuery.CountAsync(token);
-
-    //        var skip = (request.Page - 1) * request.PageSize;
-    //        var pagedIds = await orderedQuery
-    //            .Select(b => b.Book.Id)
-    //            .Skip(skip)
-    //            .Take(request.PageSize)
-    //            .ToListAsync(token);
-
-    //        if (pagedIds.Count == 0)
-    //            return new OffsetPagedResult<BookSearchResult>
-    //            {
-    //                Items = [],
-    //                HasNext = false,
-    //                Page = request.Page,
-    //                TotalCount = totalCount,
-    //            };
-
-    //        var itemsDict = await ProjectByIdsAsync(pagedIds, request.UserId, token);
-
-    //        var items = pagedIds
-    //            .Where(id => itemsDict.ContainsKey(id))
-    //            .Select(id => itemsDict[id])
-    //            .ToList();
-
-    //        return new OffsetPagedResult<BookSearchResult>
-    //        {
-    //            Items = items,
-    //            HasNext = skip + items.Count < totalCount,
-    //            Page = request.Page,
-    //            TotalCount = totalCount,
-    //        };
-
-
-    //    }
-
-    //    public async Task<OffsetPagedResult<BookSearchResult>> SearchOffsetAsync(SimpleSearchOffsetRequest request, CancellationToken token)
-    //    {
-    //        var query = request.Query.Trim();
-    //        float threshold = 0.3f;
-
-
-
-    //        var booksQuery = _context.Books.AsNoTracking()
-    //            .Where(b => b.IsAvailable &&
-    //            (EF.Functions.TrigramsWordSimilarity(query, b.Title) > threshold ||
-    //            b.BookContents.Any(bc =>
-    //            EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title) > threshold)));
-
-    //        //var orderedQuery = booksQuery.OrderByDescending(b => EF.Functions.TrigramsWordSimilarity(query, b.Title))
-    //        //    .ThenBy(b => b.Id);
-
-    //        var orderedQuery = booksQuery
-    //            .Select(b => new
-    //            {
-    //                Book = b,
-    //                // GREATEST(sim_по_книге, MAX(sim_по_контентам)) — берём лучшее совпадение
-    //                BestSimilarity = Math.Max(
-    //                    (double)EF.Functions.TrigramsWordSimilarity(query, b.Title),
-    //                    b.BookContents
-    //                        .Select(bc => (double)EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title))
-    //                        .OrderByDescending(s => s)
-    //                        .FirstOrDefault()
-    //                )
-    //            })
-    //            .OrderByDescending(x => x.BestSimilarity)
-    //            .ThenBy(x => x.Book.Id);
-
-    //        var totalCount = await orderedQuery.CountAsync(token);
-
-    //        var skip = (request.Page - 1) * request.PageSize;
-    //        var pagedIds = await orderedQuery.Select(b => b.Book.Id)
-    //            .Skip(skip)
-    //            .Take(request.PageSize)
-    //            .ToListAsync(token);
-
-    //        if (pagedIds.Count == 0)
-    //        {
-    //            return new OffsetPagedResult<BookSearchResult>
-    //            {
-    //                Items = [],
-    //                HasNext = false,
-    //                Page = request.Page,
-    //                TotalCount = totalCount,
-    //            };
-    //        }
-    //        var itemsDict = await ProjectByIdsAsync(pagedIds, request.UserId, token);
-
-    //        var items = pagedIds.Where(id => itemsDict.ContainsKey(id))
-    //            .Select(id => itemsDict[id])
-    //            .ToList();
-
-    //        return new OffsetPagedResult<BookSearchResult>
-    //        {
-    //            Items = items,
-    //            HasNext = skip + items.Count < totalCount,
-    //            Page = request.Page,
-    //            TotalCount = totalCount,
-    //        };
-
-    //    }
-
-    //    private async Task<Dictionary<long, BookSearchResult>> ProjectByIdsAsync(
-    //        List<long> ids,
-    //        long? userId,
-    //        CancellationToken cancellationToken)
-    //    {
-    //        var favoriteShelfType = 1;
-    //        var publishedStatus = 2;
-    //        return await _context.Books
-    //            .AsNoTracking()
-    //            .Where(b => ids.Contains(b.Id))
-    //            .Select(b => new BookSearchResult
-    //            {
-    //                Id = b.Id,
-    //                Title = b.Title,
-    //                Description = b.Description,
-    //                CoverPath = b.CoverPath,
-    //                Year = b.Year,
-    //                IsAvailable = b.IsAvailable,
-    //                IsReviewable = b.IsReviewable,
-    //                AverageRating = b.Reviews
-    //                    .Where(r => r.ReviewStatusId == publishedStatus)
-    //                    .Average(r => (double?)r.Score),
-    //                IsFavorite = userId != null &&
-    //                    b.BookShelves.Any(bs =>
-    //                        bs.Shelf.UserId == userId &&
-    //                        bs.Shelf.ShelfTypeId == favoriteShelfType),
-    //            })
-    //            .ToDictionaryAsync(b => b.Id, cancellationToken);
-    //    }
-
-
-
-    //    public async Task<PagedResult<BookSearchResult>> SearchKeysetAsync(
-    //SimpleSearchKeysetRequest request,
-    //CancellationToken token)
-    //    {
-    //        var query = request.Query.Trim();
-    //        var threshold = 0.3f;
-
-    //        var booksQuery = _context.Books
-    //            .AsNoTracking()
-    //            .Where(b => b.IsAvailable &&
-    //                (EF.Functions.TrigramsWordSimilarity(query, b.Title) > threshold ||
-    //                 b.BookContents.Any(bc =>
-    //                     EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title) > threshold)));
-
-    //        var projectedQuery = booksQuery
-    //            .Select(b => new
-    //            {
-    //                Book = b,
-    //                BestSimilarity = Math.Max(
-    //                    (double)EF.Functions.TrigramsWordSimilarity(query, b.Title),
-    //                    b.BookContents
-    //                        .Select(bc => (double)EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title))
-    //                        .OrderByDescending(s => s)
-    //                        .FirstOrDefault()
-    //                )
-    //            });
-
-    //        if (request.LastBestSimilarity.HasValue && request.LastId.HasValue)
-    //        {
-    //            var lastSim = request.LastBestSimilarity.Value;
-    //            var lastId = request.LastId.Value;
-    //            projectedQuery = projectedQuery
-    //                .Where(x => x.BestSimilarity < lastSim ||
-    //                            (x.BestSimilarity == lastSim && x.Book.Id > lastId));
-    //        }
-
-    //        var pagedIds = await projectedQuery
-    //            .OrderByDescending(x => x.BestSimilarity)
-    //            .ThenBy(x => x.Book.Id)
-    //            .Select(x => new { x.Book.Id, x.BestSimilarity })
-    //            .Take(request.PageSize + 1)
-    //            .ToListAsync(token);
-
-    //        var hasNext = pagedIds.Count > request.PageSize;
-    //        var pageItems = pagedIds.Take(request.PageSize).ToList();
-
-    //        if (pageItems.Count == 0)
-    //            return new PagedResult<BookSearchResult>
-    //            {
-    //                Items = [],
-    //                HasNext = false,
-    //                LastId = null,
-    //                LastBestSimilarity = null,
-    //            };
-
-    //        var ids = pageItems.Select(x => x.Id).ToList();
-    //        var itemsDict = await ProjectByIdsAsync(ids, request.UserId, token);
-
-    //        var items = ids
-    //            .Where(id => itemsDict.ContainsKey(id))
-    //            .Select(id => itemsDict[id])
-    //            .ToList();
-
-    //        var last = pageItems.Last();
-    //        return new PagedResult<BookSearchResult>
-    //        {
-    //            Items = items,
-    //            HasNext = hasNext,
-    //            LastId = last.Id,
-    //            LastBestSimilarity = last.BestSimilarity,
-    //        };
-    //    }
-
-    //    public async Task<PagedResult<BookSearchResult>> AdvancedSearchKeysetAsync(
-    //        AdvancedSearchKeysetRequest request,
-    //        CancellationToken token)
-    //    {
-    //        var query = request.Query.Trim();
-    //        var threshold = 0.3f;
-
-    //        var booksQuery = _context.Books
-    //            .AsNoTracking()
-    //            .Where(b => b.IsAvailable &&
-    //                (EF.Functions.TrigramsWordSimilarity(query, b.Title) > threshold ||
-    //                 b.BookContents.Any(bc =>
-    //                     EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title) > threshold)));
-
-    //        if (request.PublisherIds.Count > 0)
-    //            booksQuery = booksQuery
-    //                .Where(b => request.PublisherIds.Contains(b.PublisherId!.Value));
-
-    //        if (request.LanguageIds.Count > 0)
-    //            booksQuery = booksQuery
-    //                .Where(b => request.LanguageIds.Contains(b.LanguageId));
-
-    //        if (request.CountryIds.Count > 0)
-    //            booksQuery = booksQuery
-    //                .Where(b => request.CountryIds.Contains(b.CountryId));
-
-    //        if (request.YearFrom.HasValue)
-    //            booksQuery = booksQuery.Where(b => b.Year >= request.YearFrom);
-
-    //        if (request.YearTo.HasValue)
-    //            booksQuery = booksQuery.Where(b => b.Year <= request.YearTo);
-
-    //        foreach (var personFilter in request.PersonFilters)
-    //        {
-    //            var roleId = personFilter.RoleId;
-    //            var personIds = personFilter.PersonIds;
-
-    //            booksQuery = booksQuery.Where(b =>
-    //                b.Participations.Any(p =>
-    //                    p.PersonRoleId == roleId &&
-    //                    personIds.Contains(p.PersonId))
-    //                ||
-    //                b.BookContents.Any(bc =>
-    //                    bc.Content.Participations.Any(p =>
-    //                        p.PersonRoleId == roleId &&
-    //                        personIds.Contains(p.PersonId))));
-    //        }
-
-    //        if (request.RequiredThemeIds.Count > 0)
-    //        {
-    //            var requiredThemes = request.RequiredThemeIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                b.BookContents.Any(bc =>
-    //                    bc.Content.Themes.Any(t =>
-    //                        requiredThemes.Contains(t.Id))));
-    //        }
-
-    //        if (request.ExcludedThemeIds.Count > 0)
-    //        {
-    //            var excludedThemes = request.ExcludedThemeIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                !b.BookContents.Any(bc =>
-    //                    bc.Content.Themes.Any(t =>
-    //                        excludedThemes.Contains(t.Id))));
-    //        }
-
-    //        if (request.RequiredTagIds.Count > 0)
-    //        {
-    //            var requiredTags = request.RequiredTagIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                b.BookContents.Any(bc =>
-    //                    bc.Content.Tags.Any(t =>
-    //                        requiredTags.Contains(t.Id))));
-    //        }
-
-    //        if (request.ExcludedTagIds.Count > 0)
-    //        {
-    //            var excludedTags = request.ExcludedTagIds;
-    //            booksQuery = booksQuery.Where(b =>
-    //                !b.BookContents.Any(bc =>
-    //                    bc.Content.Tags.Any(t =>
-    //                        excludedTags.Contains(t.Id))));
-    //        }
-
-    //        var projectedQuery = booksQuery
-    //            .Select(b => new
-    //            {
-    //                Book = b,
-    //                BestSimilarity = Math.Max(
-    //                    (double)EF.Functions.TrigramsWordSimilarity(query, b.Title),
-    //                    b.BookContents
-    //                        .Select(bc => (double)EF.Functions.TrigramsWordSimilarity(query, bc.Content.Title))
-    //                        .OrderByDescending(s => s)
-    //                        .FirstOrDefault()
-    //                )
-    //            });
-
-    //        if (request.LastBestSimilarity.HasValue && request.LastId.HasValue)
-    //        {
-    //            var lastSim = request.LastBestSimilarity.Value;
-    //            var lastId = request.LastId.Value;
-    //            projectedQuery = projectedQuery
-    //                .Where(x => x.BestSimilarity < lastSim ||
-    //                            (x.BestSimilarity == lastSim && x.Book.Id > lastId));
-    //        }
-
-    //        var pagedIds = await projectedQuery
-    //            .OrderByDescending(x => x.BestSimilarity)
-    //            .ThenBy(x => x.Book.Id)
-    //            .Select(x => new { x.Book.Id, x.BestSimilarity })
-    //            .Take(request.PageSize + 1)
-    //            .ToListAsync(token);
-
-    //        var hasNext = pagedIds.Count > request.PageSize;
-    //        var pageItems = pagedIds.Take(request.PageSize).ToList();
-
-    //        if (pageItems.Count == 0)
-    //            return new PagedResult<BookSearchResult>
-    //            {
-    //                Items = [],
-    //                HasNext = false,
-    //                LastId = null,
-    //                LastBestSimilarity = null,
-    //            };
-
-    //        var ids = pageItems.Select(x => x.Id).ToList();
-    //        var itemsDict = await ProjectByIdsAsync(ids, request.UserId, token);
-
-    //        var items = ids
-    //            .Where(id => itemsDict.ContainsKey(id))
-    //            .Select(id => itemsDict[id])
-    //            .ToList();
-
-    //        var last = pageItems.Last();
-    //        return new PagedResult<BookSearchResult>
-    //        {
-    //            Items = items,
-    //            HasNext = hasNext,
-    //            LastId = last.Id,
-    //            LastBestSimilarity = last.BestSimilarity,
-    //        };
-    //    }
+        private static (string Sql, List<object> Parameters) BuildAdvancedUnionSql(
+            string rawQuery,
+            AdvancedSearchOffsetRequest? offsetRequest = null, AdvancedSearchKeysetRequest keysetRequest = null)
+        {
+            var publisherIds = offsetRequest?.PublisherIds ?? keysetRequest?.PublisherIds ?? [];
+            var languageIds = offsetRequest?.LanguageIds ?? keysetRequest?.LanguageIds ?? [];
+            var countryIds = offsetRequest?.CountryIds ?? keysetRequest?.CountryIds ?? [];
+            var yearFrom = offsetRequest?.YearFrom ?? keysetRequest?.YearFrom;
+            var yearTo = offsetRequest?.YearTo ?? keysetRequest?.YearTo;
+            var personFilters = offsetRequest?.PersonFilters ?? keysetRequest?.PersonFilters ?? [];
+            var requiredThemes = offsetRequest?.RequiredThemeIds ?? keysetRequest?.RequiredThemeIds ?? [];
+            var excludedThemes = offsetRequest?.ExcludedThemeIds ?? keysetRequest?.ExcludedThemeIds ?? [];
+            var requiredTags = offsetRequest?.RequiredTagIds ?? keysetRequest?.RequiredTagIds ?? [];
+            var excludedTags = offsetRequest?.ExcludedTagIds ?? keysetRequest?.ExcludedTagIds ?? [];
+
+            var query = rawQuery.Trim();
+            var parameters = new List<object> { query, query, query };
+
+            var bookFilters = new StringBuilder();
+
+            if (publisherIds.Count > 0)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(publisherIds.ToArray());
+                bookFilters.AppendLine($"""AND b.publisher_id = ANY(${p})""");
+            }
+
+            if (languageIds.Count > 0)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(languageIds.ToArray());
+                bookFilters.AppendLine($"""AND b.language_id = ANY(${p})""");
+            }
+
+            if (countryIds.Count > 0)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(countryIds.ToArray());
+                bookFilters.AppendLine($"""AND b.country_id = ANY(${p})""");
+            }
+
+            if (yearFrom.HasValue)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(yearFrom.Value);
+                bookFilters.AppendLine($"""AND b.year >= ${p}""");
+            }
+
+            if (yearTo.HasValue)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(yearTo.Value);
+                bookFilters.AppendLine($"""AND b.year <= ${p}""");
+            }
+            foreach (var pf in personFilters)
+            {
+                var pRole = parameters.Count + 1;
+                var pPersons = parameters.Count + 2;
+                parameters.Add(pf.RoleId);
+                parameters.Add(pf.PersonIds.ToArray());
+                bookFilters.AppendLine($"""
+                    AND (
+                        EXISTS (
+                            SELECT 1 FROM book_participations p
+                            WHERE p.book_id = b.id
+                              AND p.person_role_id = ${pRole}
+                              AND p.person_id = ANY(${pPersons})
+                        )
+                        OR EXISTS (
+                            SELECT 1
+                            FROM book_content bc
+                            JOIN content_participations p ON p.content_id = bc.content_id
+                            WHERE bc.book_id = b.id
+                              AND p.person_role_id = ${pRole}
+                              AND p.person_id = ANY(${pPersons})
+                        )
+                    )
+                    """);
+            }
+
+            if (requiredThemes.Count > 0)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(requiredThemes.ToArray());
+                bookFilters.AppendLine($"""
+                    AND EXISTS (
+                        SELECT 1
+                        FROM book_content bc
+                        JOIN content_theme ct ON ct.content_id = bc.content_id
+                        WHERE bc.book_id = b.id
+                          AND ct.theme_id = ANY(${p})
+                    )
+                    """);
+            }
+
+            if (excludedThemes.Count > 0)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(excludedThemes.ToArray());
+                bookFilters.AppendLine($"""
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM book_content bc
+                        JOIN content_theme ct ON ct.content_id = bc.content_id
+                        WHERE bc.book_id = b.id
+                          AND ct.theme_id = ANY(${p})
+                    )
+                    """);
+            }
+
+            if (requiredTags.Count > 0)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(requiredTags.ToArray());
+                bookFilters.AppendLine($"""
+                    AND EXISTS (
+                        SELECT 1
+                        FROM book_content bc
+                        JOIN content_tags ctg ON ctg.content_id = bc.content_id
+                        WHERE bc.book_id = b.id
+                          AND ctg.tag_id = ANY(${p})
+                    )
+                    """);
+            }
+
+            if (excludedTags.Count > 0)
+            {
+                var p = parameters.Count + 1;
+                parameters.Add(excludedTags.ToArray());
+                bookFilters.AppendLine($"""
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM book_content bc
+                        JOIN content_tags ctg ON ctg.content_id = bc.content_id
+                        WHERE bc.book_id = b.id
+                          AND ctg.tag_id = ANY(${p})
+                    )
+                    """);
+            }
+            var filters = bookFilters.ToString();
+
+            // Подзапрос scoring — одинаков в обеих ветках
+            var scoringSubquery = """
+                GREATEST(
+                    word_similarity($3::text, b.title),
+                    COALESCE((
+                        SELECT word_similarity($3::text, c.title)
+                        FROM book_content bc
+                        JOIN contents c ON c.id = bc.content_id
+                        WHERE bc.book_id = b.id
+                        ORDER BY 1 DESC
+                        LIMIT 1
+                    ), 0)
+                )
+                """;
+
+            var sql = $"""
+                SELECT b.id AS id, {scoringSubquery} AS best_similarity
+                FROM books b
+                WHERE b.is_available = true
+                  AND b.title %> $1::text
+                {filters}
+ 
+                UNION
+ 
+                SELECT b.id AS id, {scoringSubquery} AS best_similarity
+                FROM books b
+                WHERE b.is_available = true
+                  AND EXISTS (
+                      SELECT 1
+                      FROM book_content bc
+                      JOIN contents c ON c.id = bc.content_id
+                      WHERE bc.book_id = b.id
+                        AND c.title %> $2::text
+                  )
+                {filters}
+                """;
+
+            return (sql, parameters);
+
+
+        }
+
+        private static (string Sql, List<object> Parameters) BuildAdvancedUnionSql(
+           string rawQuery,
+           AdvancedSearchKeysetRequest request)
+           => BuildAdvancedUnionSql(rawQuery, keysetRequest: request);
+        private async Task<Dictionary<long, BookSearchResult>> ProjectByIdsAsync(
+            List<long> ids,
+            long? userId,
+            CancellationToken cancellationToken)
+        {
+            var favoriteShelfType = 1;
+            var publishedStatus = 2;
+            return await _context.Books
+                .AsNoTracking()
+                .Where(b => ids.Contains(b.Id))
+                .Select(b => new BookSearchResult
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Description = b.Description,
+                    CoverPath = b.CoverPath,
+                    Year = b.Year,
+                    IsAvailable = b.IsAvailable,
+                    IsReviewable = b.IsReviewable,
+                    AverageRating = b.Reviews
+                        .Where(r => r.ReviewStatusId == publishedStatus)
+                        .Average(r => (double?)r.Score),
+                    IsFavorite = userId != null &&
+                        b.BookShelves.Any(bs =>
+                            bs.Shelf.UserId == userId &&
+                            bs.Shelf.ShelfTypeId == favoriteShelfType),
+                })
+                .ToDictionaryAsync(b => b.Id, cancellationToken);
+        }
+
+        private sealed class SearchIdScore
+        {
+            public long Id { get; set; }
+            public double BestSimilarity { get; set; }
+        }
     }
 }
