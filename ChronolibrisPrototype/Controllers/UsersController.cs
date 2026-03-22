@@ -94,44 +94,42 @@ namespace ChronolibrisPrototype.Controllers
 
         [Authorize]
         [HttpPost("profile")]
-        public async Task<IActionResult> UpdateProfile(UpdateUserProfileCommand request)
+        public async Task<IActionResult> UpdateProfile(UpdateUserProfileRequest request)
         {
-            //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            //if (userId == null)
-            //    return Unauthorized();
 
-            //long parsedUserId = long.Parse(userId);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+            var command = new UpdateUserProfileCommand
+            {
+                UserId = userId,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
+                UserName = request.UserName,
+            };
 
-            //var command = new UpdateUserProfileCommand
-            //{
-            //    UserId = parsedUserId,
-            //    FirstName = request.FirstName,
-            //    LastName = request.LastName,
-            //    Email = request.Email
-            //};
-
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(command);
             return Ok(result);
         }
 
         [Authorize]
         [HttpPost("password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordCommand request) 
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request) 
         {
-            //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            //if (userId == null)
-            //    return Unauthorized();
 
-            //long parsedUserId = long.Parse(userId);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
 
-            //var command = new ChangePasswordCommand
-            //{
-            //    UserId = parsedUserId,
-            //    CurrentPassword = request.CurrentPassword,
-            //    NewPassword = request.NewPassword
-            //};
-
-            await _mediator.Send(request);
+            var command = new ChangePasswordCommand
+            {
+                UserId = userId,
+                CurrentPassword = request.CurrentPassword,
+                NewPassword = request.NewPassword,
+            };
+            await _mediator.Send(command);
 
             return Ok(new { success = true, message = "Password changed successfully" });
         }
@@ -139,26 +137,6 @@ namespace ChronolibrisPrototype.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            //TODO:
-            //var token = Request.Cookies["token"];
-            //if (!string.IsNullOrEmpty(token))
-            //{
-            //    var handler = new JwtSecurityTokenHandler();
-            //    var jwtToken = handler.ReadJwtToken(token);
-            //    var jti = jwtToken.Id; // This gets the JTI claim
-            //    var expiry = jwtToken.ValidTo;
-
-            //    // 1. Add to PostgreSQL
-            //    await _db.TokenBlacklist.AddAsync(new BlacklistedToken { Id = jti, Expiry = expiry });
-            //    await _db.SaveChangesAsync();
-
-            //    // 2. Add to IMemoryCache (for fast checking)
-            //    _memoryCache.Set(jti, true, expiry - DateTime.UtcNow);
-            //}
-
-            //Response.Cookies.Delete("token", new CookieOptions { /* your options */ });
-            //return Ok();
-
 
             Response.Cookies.Delete("token", new CookieOptions
             {
@@ -168,6 +146,22 @@ namespace ChronolibrisPrototype.Controllers
             });
             return Ok();
         }
+    }
+
+    public class UpdateUserProfileRequest
+    {
+        public required string FirstName { get; init; }
+        public required string LastName {get;init;}
+        public string? Email { get; init;}
+        public string? PhoneNumber { get; init; }
+        public required string UserName { get; init; }
+
+    }
+
+    public class ChangePasswordRequest
+    {
+        public required string CurrentPassword { get; init; }
+        public required string NewPassword { get; init; }
     }
 }
 

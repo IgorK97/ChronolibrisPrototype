@@ -122,9 +122,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             SimpleSearchKeysetRequest request, CancellationToken token)
         {
             var query = request.Query.Trim();
-            var parameters = new List<object> { query, query, query };
+            var parameters = new List<object> { query,request.PageSize+1 };
 
-            var cursorClause = "";
+            var cursorClause = " ";
             if(request.LastBestSimilarity.HasValue && request.LastId.HasValue)
             {
                 var p = parameters.Count;
@@ -138,15 +138,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             }
 
-            var sql = $"""
+            var sql = @"
                 SELECT sub.id, sub.best_similarity
                 FROM (
                     SELECT
                         b.id,
                         GREATEST(
-                            word_similarity($3::text, b.title),
+                            word_similarity({0}::text, b.title),
                             COALESCE((
-                                SELECT word_similarity($3::text, c.title)
+                                SELECT word_similarity({0}::text, c.title)
                                 FROM book_content bc
                                 JOIN contents c ON c.id = bc.content_id
                                 WHERE bc.book_id = b.id
@@ -156,16 +156,16 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         ) AS best_similarity
                     FROM books b
                     WHERE b.is_available = true
-                        AND b.title %>$1::text
+                        AND word_similarity({0}::text, b.title)>0.3
 
                     UNION
 
                     SELECT
                         b.id,
                         GREATEST(
-                            word_similarity($3::text, b.title),
+                            word_similarity({0}::text, b.title),
                             COALESCE((
-                                SELECT word_similarity($3::text, b.title)
+                                SELECT word_similarity({0}::text, c.title)
                                 FROM book_content bc
                                 JOIN contents c ON c.id = bc.content_id
                                 WHERE bc.book_id = b.id
@@ -177,16 +177,16 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     WHERE b.is_available = true
                         AND EXISTS (
                             SELECT 1
-                            FROM book_contents bc
+                            FROM book_content bc
                             JOIN contents c ON c.id = bc.content_id
                             WHERE bc.book_id=b.id
-                                AND c.title %> $2::text
+                                AND word_similarity({0}::text, c.title) >0.3
                             )
                     ) sub
-                    {cursorClause}
+                    " + cursorClause+@"
                     ORDER BY sub.best_similarity DESC, sub.id ASC
-                    LIMIT {request.PageSize + 1}
-                """;
+                    LIMIT {1}
+                ";
 
             var pagedIds = await _context.Database.SqlQueryRaw<SearchIdScore>(sql, parameters.ToArray())
                 .ToListAsync(token);

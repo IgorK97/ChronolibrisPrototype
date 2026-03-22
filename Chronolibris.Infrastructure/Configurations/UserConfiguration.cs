@@ -26,10 +26,10 @@ namespace Chronolibris.Infrastructure.Configurations
                 new User
                 {
                     Id = 1,
-                    FamilyName = "KQWERTY",
+                    LastName = "KQWERTY",
                     IsDeleted = false,
                     LastEnteredAt = dt,
-                    Name = "AQWERTY",
+                    FirstName = "AQWERTY",
                     RegisteredAt = dt,
                     Email = "mail@mail.com",
                     NormalizedEmail = "MAIL@MAIL.COM",

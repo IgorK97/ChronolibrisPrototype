@@ -57,10 +57,10 @@ namespace Chronolibris.Infrastructure.Identity
             DateTime dt = DateTime.UtcNow;
             var user = new User
             {
-                FamilyName = request.FamilyName,
+                LastName = request.FamilyName,
                 IsDeleted = false,
                 LastEnteredAt = dt,
-                Name = request.Name,
+                FirstName = request.Name,
                 RegisteredAt = dt,
                 Email = request.Email,
                 UserName = request.Name,
@@ -210,8 +210,8 @@ namespace Chronolibris.Infrastructure.Identity
             return new UserProfileResponse
             {
                 UserId = user.Id,
-                FirstName = user.Name,
-                LastName = user.FamilyName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Email = user.Email,
                 UserName = user.UserName!,
                 PhoneNumber = user.PhoneNumber!,
@@ -225,21 +225,14 @@ namespace Chronolibris.Infrastructure.Identity
                 throw new ApplicationException("User not found.");
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? string.Empty;
-            // 1. Обновляем Имя/Фамилию (Name/FamilyName)
-            user.Name = request.FirstName;
-            user.FamilyName = request.LastName;
 
-            // 2. Обновляем Email
-            if (user.Email != request.Email)
-            {
-                var setEmailResult = await _userManager.SetEmailAsync(user, request.Email);
-                if (!setEmailResult.Succeeded)
-                    throw new ApplicationException($"Failed to change email: {setEmailResult.Errors.Select(e => e.Description).FirstOrDefault()}");
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.UserName = request.UserName;
+            user.PhoneNumber = request.PhoneNumber;
+            user.Email = request.Email;
+            user.NormalizedEmail = request.Email?.ToUpperInvariant() ?? string.Empty;
 
-                var setUserNameResult = await _userManager.SetUserNameAsync(user, request.Email); // Используем Email как UserName
-                if (!setUserNameResult.Succeeded)
-                    throw new ApplicationException($"Failed to change username: {setUserNameResult.Errors.Select(e => e.Description).FirstOrDefault()}");
-            }
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -249,8 +242,8 @@ namespace Chronolibris.Infrastructure.Identity
             return new UserProfileResponse
             {
                 UserId = user.Id,
-                FirstName = user.Name,
-                LastName = user.FamilyName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Email = user.Email,
                 UserName = user.UserName!,
                 PhoneNumber = user.PhoneNumber!,

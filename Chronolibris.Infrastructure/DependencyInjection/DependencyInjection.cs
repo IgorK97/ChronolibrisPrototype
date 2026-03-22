@@ -92,6 +92,8 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<ITagsRepository, TagsRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
             services.AddScoped<IModerationTasksRepository, ModerationTasksRepository>();
+            services.AddScoped<IBookSearchRepository, BookSearchRepository>();
+            services.AddScoped<IReferenceSearchRepository, ReferenceSearchRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

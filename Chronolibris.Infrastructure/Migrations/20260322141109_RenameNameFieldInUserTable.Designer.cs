@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260322141109_RenameNameFieldInUserTable")]
+    partial class RenameNameFieldInUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2306,6 +2309,11 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("email_confirmed");
 
+                    b.Property<string>("FamilyName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("family_name");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text")
@@ -2318,11 +2326,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Property<DateTime>("LastEnteredAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_entered_at");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("last_name");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean")
@@ -2400,10 +2403,10 @@ namespace Chronolibris.Infrastructure.Migrations
                             ConcurrencyStamp = "88d4f82e-f15b-4d84-8bba-6875af640148",
                             Email = "mail@mail.com",
                             EmailConfirmed = true,
+                            FamilyName = "KQWERTY",
                             FirstName = "AQWERTY",
                             IsDeleted = false,
                             LastEnteredAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LastName = "KQWERTY",
                             LockoutEnabled = false,
                             NormalizedEmail = "MAIL@MAIL.COM",
                             NormalizedUserName = "MAINADMIN",

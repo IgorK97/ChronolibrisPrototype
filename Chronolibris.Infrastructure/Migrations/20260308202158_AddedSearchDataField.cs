@@ -125,7 +125,7 @@ namespace Chronolibris.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             // Удаляем триггеры
-            migrationBuilder.Sql(@"DROP TRIGGER IF EXISTS trg_book_content_search ON book_contents;");
+            migrationBuilder.Sql(@"DROP TRIGGER IF EXISTS trg_book_content_search ON book_content;");
             migrationBuilder.Sql(@"DROP TRIGGER IF EXISTS trg_contents_search ON contents;");
             migrationBuilder.Sql(@"DROP TRIGGER IF EXISTS trg_books_title_change ON books;");
 

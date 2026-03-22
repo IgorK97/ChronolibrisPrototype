@@ -15,9 +15,9 @@ namespace Chronolibris.Infrastructure.Data
         //public required long Id { get; set; }
         //public required string Email { get; set; }
 
-        public required string Name { get; set; }
+        public required string FirstName { get; set; }
         //public required string Password { get; set; }
-        public required string FamilyName { get; set; }
+        public required string LastName { get; set; }
         public required DateTime RegisteredAt { get; set; }
         public required DateTime LastEnteredAt { get; set; }
         public required bool IsDeleted { get; set; }
