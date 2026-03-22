@@ -60,24 +60,11 @@ namespace Chronolibris.Application.Users
                 };
 
             // ── Проверка уникальности email (глобально) ───────────────────────
-            if (!string.IsNullOrEmpty(request.Email) &&
-                !await _identityService.IsEmailUniqueAsync(request.Email))
-                return new RegistrationResult
-                {
-                    UserId=0,
-                    Success = false,
-                    Message = "Этот email уже зарегистрирован.",
-                };
+            if (!await _identityService.IsEmailUniqueAsync(request.Email))
+                return new RegistrationResult {UserId=0, Success = false, Message = "Этот email уже зарегистрирован." };
 
-            // ── Проверка уникальности телефона (глобально) ────────────────────
-            if (!string.IsNullOrEmpty(request.PhoneNumber) &&
-                !await _identityService.IsPhoneUniqueAsync(request.PhoneNumber))
-                return new RegistrationResult
-                {
-                    UserId=0,
-                    Success = false,
-                    Message = "Этот номер телефона уже зарегистрирован.",
-                };
+            if (!await _identityService.IsPhoneUniqueAsync(request.PhoneNumber!))
+                return new RegistrationResult { UserId=0, Success = false, Message = "Этот номер телефона уже зарегистрирован." };
             // ── Регистрация с нужной ролью ────────────────────────────────────
             return await _identityService.RegisterUserAsync(new RegisterRequest
             {

@@ -18,7 +18,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<SelectionType> SelectionTypes { get; set; }
         public DbSet<BookFile> BookFiles { get; set; }
         public DbSet<BookFragment> BookFragments { get; set; }
-        public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
+        //public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -59,17 +59,22 @@ namespace Chronolibris.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Ignore<IdentityUserClaim<long>>();
+            modelBuilder.Ignore<IdentityUserLogin<long>>();
+            modelBuilder.Ignore<IdentityUserToken<long>>();
+            modelBuilder.Ignore<IdentityRoleClaim<long>>();
+
             modelBuilder.Entity<User>().ToTable("users");
             modelBuilder.Entity<IdentityRole<long>>().ToTable("roles");
             modelBuilder.Entity<IdentityUserRole<long>>().ToTable("user_role");
-            modelBuilder.Entity<IdentityUserClaim<long>>().ToTable("user_claims");
-            modelBuilder.Entity<IdentityUserLogin<long>>().ToTable("user_logins");
-            modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("role_claims");
-            modelBuilder.Entity<IdentityUserToken<long>>().ToTable("user_tokens");
+            //modelBuilder.Entity<IdentityUserClaim<long>>().ToTable("user_claims");
+            //modelBuilder.Entity<IdentityUserLogin<long>>().ToTable("user_logins");
+            //modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("role_claims");
+            //modelBuilder.Entity<IdentityUserToken<long>>().ToTable("user_tokens");
 
-            modelBuilder.Entity<TokenBlacklist>()
-                .HasIndex(t => t.Expiry)
-                .HasDatabaseName("IX_TokenBlacklist_Expiry");
+            //modelBuilder.Entity<TokenBlacklist>()
+            //    .HasIndex(t => t.Expiry)
+            //    .HasDatabaseName("IX_TokenBlacklist_Expiry");
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 

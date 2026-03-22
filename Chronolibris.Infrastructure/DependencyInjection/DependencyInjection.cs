@@ -5,7 +5,7 @@ using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Options;
 using Chronolibris.Infrastructure.Data;
-using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
+//using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
 using Chronolibris.Infrastructure.DataAccess.Files;
 using Chronolibris.Infrastructure.DataAccess.Jobs;
 using Chronolibris.Infrastructure.DataAccess.Persistance;
@@ -166,10 +166,10 @@ namespace Chronolibris.Infrastructure.DependencyInjection
                 //}
                 )
                 // Указывает, что Identity будет использовать ApplicationDbContext
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+                //.AddDefaultTokenProviders();
 
-            services.AddHostedService<TokenCleanupService>();
+            //services.AddHostedService<TokenCleanupService>();
 
             return services;
         }

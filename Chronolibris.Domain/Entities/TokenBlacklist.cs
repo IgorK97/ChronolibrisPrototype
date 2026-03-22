@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
-    public class TokenBlacklist
-    {
-        [Key]
-        public string Id { get; set; } = string.Empty;
-        public DateTime Expiry { get; set; }
-    }
+    //public class TokenBlacklist
+    //{
+    //    [Key]
+    //    public string Id { get; set; } = string.Empty;
+    //    public DateTime Expiry { get; set; }
+    //}
 }
