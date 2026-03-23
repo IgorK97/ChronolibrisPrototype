@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.DataAccess.Configurations
@@ -25,6 +26,11 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
             builder.HasOne(r => r.TargetType)
                 .WithMany(rt => rt.Reports)
                 .HasForeignKey(r => r.TargetTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(r=>r.CreatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
             
