@@ -18,6 +18,14 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<long> Handle(CreateCommentCommand request, CancellationToken ct)
         {
+
+            var book = await _uow.Books.GetByIdAsync(request.BookId);
+
+            if (book == null)
+                throw new Exception("Такая книга не найдена");
+
+            //var user = await _uow.U
+
             var comment = new Comment
             {
                 BookId = request.BookId,

@@ -39,23 +39,23 @@ namespace Chronolibris.Application.Handlers
                 CreatedAt = bf.CreatedAt,
                 CompletedAt = bf.CompletedAt,
                 CreatedBy = bf.CreatedBy,
-                Version = bf.Version,
+                //Version = bf.Version,
                 BookFileStatusId = bf.BookFileStatusId,
                 BookFileStatusName = bf.BookFileStatus?.Name
             }).ToList();
         }
     }
 
-    public class GetBookFileHandler : IRequestHandler<GetBookFileQuery, BookFileDto?>
+    public class GetBookFileDtoHandler : IRequestHandler<GetBookFileDtoQuery, BookFileDto?>
     {
         private readonly IBookFileRepository _bookFileRepository;
 
-        public GetBookFileHandler(IBookFileRepository bookFileRepository)
+        public GetBookFileDtoHandler(IBookFileRepository bookFileRepository)
         {
             _bookFileRepository = bookFileRepository;
         }
 
-        public async Task<BookFileDto?> Handle(GetBookFileQuery request, CancellationToken cancellationToken)
+        public async Task<BookFileDto?> Handle(GetBookFileDtoQuery request, CancellationToken cancellationToken)
         {
             var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
             if (bookFile == null) return null;
@@ -72,25 +72,25 @@ namespace Chronolibris.Application.Handlers
                 CreatedAt = bookFile.CreatedAt,
                 CompletedAt = bookFile.CompletedAt,
                 CreatedBy = bookFile.CreatedBy,
-                Version = bookFile.Version,
+                //Version = bookFile.Version,
                 BookFileStatusId = bookFile.BookFileStatusId,
                 BookFileStatusName = bookFile.BookFileStatus?.Name
             };
         }
     }
 
-    public class GetBookFileStreamHandler : IRequestHandler<GetBookFileStreamQuery, Stream?>
+    public class GetBookFileHandler : IRequestHandler<GetBookFileQuery, Stream?>
     {
         private readonly IBookFileRepository _bookFileRepository;
         private readonly IStorageService _bookStorage;
 
-        public GetBookFileStreamHandler(IBookFileRepository bookFileRepository, IStorageService bookStorage)
+        public GetBookFileHandler(IBookFileRepository bookFileRepository, IStorageService bookStorage)
         {
             _bookFileRepository = bookFileRepository;
             _bookStorage = bookStorage;
         }
 
-        public async Task<Stream?> Handle(GetBookFileStreamQuery request, CancellationToken cancellationToken)
+        public async Task<Stream?> Handle(GetBookFileQuery request, CancellationToken cancellationToken)
         {
             var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
             if (bookFile == null) return null;
@@ -141,7 +141,7 @@ namespace Chronolibris.Application.Handlers
                 IsReadable = request.IsReadable,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = request.CreatedBy,
-                Version = 0,
+                //Version = 0,
                 BookFileStatusId = BookFileStatuses.PENDING
             };
 
@@ -334,7 +334,7 @@ namespace Chronolibris.Application.Handlers
             existingFile.StorageUrl = storageUrl;
             existingFile.FileSizeBytes = request.FileSizeBytes;
             existingFile.IsReadable = request.IsReadable;
-            existingFile.Version++;
+            //existingFile.Version++;
             existingFile.BookFileStatusId = BookFileStatuses.UPLOADED;
             existingFile.CompletedAt = DateTime.UtcNow;
 

@@ -14,16 +14,16 @@ namespace Chronolibris.Application.Requests
         public GetBookFilesQuery(long bookId) => BookId = bookId;
     }
 
-    public class GetBookFileQuery : IRequest<BookFileDto?>
+    public class GetBookFileDtoQuery : IRequest<BookFileDto?>
+    {
+        public long BookFileId { get; set; }
+        public GetBookFileDtoQuery(long bookFileId) => BookFileId = bookFileId;
+    }
+
+    public class GetBookFileQuery : IRequest<Stream?>
     {
         public long BookFileId { get; set; }
         public GetBookFileQuery(long bookFileId) => BookFileId = bookFileId;
-    }
-
-    public class GetBookFileStreamQuery : IRequest<Stream?>
-    {
-        public long BookFileId { get; set; }
-        public GetBookFileStreamQuery(long bookFileId) => BookFileId = bookFileId;
     }
 
     // Commands

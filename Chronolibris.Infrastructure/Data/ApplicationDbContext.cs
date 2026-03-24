@@ -67,6 +67,15 @@ namespace Chronolibris.Infrastructure.Data
             modelBuilder.Entity<User>().ToTable("users");
             modelBuilder.Entity<IdentityRole<long>>().ToTable("roles");
             modelBuilder.Entity<IdentityUserRole<long>>().ToTable("user_role");
+
+            modelBuilder.Entity<IdentityRole<long>>(r =>
+            {
+                r.Property(x => x.ConcurrencyStamp)
+                    .IsUnicode(false)
+                    .IsFixedLength(true)
+                    .HasMaxLength(36);
+            });
+
             //modelBuilder.Entity<IdentityUserClaim<long>>().ToTable("user_claims");
             //modelBuilder.Entity<IdentityUserLogin<long>>().ToTable("user_logins");
             //modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("role_claims");

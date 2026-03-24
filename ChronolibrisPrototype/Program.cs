@@ -167,13 +167,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseHttpLogging();
-
-app.UseCors(allowAVDCORSPolicy);
+if(app.Environment.IsDevelopment())
+    app.UseCors(allowAVDCORSPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseDefaultFiles();
 app.UseStaticFiles();
+app.MapFallbackToFile("index.html");
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
     Authorization = new[] { new HangfireAuthFilter() },

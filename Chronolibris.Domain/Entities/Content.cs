@@ -13,6 +13,7 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         [MaxLength(500)]
         public required string Title { get; set; }
+        [MaxLength(2000)]
         public required string Description { get; set; }
         public required long CountryId { get; set; }
         public required long ContentTypeId { get; set; }
@@ -21,9 +22,9 @@ namespace Chronolibris.Domain.Entities
         //public long? ParentContentId { get; set; }
         //public Content? ParentContent { get; set; }
 
-        public int? Position { get; set; }
+        //public int? Position { get; set; }
         public required DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        //public DateTime? UpdatedAt { get; set; }
         public ICollection<BookContent> BookContents { get; set; } = [];
         public Country Country { get; set; } = null!;
         public Language Language { get; set; } = null!;

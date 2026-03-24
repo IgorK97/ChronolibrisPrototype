@@ -24,7 +24,7 @@ namespace Chronolibris.Domain.Interfaces
             long TargetTypeId, long TargetId,
             long ReasonTypeId);
 
-        Task<ModerationTask> CreateModerationTaskWithReportsAsync(
+        Task<ModerationTask?> CreateModerationTaskWithReportsAsync(
             long TargetId, long TargetTypeId, long ReportTypeId,
             long ModeratorId,
             ITransaction transaction);

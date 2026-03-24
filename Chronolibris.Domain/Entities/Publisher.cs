@@ -12,6 +12,7 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         [MaxLength(256)]
         public required string Name { get; set; }
+        [MaxLength(2000)]
         public required string Description { get; set; }
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

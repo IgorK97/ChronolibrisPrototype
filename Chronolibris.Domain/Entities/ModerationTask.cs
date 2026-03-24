@@ -16,6 +16,7 @@ namespace Chronolibris.Domain.Entities
         public DateTime StartedAt { get; set; }
         public DateTime? ResolvedAt { get; set; }
         public long StatusId { get; set; }
+        public int CheckNumber { get; set; }
         public long ReasonTypeId { get; set; }
         [MaxLength(1000)]
         public string? Comment { get; set; }

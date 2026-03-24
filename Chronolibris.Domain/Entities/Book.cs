@@ -13,6 +13,7 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         [MaxLength(500)]
         public required string Title { get; set; }
+        [MaxLength(2000)]
         public required string Description { get; set; }
         public required long CountryId { get; set; }
         public required long LanguageId { get; set; }
@@ -22,8 +23,8 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(17)]
         public string? ISBN { get; set; }
         //public required bool IsFragment { get; set; }
-        [MaxLength(2048)]
-        public required string FilePath { get; set; }
+        //[MaxLength(2048)]
+        //public required string FilePath { get; set; }
         [MaxLength(2048)]
         public required string CoverPath { get; set; }
 
@@ -32,6 +33,7 @@ namespace Chronolibris.Domain.Entities
 
         public required bool IsReviewable { get; set; }
         public long? PublisherId { get; set; }
+        [MaxLength(500)]
         public string? Source { get; set; }
         public Publisher? Publisher { get; set; }
         //public long? SeriesId { get; set; }

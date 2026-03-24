@@ -9,7 +9,7 @@ using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Domain.Interfaces
 {
-    public interface ICommentRepository : IGenericRepository<Comment>
+    public interface разуICommentRepository : IGenericRepository<Comment>
     {
         Task<CommentDto?> GetByIdWithVotesAsync(long commentId, long userId, CancellationToken token);
         // Получение корневых комментариев книги

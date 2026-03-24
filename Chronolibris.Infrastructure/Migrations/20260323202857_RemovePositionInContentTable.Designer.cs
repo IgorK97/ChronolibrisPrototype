@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323202857_RemovePositionInContentTable")]
+    partial class RemovePositionInContentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,6 +72,12 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("description");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("file_path");
 
                     b.Property<string>("ISBN")
                         .HasMaxLength(17)
@@ -132,6 +141,7 @@ namespace Chronolibris.Infrastructure.Migrations
                             CoverPath = "BuddismHistory/BuddismJapanGrig/MainFile.png",
                             CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Монография является первой в отечественной литературе попыткой...",
+                            FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
                             IsAvailable = true,
                             IsReviewable = true,
                             LanguageId = 2L,
@@ -146,6 +156,7 @@ namespace Chronolibris.Infrastructure.Migrations
                             CoverPath = "EconomicHistory/StructureBrodel/MainFile.png",
                             CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Это — второе крупное исследование Ф. Броделя...",
+                            FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
                             IsAvailable = true,
                             IsReviewable = true,
                             LanguageId = 2L,
@@ -232,6 +243,10 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasMaxLength(2048)
                         .HasColumnType("character varying(2048)")
                         .HasColumnName("storage_url");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
 
                     b.HasKey("Id")
                         .HasName("pk_book_files");
@@ -576,6 +591,10 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<int?>("Year")
                         .HasColumnType("integer")
@@ -985,10 +1004,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("CheckNumber")
-                        .HasColumnType("integer")
-                        .HasColumnName("check_number");
-
                     b.Property<string>("Comment")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
@@ -1055,8 +1070,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasColumnType("text")
                         .HasColumnName("description");
 
                     b.Property<string>("ImagePath")
@@ -1070,6 +1084,10 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
                         .HasName("pk_persons");
@@ -1212,8 +1230,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasColumnType("text")
                         .HasColumnName("description");
 
                     b.Property<string>("Name")
@@ -1589,8 +1606,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasColumnType("text")
                         .HasColumnName("description");
 
                     b.Property<bool>("IsActive")

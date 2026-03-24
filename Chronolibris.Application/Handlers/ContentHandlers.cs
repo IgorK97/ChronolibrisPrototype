@@ -46,9 +46,9 @@ namespace Chronolibris.Application.Handlers
                     LanguageName = content.Language?.Name,
                     Year = content.Year,
                     //ParentContentId = content.ParentContentId,
-                    Position = content.Position,
+                    //Position = content.Position,
                     CreatedAt = content.CreatedAt,
-                    UpdatedAt = content.UpdatedAt,
+                    //UpdatedAt = content.UpdatedAt,
                     Authors = authors,
                     Themes = themes.Select(t => new ThemeDto
                     {
@@ -101,9 +101,9 @@ namespace Chronolibris.Application.Handlers
                 LanguageName = content.Language?.Name,
                 Year = content.Year,
                 //ParentContentId = content.ParentContentId,
-                Position = content.Position,
+                //Position = content.Position,
                 CreatedAt = content.CreatedAt,
-                UpdatedAt = content.UpdatedAt,
+                //UpdatedAt = content.UpdatedAt,
                 Authors = authors,
                 Themes = themes.Select(t => new ThemeDto
                 {
@@ -199,9 +199,9 @@ namespace Chronolibris.Application.Handlers
                 LanguageId = request.LanguageId,
                 Year = request.Year,
                 //ParentContentId = request.ParentContentId,
-                Position = request.Position,
+                //Position = request.Position,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null
+                //UpdatedAt = null
             };
 
             await _contentRepository.AddAsync(content, cancellationToken);
@@ -237,8 +237,8 @@ namespace Chronolibris.Application.Handlers
             content.LanguageId = request.LanguageId;
             content.Year = request.Year;
             //content.ParentContentId = request.ParentContentId;
-            content.Position = request.Position;
-            content.UpdatedAt = DateTime.UtcNow;
+            //content.Position = request.Position;
+            //content.UpdatedAt = DateTime.UtcNow;
 
             _contentRepository.Update(content);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

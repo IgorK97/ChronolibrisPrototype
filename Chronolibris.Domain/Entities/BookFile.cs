@@ -31,7 +31,7 @@ namespace Chronolibris.Domain.Entities
         public DateTime? CompletedAt { get; set; }
         //public required DateTime UpdatedAt { get; set; }
         public required long CreatedBy { get; set; }
-        public required int Version { get; set; } = 0;
+        //public required int Version { get; set; } = 0;
         public required long BookFileStatusId { get; set; }
 
         public Book Book { get; set; } = null!;

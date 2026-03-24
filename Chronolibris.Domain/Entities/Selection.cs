@@ -12,9 +12,10 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         [MaxLength(500)]
         public required string Name { get; set; }
+        [MaxLength(2000)]
         public required string Description { get; set; }
         public required bool IsActive { get; set; }
-        public required long CreatedBy { get; set; }
+        public required long UserId { get; set; }
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         //public required int SelectionTypeId { get; set; }

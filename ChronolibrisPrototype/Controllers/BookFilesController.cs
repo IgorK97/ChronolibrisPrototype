@@ -41,7 +41,7 @@ namespace ChronolibrisPrototype.Controllers
 
         public async Task<ActionResult<BookFileDto>> GetBookFile(long id, CancellationToken cancellationToken)
         {
-            var query = new GetBookFileQuery(id);
+            var query = new GetBookFileDtoQuery(id);
             var file = await _mediator.Send(query, cancellationToken);
 
             if (file == null)
@@ -57,7 +57,7 @@ namespace ChronolibrisPrototype.Controllers
 
         public async Task<ActionResult> DownloadBookFile(long id, CancellationToken cancellationToken)
         {
-            var query = new GetBookFileStreamQuery(id);
+            var query = new GetBookFileQuery(id);
             var stream = await _mediator.Send(query, cancellationToken);
 
             if (stream == null)

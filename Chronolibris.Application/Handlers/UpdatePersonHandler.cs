@@ -31,7 +31,7 @@ public class UpdatePersonHandler : IRequestHandler<UpdatePersonCommand>
         // Обновляем текстовые поля
         person.Name = request.Name;
         person.Description = request.Description;
-        person.UpdatedAt = DateTime.UtcNow;
+        //person.UpdatedAt = DateTime.UtcNow;
 
         // Логика работы с изображением
         if (request.ImageData != null && request.ImageData.Length > 0)

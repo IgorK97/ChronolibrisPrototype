@@ -141,7 +141,7 @@ namespace Chronolibris.Application.Handlers
                 LanguageId = request.LanguageId,
                 Year = request.Year,
                 ISBN = request.ISBN,
-                FilePath = request.FilePath ?? string.Empty,
+                //FilePath = request.FilePath ?? string.Empty,
                 CoverPath = request.CoverPath ?? string.Empty,
                 IsAvailable = request.IsAvailable,
                 IsReviewable = request.IsReviewable,
@@ -181,7 +181,7 @@ namespace Chronolibris.Application.Handlers
             book.LanguageId = request.LanguageId;
             book.Year = request.Year;
             book.ISBN = request.ISBN;
-            book.FilePath = request.FilePath ?? book.FilePath;
+            //book.FilePath = request.FilePath ?? book.FilePath;
             book.CoverPath = request.CoverPath ?? book.CoverPath;
             book.IsAvailable = request.IsAvailable;
             book.IsReviewable = request.IsReviewable;
@@ -250,9 +250,9 @@ namespace Chronolibris.Application.Handlers
                     LanguageName = content.Language?.Name,
                     Year = content.Year,
                     //ParentContentId = content.ParentContentId,
-                    Position = content.Position,
+                    //Position = content.Position,
                     CreatedAt = content.CreatedAt,
-                    UpdatedAt = content.UpdatedAt,
+                    //UpdatedAt = content.UpdatedAt,
                     Authors = authors,
                     Themes = content.Themes.Select(t => new ThemeDto
                     {

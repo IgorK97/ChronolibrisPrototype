@@ -16,17 +16,18 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
     {
         public ReportRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<ModerationTask> CreateModerationTaskWithReportsAsync(long TargetId, long TargetTypeId, long ReportTypeId, long ModeratorId, ITransaction transaction)
+        public async Task<ModerationTask?> CreateModerationTaskWithReportsAsync(long TargetId, long TargetTypeId, long ReportTypeId, long ModeratorId, ITransaction transaction)
         {
-            var existingTask = await _context.ModerationTasks
+            var lastTask = await _context.ModerationTasks
                 .Where(t =>
                 t.TargetId == TargetId &&
-                t.TargetTypeId == TargetTypeId &&
-                t.StatusId == 2).FirstOrDefaultAsync();
-
-            if(existingTask != null)
+                t.TargetTypeId == TargetTypeId).OrderByDescending(t => t.StartedAt).FirstOrDefaultAsync();
+            var stamp_number = 0;
+            if(lastTask != null)
             {
-                return existingTask;
+                if(lastTask.StatusId == 2)
+                    return null;
+                stamp_number = lastTask.CheckNumber + 1;
             }
 
             var task = new ModerationTask
@@ -37,6 +38,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 StartedAt = DateTime.UtcNow,
                 StatusId = 2,
                 Comment = "",
+                CheckNumber = stamp_number,
             };
 
             await _context.ModerationTasks.AddAsync(task);

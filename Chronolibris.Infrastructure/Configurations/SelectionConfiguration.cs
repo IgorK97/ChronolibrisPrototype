@@ -16,7 +16,7 @@ namespace Chronolibris.Infrastructure.Configurations
         {
             builder.HasOne<User>()
                 .WithMany()
-                .HasForeignKey(s => s.CreatedBy)
+                .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
@@ -30,7 +30,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "Экономическая история",
-                    CreatedBy = 1,
+                    UserId = 1,
                     //SelectionTypeId=3
                 },
                 new Selection
@@ -41,7 +41,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     IsActive = true,
                     Name = "История культуры",
                     //SelectionTypeId = 3
-                    CreatedBy = 1,
+                    UserId = 1,
 
                 },
                 new Selection
@@ -52,7 +52,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     IsActive = true,
                     Name = "История мира",
                     //SelectionTypeId = 3
-                    CreatedBy = 1,
+                    UserId = 1,
 
                 },
                 new Selection
@@ -63,7 +63,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     IsActive = true,
                     Name = "Новое",
                     //SelectionTypeId = 1
-                    CreatedBy=1,
+                    UserId=1,
                 },
                 new Selection {                     
                     Id = 5,
@@ -72,7 +72,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     IsActive = true,
                     Name = "Часто читают",
                     //SelectionTypeId = 2
-                    CreatedBy=1,
+                    UserId=1,
                 }
             );
         }

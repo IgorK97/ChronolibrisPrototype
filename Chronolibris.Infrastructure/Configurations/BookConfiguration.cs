@@ -82,7 +82,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     CoverPath = "BuddismHistory/BuddismJapanGrig/MainFile.png",
                     CreatedAt = dt,
                     Description = "Монография является первой в отечественной литературе попыткой...",
-                    FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
+                    //FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
                     IsAvailable = true,
                     //IsFragment = false,
                     LanguageId = 2, // Русский
@@ -101,7 +101,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     CoverPath = "EconomicHistory/StructureBrodel/MainFile.png",
                     CreatedAt = dt,
                     Description = "Это — второе крупное исследование Ф. Броделя...",
-                    FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
+                    //FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
                     IsAvailable = true,
                     //IsFragment = false,
                     LanguageId = 2, // Русский
