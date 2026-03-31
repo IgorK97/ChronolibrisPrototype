@@ -26,7 +26,6 @@ namespace ChronolibrisPrototype.Controllers
                 return Unauthorized();
 
             var result = await _mediator.Send(new AddBookmarkCommand(command.bookFileId,userId,command.noteText, command.paraIndex));
-            if (result<=0) return BadRequest();
             return Ok(result);
         }
 

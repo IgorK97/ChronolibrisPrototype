@@ -20,6 +20,10 @@ namespace Chronolibris.Domain.Entities
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public int? Year { get; set; }
+        [MaxLength(150)]
+        public string? Bbk { get; set; }
+        [MaxLength(150)]
+        public string? Udk { get; set; }
         [MaxLength(17)]
         public string? ISBN { get; set; }
         //public required bool IsFragment { get; set; }

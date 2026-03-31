@@ -15,7 +15,7 @@ namespace Chronolibris.Application.Handlers
     /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/> 
     /// для обработки <see cref="AddBookmarkCommand"/> и возврата <see cref="bool"/>.
     /// </summary>
-    public class AddBookmarkHandler : IRequestHandler<AddBookmarkCommand, long>
+    public class AddBookmarkHandler : IRequestHandler<AddBookmarkCommand, AddBookmarkResult>
     {
         /// <summary>
         /// Приватное поле для доступа к паттерну Unit of Work и репозиториям.
@@ -36,7 +36,7 @@ namespace Chronolibris.Application.Handlers
         /// <param name="request">Объект команды, содержащий данные для новой закладки.</param>
         /// <param name="cancellationToken">Токен отмены для асинхронной операции.</param>
         /// <returns>Задача, представляющая асинхронную операцию. Результат задачи — <c>true</c> при успехе.</returns>
-        public async Task<long> Handle(AddBookmarkCommand request, CancellationToken cancellationToken)
+        public async Task<AddBookmarkResult> Handle(AddBookmarkCommand request, CancellationToken cancellationToken)
         {
             //AAAAAAAAAAAAAAAA
             //TODO: FIX THIS!!! - нет проверки на то, что такая закладка уже есть (потом исправлю тип сущности и все будет работать)
@@ -54,7 +54,7 @@ namespace Chronolibris.Application.Handlers
             
             await _unitOfWork.SaveChangesAsync(cancellationToken);
            
-            return bookmark.Id;
+            return new AddBookmarkResult(bookmark.Id, bookmark.CreatedAt);
         }
     }
 

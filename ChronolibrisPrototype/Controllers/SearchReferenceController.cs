@@ -71,8 +71,6 @@ namespace Chronolibris.API.Controllers.Search
         /// возвращается корневой тег; MatchedName содержит найденный синоним.
         /// </summary>
         [HttpGet("tags")]
-        [ProducesResponseType(typeof(List<TagSuggestionDto>), 200)]
-        [ProducesResponseType(400)]
         public async Task<ActionResult<List<TagSuggestionDto>>> SearchTags(
             [FromQuery] string name,
             [FromQuery] int limit = 10,
