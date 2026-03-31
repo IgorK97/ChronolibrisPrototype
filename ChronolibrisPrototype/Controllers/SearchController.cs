@@ -53,19 +53,10 @@ namespace Chronolibris.API.Controllers.Search
         /// Следующая страница: то же тело + lastBestSimilarity и lastId из предыдущего ответа.
         /// </summary>
         [HttpPost("advanced")]
-        [ProducesResponseType(typeof(PagedResult<BookSearchResult>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PagedResult<BookSearchResult>>> AdvancedSearch(
-            [FromBody] AdvancedSearchHttpRequest request,
+            [FromBody] AdvancedSearchInputModel request,
             CancellationToken cancellationToken)
         {
-            if (request.LastBestSimilarity.HasValue != request.LastId.HasValue)
-                return BadRequest(
-                    "LastBestSimilarity и LastId должны передаваться вместе.");
-
-            if (request.YearFrom.HasValue && request.YearTo.HasValue
-                && request.YearFrom > request.YearTo)
-                return BadRequest("YearFrom не может быть больше YearTo.");
 
             var personFilters = request.PersonFilters
                 .Select(f => new PersonRoleFilter
@@ -83,15 +74,10 @@ namespace Chronolibris.API.Controllers.Search
                     LastBestSimilarity: request.LastBestSimilarity,
                     LastId: request.LastId,
                     PersonFilters: personFilters,
-                    RequiredThemeIds: request.RequiredThemeIds,
-                    ExcludedThemeIds: request.ExcludedThemeIds,
                     RequiredTagIds: request.RequiredTagIds,
                     ExcludedTagIds: request.ExcludedTagIds,
-                    PublisherIds: request.PublisherIds,
-                    LanguageIds: request.LanguageIds,
-                    CountryIds: request.CountryIds,
-                    YearFrom: request.YearFrom,
-                    YearTo: request.YearTo),
+                    ThemeId: request.ThemeId
+),
                 cancellationToken);
 
             return Ok(result);

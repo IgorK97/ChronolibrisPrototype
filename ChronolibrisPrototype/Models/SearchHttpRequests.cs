@@ -37,7 +37,7 @@ namespace Chronolibris.API.Controllers.Search
         public List<long> PersonIds { get; set; } = [];
     }
 
-    public class AdvancedSearchHttpRequest
+    public class AdvancedSearchInputModel
     {
         [Required(ErrorMessage = "Параметр query обязателен")]
         [MinLength(1)]
@@ -53,18 +53,9 @@ namespace Chronolibris.API.Controllers.Search
 
         // ── Фильтры ────────────────────────────────────────────────────────
         public List<PersonRoleFilterHttpRequest> PersonFilters { get; set; } = [];
-        public List<long> RequiredThemeIds { get; set; } = [];
-        public List<long> ExcludedThemeIds { get; set; } = [];
+        public long ThemeId { get; set; }
         public List<long> RequiredTagIds { get; set; } = [];
         public List<long> ExcludedTagIds { get; set; } = [];
-        public List<long> PublisherIds { get; set; } = [];
-        public List<long> LanguageIds { get; set; } = [];
-        public List<long> CountryIds { get; set; } = [];
 
-        [Range(0, 9999)]
-        public int? YearFrom { get; set; }
-
-        [Range(0, 9999)]
-        public int? YearTo { get; set; }
     }
 }

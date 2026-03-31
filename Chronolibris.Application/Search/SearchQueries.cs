@@ -26,14 +26,8 @@ namespace Chronolibris.Application.Search.Queries
         double? LastBestSimilarity,
         long? LastId,
         List<PersonRoleFilter> PersonFilters,
-        List<long> RequiredThemeIds,
-        List<long> ExcludedThemeIds,
+        long ThemeId,
         List<long> RequiredTagIds,
-        List<long> ExcludedTagIds,
-        List<long> PublisherIds,
-        List<long> LanguageIds,
-        List<long> CountryIds,
-        int? YearFrom,
-        int? YearTo
+        List<long> ExcludedTagIds
     ) : IRequest<PagedResult<BookSearchResult>>;
 }

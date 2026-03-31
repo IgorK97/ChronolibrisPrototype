@@ -68,16 +68,17 @@ namespace Chronolibris.Domain.Models.Search
         public int PageSize { get; set; } = 20;
 
         public List<PersonRoleFilter> PersonFilters { get; set; } = [];
-        public List<long> RequiredThemeIds { get; set; } = [];
-        public List<long> ExcludedThemeIds { get; set; } = [];
+        public long ThemeId { get; set; }
+        //public List<long> RequiredThemeIds { get; set; } = [];
+        //public List<long> ExcludedThemeIds { get; set; } = [];
         public List<long> RequiredTagIds { get; set; } = [];
         public List<long> ExcludedTagIds { get; set; } = [];
 
-        public List<long> PublisherIds { get; set; } = [];
-        public List<long> LanguageIds { get; set; } = [];
-        public List<long> CountryIds { get; set; } = [];
-        public int? YearFrom { get; set; }
-        public int? YearTo { get; set; }
+        //public List<long> PublisherIds { get; set; } = [];
+        //public List<long> LanguageIds { get; set; } = [];
+        //public List<long> CountryIds { get; set; } = [];
+        //public int? YearFrom { get; set; }
+        //public int? YearTo { get; set; }
         public long? UserId { get; set; }
 
         public double? LastBestSimilarity { get; set; }

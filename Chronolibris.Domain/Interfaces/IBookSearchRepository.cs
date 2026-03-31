@@ -11,15 +11,15 @@ namespace Chronolibris.Domain.Interfaces
     {
         //Простой поиск по названию,
         //офсетная пагинация
-        Task<OffsetPagedResult<BookSearchResult>> SearchOffsetAsync(
-            SimpleSearchOffsetRequest request, CancellationToken token);
+        //Task<OffsetPagedResult<BookSearchResult>> SearchOffsetAsync(
+        //    SimpleSearchOffsetRequest request, CancellationToken token);
 
         Task<PagedResult<BookSearchResult>> SearchKeysetAsync(
            SimpleSearchKeysetRequest request, CancellationToken token);
 
         //Расширенный поиск, офсетная пагинация
-        Task<OffsetPagedResult<BookSearchResult>> AdvancedSearchOffsetAsync(
-            AdvancedSearchOffsetRequest request, CancellationToken token);
+        //Task<OffsetPagedResult<BookSearchResult>> AdvancedSearchOffsetAsync(
+        //    AdvancedSearchOffsetRequest request, CancellationToken token);
 
         Task<PagedResult<BookSearchResult>> AdvancedSearchKeysetAsync(
             AdvancedSearchKeysetRequest request, CancellationToken token);
