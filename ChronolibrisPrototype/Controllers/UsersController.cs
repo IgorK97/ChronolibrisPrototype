@@ -38,7 +38,7 @@ namespace ChronolibrisPrototype.Controllers
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(7)
+                Expires = DateTime.UtcNow.AddDays(365)
             };
 
             Response.Cookies.Append("token", token, cookieOptions);
@@ -59,7 +59,7 @@ namespace ChronolibrisPrototype.Controllers
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(7)
+                Expires = DateTime.UtcNow.AddDays(365)
             };
 
             Response.Cookies.Append("token", token, cookieOptions);
@@ -85,6 +85,7 @@ namespace ChronolibrisPrototype.Controllers
             try
             {
                 var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
+                
                 return result !=null ? Ok(result): NotFound();
 
             }
@@ -94,7 +95,8 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [Authorize]
-        [HttpPost("profile")]
+        //[HttpPost("profile")]
+        [HttpPut]
         public async Task<IActionResult> UpdateProfile(UpdateUserProfileRequest request)
         {
 

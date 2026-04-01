@@ -66,6 +66,8 @@ namespace Chronolibris.Domain.Models
         public long? ReaderId { get; set; }
         public string? BookTitle { get; set; }
         public string? BookDescription { get; set; }
+        public required long BookId { get; set; }
+        public string? ParentCommentText { get; set; }
     }
 
     //Запрос списка жалоб конкретного типа на конкретный таргет - 3

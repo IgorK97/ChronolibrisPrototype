@@ -235,8 +235,8 @@ namespace Chronolibris.Application.Handlers
             var contentDtos = new List<ContentDto>();
             foreach (var content in contents)
             {
-                var authors = await _bookRepository.GetAuthorNamesByBookIdAsync(request.BookId, cancellationToken);
-
+                //var authors = await _bookRepository.GetAuthorNamesByBookIdAsync(request.BookId, cancellationToken);
+                var authors = content.Participations.Select(a => a.Person.Name).ToList();
                 contentDtos.Add(new ContentDto
                 {
                     Id = content.Id,

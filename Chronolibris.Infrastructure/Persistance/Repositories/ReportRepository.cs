@@ -138,6 +138,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     TargetTypeId = TargetTypeId,
                     Text = null,
                     ReaderId = null,
+                    BookId = b.Id,
                 }).FirstOrDefaultAsync();
             }
             else if (TargetTypeId == 2)
@@ -150,7 +151,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     BookTitle = null,
                     TargetTypeId = TargetTypeId,
                     Text = c.Text,
-                    ReaderId = c.UserId
+                    ParentCommentText = c.ParentComment != null ? c.ParentComment.Text : null,
+                    ReaderId = c.UserId,
+                    BookId = c.BookId,
                 }).FirstOrDefaultAsync();
             }
             else if (TargetTypeId == 3)
@@ -163,7 +166,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     BookTitle = null,
                     TargetTypeId = TargetTypeId,
                     Text = r.ReviewText,
-                    ReaderId = r.UserId
+                    ReaderId = r.UserId,
+                    BookId= r.BookId,
                 }).FirstOrDefaultAsync();
             }
             return null;

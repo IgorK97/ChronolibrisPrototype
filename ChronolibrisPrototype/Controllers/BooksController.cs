@@ -152,23 +152,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-
-        //[HttpGet("{bookId}/read")]
-        //public async Task<ActionResult> GetBook(long bookId)
-        //{
-        //    var result = await _mediator.Send(new Chronolibris.Application.Requests.GetBookFileQuery(bookId));
-        //    //if (result != null)
-        //    //    return File(result.FileBytes, result.ContentType, result.FileName);
-        //    //return NotFound();
-        //    if (result == null) //null pochemu-to :-/
-        //        return NotFound();
-
-        //    return new FileStreamResult(result.Stream, result.ContentType)
-        //    {
-        //        FileDownloadName = result.FileName,
-        //    };
-        //}
-
         [HttpGet("{bookId}/info")]
         public async Task<ActionResult> GetBookMetadata(long bookId, long userId)
         {
@@ -239,7 +222,6 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает список контентов для книги
         /// </summary>
         [HttpGet("{id}/contents")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ContentDto>))]
         public async Task<ActionResult<List<ContentDto>>> GetBookContents(long id, CancellationToken cancellationToken)
         {
             var query = new GetBookContentsQuery(id);

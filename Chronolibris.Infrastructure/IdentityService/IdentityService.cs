@@ -60,7 +60,7 @@ namespace Chronolibris.Infrastructure.Identity
                 LastName = request.LastName,
                 IsDeleted = false,
                 //LastEnteredAt = dt,
-                FirstName = request.UserName,
+                FirstName = request.FirstName,
                 RegisteredAt = dt,
                 Email = request.Email,
                 UserName = request.UserName,
