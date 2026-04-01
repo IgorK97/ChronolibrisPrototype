@@ -26,7 +26,7 @@ namespace ChronolibrisPrototype.Controllers
         /// <summary>
         /// Получает список всех тем верхнего уровня
         /// </summary>
-        [HttpGet]
+        [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ThemeDto>))]
         public async Task<ActionResult<IEnumerable<ThemeDto>>> GetAll(CancellationToken cancellationToken)
         {
@@ -35,11 +35,17 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(themes);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ThemeDto>>> GetAllByName([FromQuery] string q, CancellationToken cancellationToken)
+        {
+            var themes = await _mediator.Send(new GetThemesByNameQuery(q), cancellationToken);
+            return Ok(themes);
+        }
+
         /// <summary>
         /// Получает список дочерних тем для указанной родительской темы
         /// </summary>
         [HttpGet("parent/{parentThemeId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ThemeDto>))]
         public async Task<ActionResult<IEnumerable<ThemeDto>>> GetByParentId(long parentThemeId, CancellationToken cancellationToken)
         {
             var query = new GetAllThemesQuery(parentThemeId);
@@ -51,8 +57,6 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает тему по идентификатору
         /// </summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ThemeDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ThemeDto>> GetById(long id, CancellationToken cancellationToken)
         {
             var query = new GetThemeByIdQuery(id);
@@ -96,9 +100,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Update(long id, [FromBody] UpdateThemeRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -131,9 +132,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Delete(long id, CancellationToken cancellationToken)
         {
             try

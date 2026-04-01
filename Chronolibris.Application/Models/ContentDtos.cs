@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Chronolibris.Domain.Models;
+using MediatR;
 
 namespace Chronolibris.Application.Models
 {
@@ -51,35 +53,30 @@ namespace Chronolibris.Application.Models
         public List<long> ThemeIds { get; set; } = new();
     }
 
-    public class UpdateContentRequest
+    public class UpdateContentRequest : IRequest<Unit>
     {
-        [Required]
         public long Id { get; set; }
 
-        [Required]
-        [MaxLength(500)]
-        public string Title { get; set; } = string.Empty;
+        public string? Title { get; set; }
 
-        [Required]
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
 
-        [Required]
-        public long CountryId { get; set; }
+        public long? CountryId { get; set; }
 
-        [Required]
-        public long ContentTypeId { get; set; }
+        public long? ContentTypeId { get; set; }
 
-        [Required]
-        public long LanguageId { get; set; }
+        public long? LanguageId { get; set; }
 
         public int? Year { get; set; }
-        public long? ParentContentId { get; set; }
-        public int? Position { get; set; }
-        public List<long> PersonIds { get; set; } = new();
-        public List<long> ThemeIds { get; set; } = new();
+        public bool YearProvided { get; set; }
+        public List<PersonRoleFilter>? PersonFilters { get; set; }
+        public List<long>? ThemeIds { get; set; }
+        public List<long>? TagIds { get; set; }
     }
 
-    
+
+
+
 
     public class ContentListResponse
     {

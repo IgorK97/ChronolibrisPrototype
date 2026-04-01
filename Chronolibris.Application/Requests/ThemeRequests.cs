@@ -22,6 +22,8 @@ namespace Chronolibris.Application.Requests
         public GetThemeByIdQuery(long id) => Id = id;
     }
 
+    public record GetThemesByNameQuery(string Name) : IRequest<List<ThemeDto>>;
+
     // Commands
     public class CreateThemeCommand : IRequest<long>
     {

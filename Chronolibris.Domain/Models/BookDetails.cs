@@ -38,6 +38,10 @@ namespace Chronolibris.Domain.Models
         /// </summary>
         public string? ISBN { get; set; }
 
+        public string? Bbk { get; set; }
+        public string? Udk { get; set; }
+        public string? Source { get; set; }
+
         /// <summary>
         /// Обязательный средний рейтинг книги (например, по шкале от 1.0 до 5.0).
         /// </summary>

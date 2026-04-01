@@ -157,35 +157,15 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateContent(long id,
             [FromBody] UpdateContentRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
-
-            if (id != request.Id)
-                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
-
+            //Как лучше переписать этот код?
             try
             {
-                var command = new UpdateContentCommand(
-                    id,
-                    request.Title,
-                    request.Description,
-                    request.CountryId,
-                    request.ContentTypeId,
-                    request.LanguageId,
-                    request.Year,
-                    request.ParentContentId,
-                    request.Position,
-                    request.PersonIds,
-                    request.ThemeIds
-                );
 
-                await _mediator.Send(command, cancellationToken);
+
+                await _mediator.Send(request, cancellationToken);
                 return NoContent();
             }
             catch (KeyNotFoundException)

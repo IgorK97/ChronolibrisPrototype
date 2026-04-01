@@ -60,37 +60,21 @@ namespace Chronolibris.Application.Requests
         }
     }
 
-    public class UpdateContentCommand : IRequest<Unit>
-    {
-        public long Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public long CountryId { get; set; }
-        public long ContentTypeId { get; set; }
-        public long LanguageId { get; set; }
-        public int? Year { get; set; }
-        public long? ParentContentId { get; set; }
-        public int? Position { get; set; }
-        public List<long> PersonIds { get; set; } = new();
-        public List<long> ThemeIds { get; set; } = new();
+    //public class UpdateContentCommand : IRequest<Unit>
+    //{
+    //    public long Id { get; set; }
+    //    public string Title { get; set; } = string.Empty;
+    //    public string Description { get; set; } = string.Empty;
+    //    public long CountryId { get; set; }
+    //    public long ContentTypeId { get; set; }
+    //    public long LanguageId { get; set; }
+    //    public int? Year { get; set; }
+    //    public long? ParentContentId { get; set; }
+    //    public int? Position { get; set; }
+    //    public List<long> PersonIds { get; set; } = new();
+    //    public List<long> ThemeIds { get; set; } = new();
 
-        public UpdateContentCommand(long id, string title, string description, long countryId,
-            long contentTypeId, long languageId, int? year, long? parentContentId,
-            int? position, List<long> personIds, List<long> themeIds)
-        {
-            Id = id;
-            Title = title;
-            Description = description;
-            CountryId = countryId;
-            ContentTypeId = contentTypeId;
-            LanguageId = languageId;
-            Year = year;
-            ParentContentId = parentContentId;
-            Position = position;
-            PersonIds = personIds;
-            ThemeIds = themeIds;
-        }
-    }
+    //}
 
     public class DeleteContentCommand : IRequest<Unit>
     {

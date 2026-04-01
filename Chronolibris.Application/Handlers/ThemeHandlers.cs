@@ -46,6 +46,28 @@ namespace Chronolibris.Application.Handlers
         }
     }
 
+    public class GetThemesByNameHandler : IRequestHandler<GetThemesByNameQuery, List<ThemeDto>>
+    {
+        private readonly IThemeRepository _themeRepository;
+        public GetThemesByNameHandler(IThemeRepository themeRepository)
+        {
+            _themeRepository = themeRepository;
+        }
+        public async Task<List<ThemeDto>> Handle(GetThemesByNameQuery request, CancellationToken cancellationToken)
+        {
+            var themes = await _themeRepository.GetByNameAsync(request.Name, cancellationToken);
+            var themeDtos = new List<ThemeDto>();
+            foreach (var theme in themes)
+            {
+                themeDtos.Add(new ThemeDto
+                {
+                    Id = theme.Id,
+                    Name = theme.Name,
+                });
+            }
+            return themeDtos;
+        }
+    }
     public class GetThemeByIdHandler : IRequestHandler<GetThemeByIdQuery, ThemeDto?>
     {
         private readonly IThemeRepository _themeRepository;

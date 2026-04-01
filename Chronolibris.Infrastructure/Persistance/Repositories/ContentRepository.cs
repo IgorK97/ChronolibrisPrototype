@@ -1,6 +1,7 @@
 ﻿// File: Chronolibris.Infrastructure.Persistence.Repositories.ContentRepository.cs
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -306,6 +307,86 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 .Where(c => c.Id == contentId)
                 .SelectMany(c => c.Themes)
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task SyncThemesAsync(long contentId, List<long> newThemeIds, CancellationToken cancellationToken = default)
+        {
+            var content = await _context.Contents.Include(c=>c.Themes)
+                .FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
+                throw new KeyNotFoundException($"Not found");
+
+            var currentIds = content.Themes.Select(t => t.Id).ToHashSet();
+            var desiredIds = newThemeIds.ToHashSet();
+
+            var toRemove = content.Themes.Where(t => !desiredIds.Contains(t.Id)).ToList();
+            foreach (var theme in toRemove)
+                content.Themes.Remove(theme);
+
+            var toAddIds = desiredIds.Except(currentIds).ToList();
+            if (toAddIds.Count > 0)
+            {
+                var themesToAdd = await _context.Themes.Where(t=>toAddIds.Contains(t.Id))
+                    .ToListAsync(cancellationToken);
+                foreach (var theme in themesToAdd)
+                    content.Themes.Add(theme);
+            }
+        }
+
+        public async Task SyncPersonsAsync(long contentId, List<PersonRoleFilter> newPersons, CancellationToken cancellationToken = default)
+        {
+           var content = await _context.Contents.Include(c=>c.Participations).
+                FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
+                throw new KeyNotFoundException($"Not found");
+
+            var currentPairs = content.Participations.Select(p => (p.PersonId,p.PersonRoleId))
+                .ToHashSet();
+            var desiredPairs = newPersons.SelectMany(pr => pr.PersonIds.Select(pid => (PersonId: pid, PersonRoleId: pr.RoleId)))
+                .ToHashSet();
+
+            var pairsToAdd = desiredPairs.Except(currentPairs).ToList();
+            foreach (var pair in pairsToAdd)
+            {
+                var participation = new ContentParticipation
+                {
+                    PersonRoleId = pair.PersonRoleId,
+                    PersonId = pair.PersonId,
+                };
+                content.Participations.Add(participation);
+            }
+
+            var pairsToRemove = currentPairs.Except(desiredPairs).ToList();
+            var participationsToRemove = content.Participations.Where(p =>
+                pairsToRemove.Contains((p.PersonId, p.PersonRoleId))).ToList();
+
+            foreach (var participation in participationsToRemove)
+                content.Participations.Remove(participation);
+
+
+
+
+        }
+
+        public async Task SyncTagsAsync(long contentId, List<long> TagIds, CancellationToken cancellationToken)
+        {
+            var content = await _context.Contents.Include(c => c.Tags)
+               .FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
+               throw new KeyNotFoundException($"Not found");
+
+            var currentIds = content.Tags.Select(t => t.Id).ToHashSet();
+            var desiredIds = TagIds.ToHashSet();
+
+            var toRemove = content.Tags.Where(t => !desiredIds.Contains(t.Id)).ToList();
+            foreach (var tag in toRemove)
+                content.Tags.Remove(tag);
+
+            var toAddIds = desiredIds.Except(currentIds).ToList();
+            if (toAddIds.Count > 0)
+            {
+                var tagsToAdd = await _context.Tags.Where(t => toAddIds.Contains(t.Id))
+                    .ToListAsync(cancellationToken);
+                foreach (var tag in tagsToAdd)
+                    content.Tags.Add(tag);
+            }
         }
     }
 }

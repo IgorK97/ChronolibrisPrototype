@@ -214,7 +214,7 @@ namespace Chronolibris.Application.Handlers
         }
     }
 
-    public class UpdateContentHandler : IRequestHandler<UpdateContentCommand, Unit>
+    public class UpdateContentHandler : IRequestHandler<UpdateContentRequest, Unit>
     {
         private readonly IContentRepository _contentRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -225,22 +225,37 @@ namespace Chronolibris.Application.Handlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(UpdateContentCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateContentRequest request, CancellationToken cancellationToken)
         {
             var content = await _contentRepository.GetByIdAsync(request.Id, cancellationToken);
             if (content == null) throw new KeyNotFoundException($"Content with ID {request.Id} not found");
 
-            content.Title = request.Title;
-            content.Description = request.Description;
-            content.CountryId = request.CountryId;
-            content.ContentTypeId = request.ContentTypeId;
-            content.LanguageId = request.LanguageId;
-            content.Year = request.Year;
-            //content.ParentContentId = request.ParentContentId;
-            //content.Position = request.Position;
-            //content.UpdatedAt = DateTime.UtcNow;
+            if(request.Title!=null)
+                content.Title = request.Title;
+            
+            if(request.Description!=null)
+                content.Description = request.Description;
 
-            _contentRepository.Update(content);
+            if(request.CountryId!=null)
+                content.CountryId = (long)request.CountryId;
+            
+            if(request.ContentTypeId!=null)
+                content.ContentTypeId = (long) request.ContentTypeId;
+            
+            if(request.LanguageId!=null)
+                content.LanguageId = (long)request.LanguageId;
+            
+            if(request.YearProvided)
+                content.Year = request.Year;
+
+            if(request.PersonFilters!=null)
+                await _contentRepository.SyncPersonsAsync(content.Id, request.PersonFilters, cancellationToken);
+            if(request.ThemeIds!=null)
+                await _contentRepository.SyncThemesAsync(content.Id, request.ThemeIds, cancellationToken);
+            if(request.TagIds!=null)
+                await _contentRepository.SyncTagsAsync(content.Id, request.TagIds, cancellationToken);
+
+            //_contentRepository.Update(content);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
