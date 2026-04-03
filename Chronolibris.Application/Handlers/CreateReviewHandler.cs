@@ -56,6 +56,10 @@ namespace Chronolibris.Application.Handlers
             if (request.ReviewText != null && (request.ReviewText.Length < 120 || string.IsNullOrWhiteSpace(request.ReviewText.Trim())))
                 throw new Exception("Текст отзыва должен быть не менее 120 символов.");
 
+            var book = await _unitOfWork.Books.GetByIdAsync(request.BookId, cancellationToken);
+            if(book==null || book.IsReviewable == false)
+                throw new Exception("Этой книги нет или она не может быть оценена.");
+
             var review = new Review
             {
                 BookId = request.BookId,
