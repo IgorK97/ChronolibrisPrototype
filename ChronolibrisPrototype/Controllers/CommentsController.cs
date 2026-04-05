@@ -45,7 +45,8 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult<List<CommentDto>>> GetBookComments(
             long bookId, long? lastId, int limit = 20)
         {
-            if (!TryGetUserId(out var userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) 
+                userId = 0;
             var result = await _mediator.Send(new GetBookCommentsQuery(bookId, lastId, limit, userId));
             return Ok(result);
         }
@@ -55,7 +56,7 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult<List<CommentDto>>> GetReplies(
             long parentId, long? lastId, int limit = 20)
         {
-            if (!TryGetUserId(out var userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) userId = 0;
             var result = await _mediator.Send(new GetCommentRepliesQuery(parentId, lastId, limit, userId));
             return Ok(result);
         }

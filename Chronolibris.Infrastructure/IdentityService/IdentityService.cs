@@ -81,7 +81,7 @@ namespace Chronolibris.Infrastructure.Identity
 
             var role = string.IsNullOrWhiteSpace(request.Role) ? "reader" : request.Role;
 
-            await _userManager.AddToRoleAsync(user, "reader");
+            await _userManager.AddToRoleAsync(user, role);
 
             var refreshToken = GenerateRefreshToken();
             //user.RefreshToken = refreshToken;

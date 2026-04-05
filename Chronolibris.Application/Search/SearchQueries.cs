@@ -12,7 +12,8 @@ namespace Chronolibris.Application.Search.Queries
         int PageSize,
         long? UserId,
         double? LastBestSimilarity,
-        long? LastId
+        long? LastId,
+        bool mode
     ) : IRequest<PagedResult<BookSearchResult>>;
 
     /// <summary>
@@ -29,6 +30,7 @@ namespace Chronolibris.Application.Search.Queries
         long ThemeId,
         long SelectionId,
         List<long> RequiredTagIds,
-        List<long> ExcludedTagIds
+        List<long> ExcludedTagIds,
+        bool mode
     ) : IRequest<PagedResult<BookSearchResult>>;
 }

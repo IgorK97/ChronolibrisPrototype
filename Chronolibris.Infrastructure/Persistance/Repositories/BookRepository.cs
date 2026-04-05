@@ -28,7 +28,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// </summary>
         /// <param name="context">Контекст базы данных приложения, используемый для доступа к данным.</param>
         public BookRepository(ApplicationDbContext context) : base(context) { _set = context.Set<Book>(); }
-        public async Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, CancellationToken token)
+        public async Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, bool mode, CancellationToken token)
         {
             var raw = await _context.Books
                 .Where(b => b.Id == bookId).AsSplitQuery()
@@ -84,6 +84,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .FirstOrDefaultAsync(token);
 
             if (raw == null) return null;
+            if (!raw.IsAvailable && !mode) return null;
 
             var allParticipations = raw.DirectParticipations
                 .Concat(raw.ContentParticipations);

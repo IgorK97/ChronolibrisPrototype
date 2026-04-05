@@ -25,21 +25,29 @@ namespace Chronolibris.API.Controllers.Search
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<PagedResult<BookSearchResult>>> Search(
-            [FromQuery] SimpleSearchHttpRequest request,
-            CancellationToken cancellationToken)
+            [FromQuery] SimpleSearchHttpRequest request, bool mode = false,
+            CancellationToken cancellationToken = default)
         {
-            // Курсор валиден только если переданы оба поля одновременно
             if (request.LastBestSimilarity.HasValue != request.LastId.HasValue)
                 return BadRequest(
                     "LastBestSimilarity и LastId должны передаваться вместе.");
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                //return Unauthorized();
+                userId = 0;
+            var roleClaim = User.FindFirstValue(ClaimTypes.Role);
+            if (mode && (userId == 0 || roleClaim != "admin"))
+                return BadRequest();
 
             var result = await _mediator.Send(
                 new SimpleSearchKeysetQuery(
                     Query: request.Query,
                     PageSize: request.PageSize,
-                    UserId: TryGetUserId(),
+                    UserId: userId,
                     LastBestSimilarity: request.LastBestSimilarity,
-                    LastId: request.LastId),
+                    LastId: request.LastId,
+                    mode),
                 cancellationToken);
 
             return Ok(result);
@@ -52,9 +60,20 @@ namespace Chronolibris.API.Controllers.Search
         /// </summary>
         [HttpPost("advanced")]
         public async Task<ActionResult<PagedResult<BookSearchResult>>> AdvancedSearch(
-            [FromBody] AdvancedSearchInputModel request,
-            CancellationToken cancellationToken)
+            [FromBody] AdvancedSearchInputModel request, bool mode=false,
+            CancellationToken cancellationToken = default)
         {
+            if (request.LastBestSimilarity.HasValue != request.LastId.HasValue)
+                return BadRequest(
+                    "LastBestSimilarity и LastId должны передаваться вместе.");
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                //return Unauthorized();
+                userId = 0;
+            var roleClaim = User.FindFirstValue(ClaimTypes.Role);
+            if (mode && (userId == 0 || roleClaim != "admin"))
+                return BadRequest();
 
             var personFilters = request.PersonFilters
                 .Select(f => new PersonRoleFilter
@@ -75,7 +94,8 @@ namespace Chronolibris.API.Controllers.Search
                     RequiredTagIds: request.RequiredTagIds,
                     ExcludedTagIds: request.ExcludedTagIds,
                     ThemeId: request.ThemeId,
-                    SelectionId:request.SelectionId),
+                    SelectionId:request.SelectionId,
+                    mode:mode),
                 cancellationToken);
 
             return Ok(result);

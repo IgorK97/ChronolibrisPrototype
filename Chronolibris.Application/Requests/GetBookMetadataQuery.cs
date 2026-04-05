@@ -19,5 +19,5 @@ namespace Chronolibris.Application.Queries
     /// </summary>
     /// <param name="bookId">Идентификатор книги, метаданные которой необходимо получить.</param>
     /// <returns>Возвращает объект <see cref="BookDetails"/>, содержащий всю подробную информацию о книге.</returns>
-    public record GetBookMetadataQuery(long bookId, long userId) : IRequest<BookDetails>;
+    public record GetBookMetadataQuery(long bookId, long userId, bool mode) : IRequest<BookDetails>;
 }

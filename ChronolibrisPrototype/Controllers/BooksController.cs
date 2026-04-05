@@ -52,10 +52,7 @@ namespace ChronolibrisPrototype.Controllers
 
 
         /// <summary>
-        /// Создаёт книгу. Обложка передаётся как Base64 в теле JSON.
-        /// Порядок: 1) запись в БД → получаем id,
-        ///           2) декодируем Base64 и загружаем в MinIO: covers/{id}/cover.{ext},
-        ///           3) обновляем coverPath в БД.
+        ///
         /// </summary>
         [Authorize]
         [HttpPost]
@@ -167,13 +164,22 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{bookId}/info")]
-        public async Task<ActionResult> GetBookMetadata(long bookId)
+        public async Task<ActionResult> GetBookMetadata(long bookId, bool mode)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            //return Unauthorized();
+            {
+                userId = 0;
+                
 
-            var metadata = await _mediator.Send(new GetBookMetadataQuery(bookId, userId));
+            }
+            var roleClaim = User.FindFirstValue(ClaimTypes.Role);
+            if(mode && (userId==0 || roleClaim != "admin"))
+            {
+                return BadRequest();
+            }
+            var metadata = await _mediator.Send(new GetBookMetadataQuery(bookId, userId, mode));
             if(metadata != null)
                 return Ok(metadata);
             return NotFound();

@@ -52,7 +52,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<BookDetails?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
         {
             // Получение книги с необходимыми связанными сущностями из репозитория
-            return await unitOfWork.Books.GetBookWithRelationsAsync(request.bookId, request.userId, cancellationToken);
+            return await unitOfWork.Books.GetBookWithRelationsAsync(request.bookId, request.userId, request.mode, cancellationToken);
         }
     }
 }

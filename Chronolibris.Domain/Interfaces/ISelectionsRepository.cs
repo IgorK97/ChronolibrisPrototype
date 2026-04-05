@@ -48,7 +48,7 @@ namespace Chronolibris.Domain.Interfaces
         /// и общее количество книг в подборке (<c>TotalCount</c>).
         /// </returns>
         Task<List<BookListItem>>
-            GetBooksForSelection(long selectionId, long? lastId, int limit, long userId, CancellationToken token = default);
+            GetBooksForSelection(long selectionId, long? lastId, int limit, long userId, bool mode, CancellationToken token = default);
 
         Task<long> CreateAsync(Selection selection, CancellationToken ct);
         Task<bool> UpdateAsync(long selectionId, string? name, string? description, bool? isActive, CancellationToken ct);

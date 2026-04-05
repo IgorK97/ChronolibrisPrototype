@@ -65,8 +65,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                             ), 0)
                         ) AS best_similarity
                     FROM books b
-                    WHERE b.is_available = true
-                        AND word_similarity({0}::text, b.title)>0.3
+                    WHERE" + (!request.mode ?  @" b.is_available = true
+                        AND " : " ") +  @" word_similarity({0}::text, b.title)>0.3
 
                     UNION
 
@@ -313,8 +313,11 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 var sql = $$"""
                 SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
                 FROM books b
-                WHERE b.is_available = true
-                  AND  word_similarity({{{0}}}::text, b.title)>0.3
+                WHERE 
+                """ + (!request.mode ? $$"""b.is_available = true AND """ : " ")  + 
+                $$"""
+                 word_similarity({{{0}}}::text, b.title)>0.3
+                
                 {{filters}}
  
                 UNION

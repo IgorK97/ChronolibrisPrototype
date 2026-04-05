@@ -60,6 +60,7 @@ namespace Chronolibris.Domain.Models.Search
         // Курсор — null означает первую страницу
         public double? LastBestSimilarity { get; set; }
         public long? LastId { get; set; }
+        public bool mode { get; set; }
     }
 
     public class AdvancedSearchKeysetRequest
@@ -84,6 +85,7 @@ namespace Chronolibris.Domain.Models.Search
 
         public double? LastBestSimilarity { get; set; }
         public long? LastId { get; set; }
+        public bool mode { get; set; }
     }
 
 }

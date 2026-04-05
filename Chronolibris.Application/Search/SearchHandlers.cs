@@ -26,6 +26,7 @@ namespace Chronolibris.Application.Search.Handlers
                     UserId = request.UserId,
                     LastBestSimilarity = request.LastBestSimilarity,
                     LastId = request.LastId,
+                    mode = request.mode
                 },
                 cancellationToken);
         }
@@ -57,6 +58,7 @@ namespace Chronolibris.Application.Search.Handlers
                    ExcludedTagIds = request.ExcludedTagIds,
                    ThemeId = request.ThemeId,
                    SelectionId = request.SelectionId,
+                   mode=request.mode,
                },
                 cancellationToken);
         }

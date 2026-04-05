@@ -86,18 +86,21 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{selectionId}/books")]
-        [Authorize]
-        public async Task<IActionResult> GetBooks(long selectionId, long? lastId, int limit = 20)
+        //[Authorize]
+        public async Task<IActionResult> GetBooks(long selectionId, long? lastId, int limit = 20, bool mode = false)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
-
+                //return Unauthorized();
+                userId = 0;
+            var roleClaim = User.FindFirstValue(ClaimTypes.Role);
+            if (mode && (userId == 0 || roleClaim != "admin"))
+                return BadRequest();
             if (limit < 1) limit = 20;
             else if (limit > 100) limit = 100;
 
             var result = await _mediator.Send(
-                new GetSelectionBooksQuery(selectionId, lastId, limit, userId));
+                new GetSelectionBooksQuery(selectionId, lastId, limit, userId, mode));
 
             return Ok(result);
         }

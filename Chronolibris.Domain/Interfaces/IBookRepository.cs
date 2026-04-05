@@ -41,7 +41,7 @@ namespace Chronolibris.Domain.Interfaces
         /// Задача, которая представляет асинхронную операцию. Результат задачи — 
         /// сущность <see cref="Book"/> или <c>null</c>, если книга не найдена.
         /// </returns>
-        Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, CancellationToken token = default);
+        Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, bool mode, CancellationToken token = default);
         Task<List<BookListItem>>
             GetSearchedBooks(string query, long? lastId, int limit, long userId, CancellationToken token = default);
     }
