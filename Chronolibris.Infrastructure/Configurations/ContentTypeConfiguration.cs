@@ -13,9 +13,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<ContentType> builder)
         {
-            builder.Property(ct=>ct.Nature)
-                .HasConversion<string>()
-                .HasMaxLength(50);
+            builder.Property(ct => ct.Nature);
+                //.HasConversion<string>()
+                //.HasMaxLength(50);
 
             builder.HasData(
                  new ContentType { Id=1, Name="Дневник", Nature=ContentNature.Document },
