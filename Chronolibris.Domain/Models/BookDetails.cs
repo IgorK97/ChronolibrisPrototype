@@ -51,6 +51,7 @@ namespace Chronolibris.Domain.Models
         /// Обязательное общее количество оценок, поставленных книге.
         /// </summary>
         public required long RatingsCount { get; set; }
+        public required long CommentsCount { get; set; }
 
         /// <summary>
         /// Обязательное общее количество написанных отзывов (рецензий) на книгу.

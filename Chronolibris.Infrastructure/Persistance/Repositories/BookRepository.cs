@@ -56,6 +56,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                                         .Average(r => (decimal?)r.Score) ??0m,
                         RatingsCount = b.Reviews.Count(r => !r.IsDeleted),
                         ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && !r.IsDeleted),
+                        CommentsCount = b.Comments.Count(),
                         UserRating = b.Reviews.Where(r => r.UserId == userId && !r.IsDeleted)
                                         .Select(r => (decimal?)r.Score).FirstOrDefault()
                     } : null,
@@ -110,6 +111,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 AverageRating = raw.Stats?.AverageRating ?? 0M,
                 RatingsCount = raw.Stats?.RatingsCount??0,
                 ReviewsCount = raw.Stats?.ReviewsCount??0,
+                CommentsCount = raw.Stats?.CommentsCount??0,
                 UserRating = raw.Stats?.UserRating ?? 0M,
                 IsFavorite = raw.IsFavorite,
                 IsRead = raw.IsRead,
