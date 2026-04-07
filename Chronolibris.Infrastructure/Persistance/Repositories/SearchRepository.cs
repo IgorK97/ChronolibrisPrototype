@@ -65,7 +65,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                             ), 0)
                         ) AS best_similarity
                     FROM books b
-                    WHERE" + (!request.mode ?  @" b.is_available = true
+                    WHERE " + (!request.mode ?  @" b.is_available = true 
                         AND " : " ") +  @" word_similarity({0}::text, b.title)>0.3
 
                     UNION
@@ -93,7 +93,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                                 AND word_similarity({0}::text, c.title) >0.3
                             )
                     ) sub
-                    " + cursorClause+@"
+                    " + cursorClause+@" 
                     ORDER BY sub.best_similarity DESC, sub.id ASC
                     LIMIT {1}
                 ";
@@ -149,19 +149,19 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 parameters.Add(request.LastBestSimilarity.Value);
                 parameters.Add(request.LastId.Value);
 
-                cursorClause = $$"""
+                cursorClause = $$""" 
                     WHERE best_similarity < {{{p}}}
-                    OR (best_similarity ={{{p}}} AND id>{{{p + 1}}})
+                    OR (best_similarity ={{{p}}} AND id>{{{p + 1}}}) 
                     """;
 
             }
 
-            var sql = $"""
+            var sql = $""" 
                 SELECT id, best_similarity
                 FROM ({stringSQL}) sub
                 {cursorClause}
                 ORDER BY best_similarity DESC, id ASC
-                LIMIT {request.PageSize + 1}
+                LIMIT {request.PageSize + 1} 
                 """;
 
             var pagedIds = await _context.Database.SqlQueryRaw<SearchIdScore>(sql, parameters.ToArray())
@@ -212,7 +212,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 var pPersons = parameters.Count + 1;
                 parameters.Add(pf.RoleId);
                 parameters.Add(pf.PersonIds.ToArray());
-                bookFilters.AppendLine($$"""
+                bookFilters.AppendLine($$""" 
                     AND (
                         EXISTS (
                             SELECT 1 FROM book_participations p
@@ -228,7 +228,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                               AND p.person_role_id = {{{pRole}}}
                               AND p.person_id = ANY({{{pPersons}}})
                         )
-                    )
+                    ) 
                     """);
             }
 
@@ -236,14 +236,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 var p = parameters.Count;
                 parameters.Add(request.ThemeId);
-                bookFilters.AppendLine($$"""
+                bookFilters.AppendLine($$""" 
                     AND EXISTS (
                         SELECT 1
                         FROM book_content bc
                         JOIN content_theme ct ON ct.content_id = bc.content_id
                         WHERE bc.book_id = b.id
                           AND ct.theme_id = {{{p}}}
-                    )
+                    ) 
                     """);
             } 
 
@@ -251,7 +251,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 var p = parameters.Count;
                 parameters.Add(request.SelectionId);
-                bookFilters.AppendLine($$"""
+                bookFilters.AppendLine($$""" 
                     AND EXISTS (
                         SELECT 1
                         FROM book_selection bs
@@ -259,7 +259,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         --JOIN books b ON bc.content_id = b.id
                         --JOIN book_selection bs ON b.id = bs.book_id
                         WHERE bs.selection_id = {{{p}}} AND bs.book_id = b.id
-                    )
+                    ) 
                     """);
             }
 
@@ -267,14 +267,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 var p = parameters.Count;
                 parameters.Add(request.RequiredTagIds.ToArray());
-                bookFilters.AppendLine($$"""
+                bookFilters.AppendLine($$""" 
                     AND EXISTS (
                         SELECT 1
                         FROM book_content bc
                         JOIN content_tags ctg ON ctg.contents_id = bc.content_id
                         WHERE bc.book_id = b.id
                           AND ctg.tags_id = ANY({{{p}}})
-                    )
+                    ) 
                     """);
             }
 
@@ -282,21 +282,21 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 var p = parameters.Count;
                 parameters.Add(request.ExcludedTagIds.ToArray());
-                bookFilters.AppendLine($$"""
+                bookFilters.AppendLine($$""" 
                     AND NOT EXISTS (
                         SELECT 1
                         FROM book_content bc
                         JOIN content_tags ctg ON ctg.contents_id = bc.content_id
                         WHERE bc.book_id = b.id
                           AND ctg.tags_id = ANY({{{p}}})
-                    )
+                    ) 
                     """);
             }
             var filters = bookFilters.ToString();
 
             if (isStringSearch)
             {
-                var scoringSubquery = $$"""
+                var scoringSubquery = $$""" 
                 GREATEST(
                     word_similarity({{{0}}}::text, b.title),
                     COALESCE((
@@ -307,16 +307,16 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         ORDER BY 1 DESC
                         LIMIT 1
                     ), 0)
-                )
+                ) 
                 """;
 
-                var sql = $$"""
+                var sql = $$""" 
                 SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
                 FROM books b
-                WHERE 
+                WHERE  
                 """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  + 
                 $$"""
-                 word_similarity({{{0}}}::text, b.title)>0.3
+                  word_similarity({{{0}}}::text, b.title)>0.3
                 
                 {{filters}}
  
@@ -324,7 +324,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
  
                 SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
                 FROM books b
-                WHERE 
+                WHERE  
                 """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  +
                  $$"""
                   
@@ -346,7 +346,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 var sql = $"""
                     SELECT b.id AS id, 1.0 AS best_similarity
                     FROM books b 
-                    """ + (!request.mode ? $$""" b.is_available = true AND """ : " ") +
+                    """ + (!request.mode ? $$""" WHERE b.is_available = true """ : " ") +
                     $"""
                     {filters}
                     
