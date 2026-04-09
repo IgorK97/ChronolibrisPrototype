@@ -42,7 +42,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 query = query.Where(t => t.TagTypeId == tagTypeId.Value);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                query = query.Where(t => EF.Functions.Like(t.Name, $"%{searchTerm}%"));
+                query = query.Where(t => EF.Functions.ILike(t.Name, $"%{searchTerm}%"));
 
             if (lastId.HasValue)
                 query = query.Where(t => t.Id > lastId.Value);
@@ -74,7 +74,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                query = query.Where(t => EF.Functions.Like(t.Name, $"%{searchTerm}%"));
+                query = query.Where(t => EF.Functions.ILike(t.Name, $"%{searchTerm}%"));
             }
 
             return await query.CountAsync(ct);

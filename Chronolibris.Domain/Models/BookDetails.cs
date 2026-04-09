@@ -93,8 +93,9 @@ namespace Chronolibris.Domain.Models
         /// Инициализируется пустым списком, если не указано иное.
         /// </summary>
         public IEnumerable<BookPersonGroupDetails> Participants { get; set; } = [];
-
-
         public IEnumerable<ThemeDetails> Themes { get; set; } = [];
+        public required IEnumerable<TagShortDetails> Tags { get; set; } = [];
     }
+
+    public record TagShortDetails(long Id, string Name, long TagTypeId, string TagTypeName);
 }

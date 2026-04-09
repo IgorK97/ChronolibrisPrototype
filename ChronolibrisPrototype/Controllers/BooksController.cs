@@ -22,9 +22,6 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// Получает список книг с фильтрацией и пагинацией
-        /// </summary>
         [HttpGet]
         public async Task<ActionResult<BookListResponse>> GetBooks(
             [FromQuery] BookFilterRequest filter, CancellationToken cancellationToken)
@@ -34,11 +31,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Получает книгу по идентификатору
-        /// </summary>
         [HttpGet("{id}")]
-
         public async Task<ActionResult<BookDto>> GetBookById(long id, CancellationToken cancellationToken)
         {
             var query = new GetBookByIdQuery(id);
@@ -50,10 +43,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(book);
         }
 
-
-        /// <summary>
-        ///
-        /// </summary>
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<long>> CreateBook(
@@ -91,10 +80,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Обновляет книгу. Поля с null без флага *Provided не трогаются.
-        /// Если CoverBase64 передан — файл перезаписывается в MinIO, путь не меняется.
-        /// </summary>
         [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBook(
@@ -142,13 +127,8 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-
-        /// <summary>
-        /// Удаляет книгу
-        /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
-
         public async Task<ActionResult> DeleteBook(long id, CancellationToken cancellationToken)
         {
             try

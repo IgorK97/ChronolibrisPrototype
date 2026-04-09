@@ -80,7 +80,9 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         }),
                     Themes = b.BookContents
                         .SelectMany(bc => bc.Content.Themes)
-                        .Select(t => new { t.Id, t.Name })
+                        .Select(t => new { t.Id, t.Name }),
+                    Tags = b.BookContents.SelectMany(bc => bc.Content.Tags).Distinct()
+                    .Select(t=> new TagShortDetails(t.Id, t.Name, t.TagTypeId, t.TagType.Name))
                 })
                 .FirstOrDefaultAsync(token);
 
@@ -130,7 +132,8 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 Themes = raw.Themes
                     .DistinctBy(t => t.Id)
                     .Select(t => new ThemeDetails { Id = t.Id, Name = t.Name })
-                    .ToList()
+                    .ToList(),
+                Tags = raw.Tags
             };
         }
 
