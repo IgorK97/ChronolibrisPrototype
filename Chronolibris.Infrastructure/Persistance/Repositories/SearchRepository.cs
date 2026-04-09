@@ -382,6 +382,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         b.BookShelves.Any(bs =>
                             bs.Shelf.UserId == userId &&
                             bs.Shelf.ShelfTypeId == favoriteShelfType),
+                    Authors = b.BookContents
+                                .Select(bc=>bc.Content)
+                                .SelectMany(c => c.Participations)
+                                .Where(cp=> cp.PersonRoleId==1)
+                                .GroupBy(cp => cp.PersonId)
+                                .Select(group => group.First().Person.Name).ToList(),
+                    //Where(...).Distinct(...).ToList() - на всякий случай оставлю второй вариант
                 })
                 .ToDictionaryAsync(b => b.Id, cancellationToken);
         }

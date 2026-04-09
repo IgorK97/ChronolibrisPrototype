@@ -17,12 +17,6 @@ namespace Chronolibris.API.Controllers.Search
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// Простой поиск по названию книги или её контентов.
-        /// Первая страница: GET /api/search?query=война&amp;pageSize=20
-        /// Следующая страница: GET /api/search?query=война&amp;pageSize=20
-        ///     &amp;lastBestSimilarity=0.75&amp;lastId=42
-        /// </summary>
         [HttpGet]
         public async Task<ActionResult<PagedResult<BookSearchResult>>> Search(
             [FromQuery] SimpleSearchHttpRequest request, bool mode = false,
@@ -53,11 +47,7 @@ namespace Chronolibris.API.Controllers.Search
             return Ok(result);
         }
 
-        /// <summary>
-        /// Расширенный поиск с фильтрами.
-        /// Первая страница: POST /api/search/advanced, тело без курсора.
-        /// Следующая страница: то же тело + lastBestSimilarity и lastId из предыдущего ответа.
-        /// </summary>
+
         [HttpPost("advanced")]
         public async Task<ActionResult<PagedResult<BookSearchResult>>> AdvancedSearch(
             [FromBody] AdvancedSearchInputModel request, bool hiddenIsAvailableMode=false,
