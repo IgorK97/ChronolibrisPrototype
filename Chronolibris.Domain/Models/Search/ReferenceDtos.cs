@@ -18,7 +18,6 @@ namespace Chronolibris.Domain.Models.Search
         public string Name { get; set; } = string.Empty;
     }
 
-    // ── Роли персоналий ───────────────────────────────────────────────────────
 
     public class PersonRoleDto
     {
@@ -26,7 +25,6 @@ namespace Chronolibris.Domain.Models.Search
         public string Name { get; set; } = string.Empty;
     }
 
-    // ── Персоналии (результат подсказки при вводе имени) ─────────────────────
 
     public class PersonSuggestionDto
     {
@@ -35,18 +33,12 @@ namespace Chronolibris.Domain.Models.Search
         public string? ImagePath { get; set; }
     }
 
-    // ── Теги (результат подсказки; всегда корневой тег) ──────────────────────
 
     public class TagSuggestionDto
     {
         public long Id { get; set; }
-        /// <summary>Название корневого тега.</summary>
         public string Name { get; set; } = string.Empty;
-        /// <summary>
-        /// Название тега, который реально нашли по вводу пользователя.
-        /// Если пользователь ввёл синоним — здесь будет имя синонима,
-        /// чтобы UI мог показать "найдено через синоним «...»".
-        /// </summary>
+
         public string? MatchedName { get; set; }
     }
 }

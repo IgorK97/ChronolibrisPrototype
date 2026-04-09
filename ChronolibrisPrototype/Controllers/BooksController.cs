@@ -221,9 +221,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Получает список контентов для книги
-        /// </summary>
         [HttpGet("{id}/contents")]
         public async Task<ActionResult<List<ContentDto>>> GetBookContents(long id, CancellationToken cancellationToken)
         {
@@ -232,9 +229,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(contents);
         }
 
-        /// <summary>
-        /// Привязывает контент к книге
-        /// </summary>
         [Authorize]
         [HttpPost("{bookId}/contents/{contentId}")]
 
@@ -256,9 +250,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Отвязывает контент от книги
-        /// </summary>
         [Authorize]
         [HttpDelete("{bookId}/contents/{contentId}")]
         public async Task<ActionResult> UnlinkContentFromBook(long bookId, long contentId,

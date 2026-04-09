@@ -5,21 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace ChronolibrisPrototype.Middleware
 {
-    /// <summary>
-    /// Middleware для централизованной обработки исключений в конвейере HTTP-запросов.
-    /// Перехватывает необработанные исключения, логирует их и возвращает стандартизированный ответ 500 Internal Server Error
-    /// в формате ProblemDetails.
-    /// </summary>
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-
-        /// <summary>
-        /// Инициализирует новый экземпляр <see cref="ExceptionHandlingMiddleware"/>.
-        /// </summary>
-        /// <param name="next">Следующий делегат в конвейере запросов.</param>
-        /// <param name="logger">Интерфейс логирования для записи ошибок.</param>
         public ExceptionHandlingMiddleware(
             RequestDelegate next,
             ILogger<ExceptionHandlingMiddleware> logger)
@@ -27,14 +16,6 @@ namespace ChronolibrisPrototype.Middleware
             _next = next;
             _logger = logger;
         }
-
-
-        /// <summary>
-        /// Вызывает следующий делегат в конвейере. Оборачивает вызов в блок try-catch
-        /// для перехвата любых необработанных исключений.
-        /// </summary>
-        /// <param name="context">Текущий HTTP-контекст.</param>
-        /// <returns>Задача, представляющая асинхронную операцию.</returns>
         public async Task InvokeAsync(HttpContext context)
         {
 

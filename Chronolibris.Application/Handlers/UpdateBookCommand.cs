@@ -72,7 +72,6 @@ namespace Chronolibris.Application.Commands
 
             await _bookRepository.UpdateAsync(book, cmd.PersonFilters,ct);
 
-            // --- Обложка: перезаписываем файл в MinIO, путь в БД не меняем ---
             if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
             {
                 var imageBytes = DecodeCover(cmd.CoverBase64);

@@ -12,10 +12,7 @@ namespace Chronolibris.Domain.Interfaces
     public interface ICommentRepository : IGenericRepository<Comment>
     {
         Task<CommentDto?> GetByIdWithVotesAsync(long commentId, long userId, CancellationToken token);
-        // Получение корневых комментариев книги
         Task<List<CommentDto>> GetRootCommentsByBookIdAsync(long bookId, long? lastId, int limit, long userId, CancellationToken token);
-
-        // Получение ответов на конкретный комментарий
         Task<List<CommentDto>> GetRepliesByParentIdAsync(long parentCommentId, long? lastId, int limit, long userId, CancellationToken token);
     }
 }

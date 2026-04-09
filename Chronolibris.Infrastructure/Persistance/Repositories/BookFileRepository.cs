@@ -18,8 +18,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         public BookFileRepository(ApplicationDbContext context) : base(context)
         {
         }
-
-        /// <inheritdoc/>
         public async Task SaveConversionResultAsync(
             long bookFileId,
             ConversionResult result,
@@ -30,7 +28,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 ?? throw new InvalidOperationException(
                     $"BookFile {bookFileId} не найден");
 
-            // Создаём фрагменты только из Part-файлов (не toc)
             var fragments = result.PartFiles
                 .Where(f => f.FileType == StoredFileType.Part)
                 .Select((part, index) => new BookFragment
@@ -51,14 +48,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             if (fragments.Count > 0)
                 await _context.BookFragments.AddRangeAsync(fragments, ct);
 
-            // Обновляем саму запись файла
             bookFile.BookFileStatusId = BookFileStatuses.COMPLETED;
             bookFile.CompletedAt = result.CompletedAt.UtcDateTime;
 
             await _context.SaveChangesAsync(ct);
         }
 
-        /// <inheritdoc/>
         public async Task SetErrorAsync(
             long bookFileId,
             string errorMessage,
@@ -72,12 +67,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     setters => setters
                         .SetProperty(f => f.BookFileStatusId, BookFileStatuses.FAILED),
                     ct);
-
-            // Опционально: логировать если запись не найдена
-            // if (updated == 0) _log.LogWarning(...)
         }
 
-        /// <inheritdoc/>
         public async Task SetStatusAsync(
             long bookFileId,
             int status,

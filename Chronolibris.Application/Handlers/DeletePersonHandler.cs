@@ -29,13 +29,8 @@ namespace Chronolibris.Application.Handlers
         {
             var person = await _repository.GetByIdAsync(request.Id, token);
             if (person == null) return;
-
-            // Удаляем из БД
             _repository.Delete(person);
             await _unitOfWork.SaveChangesAsync(token);
-
-            // Удаляем файл из MinIO
-            //await _fileService.DeleteFileAsync(person.ImagePath, token);
         }
     }
 }

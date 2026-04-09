@@ -33,14 +33,14 @@ namespace Chronolibris.Application.Handlers
             var hasNext = tags.Count > request.Limit;
 
             if (hasNext)
-                tags.RemoveAt(tags.Count - 1); // удаляем лишний элемент
+                tags.RemoveAt(tags.Count - 1);
 
             return new PagedResult<TagDetails>
             {
                 Items = tags,
                 Limit = request.Limit,
                 HasNext = hasNext,
-                LastId = tags.LastOrDefault()?.Id  // курсор для следующего запроса
+                LastId = tags.LastOrDefault()?.Id
             };
         }
     }

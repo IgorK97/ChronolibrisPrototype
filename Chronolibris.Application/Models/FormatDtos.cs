@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Application.Models.FormatDtos.cs
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Chronolibris.Application.Models
 {

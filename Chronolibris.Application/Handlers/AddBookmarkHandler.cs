@@ -10,32 +10,13 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    /// <summary>
-    /// Обработчик команды для добавления новой закладки (<see cref="Bookmark"/>).
-    /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/> 
-    /// для обработки <see cref="AddBookmarkCommand"/> и возврата <see cref="bool"/>.
-    /// </summary>
     public class AddBookmarkHandler : IRequestHandler<AddBookmarkCommand, AddBookmarkResult>
     {
-        /// <summary>
-        /// Приватное поле для доступа к паттерну Unit of Work и репозиториям.
-        /// </summary>
         private readonly IUnitOfWork _unitOfWork;
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="AddBookmarkHandler"/>.
-        /// </summary>
-        /// <param name="unitOfWork">Интерфейс Unit of Work для взаимодействия с базой данных.</param>
         public AddBookmarkHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-
-        /// <summary>
-        /// Обрабатывает команду добавления закладки.
-        /// </summary>
-        /// <param name="request">Объект команды, содержащий данные для новой закладки.</param>
-        /// <param name="cancellationToken">Токен отмены для асинхронной операции.</param>
-        /// <returns>Задача, представляющая асинхронную операцию. Результат задачи — <c>true</c> при успехе.</returns>
         public async Task<AddBookmarkResult> Handle(AddBookmarkCommand request, CancellationToken cancellationToken)
         {
             //AAAAAAAAAAAAAAAA

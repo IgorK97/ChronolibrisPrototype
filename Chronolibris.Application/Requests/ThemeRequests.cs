@@ -1,11 +1,9 @@
-﻿// File: Chronolibris.Application.Requests.ThemeRequests.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using System.Collections.Generic;
 
 namespace Chronolibris.Application.Requests
 {
-    // Queries
     public class GetAllThemesQuery : IRequest<IEnumerable<ThemeDto>>
     {
         public long? ParentThemeId { get; set; }
@@ -24,7 +22,6 @@ namespace Chronolibris.Application.Requests
 
     public record GetThemesByNameQuery(string Name) : IRequest<List<ThemeDto>>;
 
-    // Commands
     public class CreateThemeCommand : IRequest<long>
     {
         public string Name { get; set; } = string.Empty;

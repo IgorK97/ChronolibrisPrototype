@@ -3,10 +3,6 @@ using MediatR;
 
 namespace Chronolibris.Application.Search.Queries
 {
-    /// <summary>
-    /// Простой поиск по названию. word_similarity, keyset-пагинация.
-    /// Курсор: (LastBestSimilarity, LastId) — оба null на первой странице.
-    /// </summary>
     public record SimpleSearchKeysetQuery(
         string Query,
         int PageSize,
@@ -15,11 +11,6 @@ namespace Chronolibris.Application.Search.Queries
         long? LastId,
         bool mode
     ) : IRequest<PagedResult<BookSearchResult>>;
-
-    /// <summary>
-    /// Расширенный поиск с фильтрами. word_similarity, keyset-пагинация.
-    /// Курсор: (LastBestSimilarity, LastId) — оба null на первой странице.
-    /// </summary>
     public record AdvancedSearchKeysetQuery(
         string? Query,
         int PageSize,

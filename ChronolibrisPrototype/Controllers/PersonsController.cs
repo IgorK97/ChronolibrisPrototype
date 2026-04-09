@@ -12,9 +12,7 @@ public class PersonsController : ControllerBase
 
     public PersonsController(IMediator mediator) => _mediator = mediator;
 
-    /// <summary>
-    /// Получает список всех персон
-    /// </summary>
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PersonDto>>> GetAll(CancellationToken cancellationToken)
     {
@@ -39,8 +37,6 @@ public class PersonsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(long id, CancellationToken token)
     {
-        // Пример получения через твой репозиторий
-        // В реальном проекте здесь лучше вызвать Query через MediatR
         var person = await _mediator.Send(new GetPersonByIdQuery(id));
         return person != null ? Ok(person) : NotFound();
     }

@@ -216,48 +216,48 @@ app.Lifetime.ApplicationStarted.Register(async () =>
 app.Run();
 
 
-static async Task TestConvertAsync(IServiceProvider services)
-{
-    var fb2Path = Path.Combine(AppContext.BaseDirectory, "test.fb2");
+//static async Task TestConvertAsync(IServiceProvider services)
+//{
+//    var fb2Path = Path.Combine(AppContext.BaseDirectory, "test.fb2");
 
-    if (!File.Exists(fb2Path))
-    {
-        Console.WriteLine($"[TEST] Файл не найден: {fb2Path}");
-        Console.WriteLine($"[TEST] Ожидается по пути: {fb2Path}");
-        return;
-    }
+//    if (!File.Exists(fb2Path))
+//    {
+//        Console.WriteLine($"[TEST] Файл не найден: {fb2Path}");
+//        Console.WriteLine($"[TEST] Ожидается по пути: {fb2Path}");
+//        return;
+//    }
 
-    using var scope = services.CreateScope();
-    var converter = scope.ServiceProvider.GetRequiredService<IFb2Converter>();
+//    using var scope = services.CreateScope();
+//    var converter = scope.ServiceProvider.GetRequiredService<IFb2Converter>();
 
-    Console.WriteLine("[TEST] Начинаем конвертацию...");
+//    Console.WriteLine("[TEST] Начинаем конвертацию...");
 
-    try
-    {
-        await using var stream = File.OpenRead(fb2Path);
-        var result = await converter.ConvertAsync(stream);
+//    try
+//    {
+//        await using var stream = File.OpenRead(fb2Path);
+//        var result = await converter.ConvertAsync(stream);
 
-        Console.WriteLine($"[TEST] ✓ BookId:     {result.BookId}");
-        Console.WriteLine($"[TEST] ✓ Название:   {result.Meta.Title}");
-        Console.WriteLine($"[TEST] ✓ Язык:       {result.Meta.Lang}");
-        Console.WriteLine($"[TEST] ✓ Автор:      {result.Meta.Authors?.FirstOrDefault()?.Last}");
-        Console.WriteLine($"[TEST] ✓ Элементов:  {result.TotalElements}");
-        Console.WriteLine($"[TEST] ✓ Фрагментов: {result.PartFiles.Count}");
-        Console.WriteLine($"[TEST] ✓ toc.json:   {result.TocFile.SizeBytes} байт");
-        Console.WriteLine($"[TEST] ─────────────────────────────────────");
+//        Console.WriteLine($"[TEST] ✓ BookId:     {result.BookId}");
+//        Console.WriteLine($"[TEST] ✓ Название:   {result.Meta.Title}");
+//        Console.WriteLine($"[TEST] ✓ Язык:       {result.Meta.Lang}");
+//        Console.WriteLine($"[TEST] ✓ Автор:      {result.Meta.Authors?.FirstOrDefault()?.Last}");
+//        Console.WriteLine($"[TEST] ✓ Элементов:  {result.TotalElements}");
+//        Console.WriteLine($"[TEST] ✓ Фрагментов: {result.PartFiles.Count}");
+//        Console.WriteLine($"[TEST] ✓ toc.json:   {result.TocFile.SizeBytes} байт");
+//        Console.WriteLine($"[TEST] ─────────────────────────────────────");
 
-        foreach (var part in result.PartFiles)
-        {
-            Console.WriteLine(
-                $"[TEST]   {part.FileName}  " +
-                $"s={part.GlobalStart,-5} e={part.GlobalEnd,-5}  " +
-                $"xps=[{string.Join(",", part.XpStart!)}]  " +
-                $"{part.SizeBytes} байт");
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[TEST] ✗ Ошибка: {ex.Message}");
-        Console.WriteLine(ex.StackTrace);
-    }
-}
+//        foreach (var part in result.PartFiles)
+//        {
+//            Console.WriteLine(
+//                $"[TEST]   {part.FileName}  " +
+//                $"s={part.GlobalStart,-5} e={part.GlobalEnd,-5}  " +
+//                $"xps=[{string.Join(",", part.XpStart!)}]  " +
+//                $"{part.SizeBytes} байт");
+//        }
+//    }
+//    catch (Exception ex)
+//    {
+//        Console.WriteLine($"[TEST] ✗ Ошибка: {ex.Message}");
+//        Console.WriteLine(ex.StackTrace);
+//    }
+//}

@@ -18,7 +18,6 @@ namespace ChronolibrisPrototype.Controllers
         private readonly IMediator _mediator;
         public CommentsController(IMediator mediator) => _mediator = mediator;
 
-        // 1. Написание комментария
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(CreateCommentRequest request)
@@ -30,7 +29,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(id);
         }
 
-        // 2. Удаление комментария (Soft Delete)
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
@@ -40,7 +38,6 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        // 3. Получение комментариев книги (с опциональной подгрузкой 1 уровня ответов)
         [HttpGet("book/{bookId}")]
         public async Task<ActionResult<List<CommentDto>>> GetBookComments(
             long bookId, long? lastId, int limit = 20)
@@ -51,7 +48,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
 
-        // 4. Получение дочерних комментариев
         [HttpGet("{parentId}/replies")]
         public async Task<ActionResult<List<CommentDto>>> GetReplies(
             long parentId, long? lastId, int limit = 20)

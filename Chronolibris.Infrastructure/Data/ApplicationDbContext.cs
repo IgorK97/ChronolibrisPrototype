@@ -14,11 +14,8 @@ namespace Chronolibris.Infrastructure.Data
     public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<long>, long>
     {
         public DbSet<Format> Formats { get; set; }
-        //public DbSet<MediaType> MediaTypes { get; set; }
-        //public DbSet<SelectionType> SelectionTypes { get; set; }
         public DbSet<BookFile> BookFiles { get; set; }
         public DbSet<BookFragment> BookFragments { get; set; }
-        //public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -27,9 +24,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<Language> Languages { get; set; }
         public DbSet<ContentParticipation> ContentParticipations { get; set; }
         public DbSet<BookParticipation> BookParticipations { get; set; }
-
         public DbSet<BookFileStatus> BookFileStatuses { get; set; }
-
         public DbSet<Person> Persons { get; set; }
         public DbSet<PersonRole> PersonRoles { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
@@ -37,7 +32,6 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<ReviewReactions> ReviewReactions { get; set; }
         public DbSet<CommentReactions> CommentReactions { get; set; }
         public DbSet<Selection> Selections { get; set; }
-        //public DbSet<Series> Series { get; set; }
         public DbSet<Shelf> Shelves { get; set; }
         public DbSet<ShelfType> ShelfTypes { get; set; }
         public DbSet<Tag> Tags { get; set; }

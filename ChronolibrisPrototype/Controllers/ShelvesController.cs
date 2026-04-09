@@ -65,16 +65,12 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
 
-        //public record AddBookToShelf(long shelfId, long bookId);
-
         [HttpPost("{shelfId}/books/{bookId}")]
         public async Task<IActionResult> AddBook(long shelfId, long bookId)
         {
             bool res = await _mediator.Send(new AddBookToShelfCommand(shelfId, bookId));
             return Ok(res);
         }
-
-        //public record DeleteBookFromShelf(long shelfId, long bookId);
 
         [HttpDelete("{shelfId}/books/{bookId}")]
         public async Task<IActionResult> RemoveBook(long shelfId, long bookId)

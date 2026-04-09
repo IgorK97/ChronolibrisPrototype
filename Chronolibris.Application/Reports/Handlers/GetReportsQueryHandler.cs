@@ -9,7 +9,7 @@ using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Reports.Handlers
-{//another constructor type
+{
     public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery,
         GetReportsResponse>
     {

@@ -10,7 +10,6 @@ using Hangfire.PostgreSql;
 
 namespace Chronolibris.Infrastructure.DataAccess.Hangfire
 {
-    // Infrastructure/Extensions/HangfireExtensions.cs
     public static class HangfireExtensions
     {
         public static IServiceCollection AddHangfireInfrastructure(

@@ -77,39 +77,36 @@ namespace Chronolibris.Infrastructure.Configurations
                 new Book
                 {
                     Id = 1,
-                    //AverageRating = 0,
-                    CountryId = 1, // Россия
+                    CountryId = 1,
                     CoverPath = "BuddismHistory/BuddismJapanGrig/MainFile.png",
                     CreatedAt = dt,
                     Description = "Монография является первой в отечественной литературе попыткой...",
-                    //FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
                     IsAvailable = true,
-                    //IsFragment = false,
-                    LanguageId = 2, // Русский
+                    LanguageId = 2,
                     //RatingsCount = 0,
                     //ReviewsCount = 0,
                     Title = "Буддизм в Японии",
                     Year = 1993,
-                    PublisherId = 2, // Восточная литература
+                    PublisherId = 2,
                     IsReviewable = true,
                 },
                 new Book
                 {
                     Id = 2,
                     //AverageRating = 0,
-                    CountryId = 1, // Россия
+                    CountryId = 1,
                     CoverPath = "EconomicHistory/StructureBrodel/MainFile.png",
                     CreatedAt = dt,
                     Description = "Это — второе крупное исследование Ф. Броделя...",
                     //FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
                     IsAvailable = true,
                     //IsFragment = false,
-                    LanguageId = 2, // Русский
+                    LanguageId = 2,
                     //RatingsCount = 0,
                     //ReviewsCount = 0,
                     Title = "Структуры повседневности: возможное и невозможное",
                     Year = 1986,
-                    PublisherId = 1, // Прогресс
+                    PublisherId = 1,
                     IsReviewable = true,
                 }
             );

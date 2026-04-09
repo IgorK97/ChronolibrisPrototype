@@ -33,16 +33,16 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 new ContentParticipation
                 {
                     Id = 1,
-                    ContentId = 1, // "Буддизм в Японии"
-                    PersonId = 1,  // Татьяна Петровна Григорьева
-                    PersonRoleId = 1, // Автор
+                    ContentId = 1,
+                    PersonId = 1,
+                    PersonRoleId = 1,
                 },
                 new ContentParticipation
                 {
                     Id = 2,
-                    ContentId = 2, // "Структуры повседневности..."
-                    PersonId = 2,  // Фернан Поль Ахилл Бродель
-                    PersonRoleId = 1, // Автор
+                    ContentId = 2,
+                    PersonId = 2,
+                    PersonRoleId = 1,
                 }
             );
         }

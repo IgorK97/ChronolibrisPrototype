@@ -31,8 +31,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         public async Task<List<TagDetails>> GetTagsAsync(
             long? tagTypeId,
     string? searchTerm,
-    long? lastId,       // вместо page
-    int limit,          // вместо pageSize
+    long? lastId,      
+    int limit,        
     CancellationToken ct)
         {
             IQueryable<Tag> query = _context.Tags.AsNoTracking()
@@ -48,8 +48,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 query = query.Where(t => t.Id > lastId.Value);
 
             return await query
-                .OrderBy(t => t.Id)        // сортировка по Id — обязательна для курсора
-                .Take(limit + 1)           // берём +1 чтобы определить HasNext
+                .OrderBy(t => t.Id)       
+                .Take(limit + 1)          
                 .Select(t => new TagDetails
                 {
                     Id = t.Id,

@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Application.Models.ThemeDtos.cs
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Chronolibris.Application.Models

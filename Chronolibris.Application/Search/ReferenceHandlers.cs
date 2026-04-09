@@ -52,4 +52,25 @@ namespace Chronolibris.Application.Search
             SearchTagsQuery request, CancellationToken ct)
             => _repo.SearchTagsAsync(request.Name, request.Limit, ct);
     }
+
+    public class GetPersonsByIdsHandler : IRequestHandler<GetPersonsByIdsQuery,
+        List<PersonSuggestionDto>>
+    {
+        private readonly IReferenceSearchRepository _repo;
+        public GetPersonsByIdsHandler(IReferenceSearchRepository repository) => _repo = repository;
+
+        public Task<List<PersonSuggestionDto>> Handle(
+            GetPersonsByIdsQuery request, CancellationToken ct)
+            => _repo.GetPersonsByIdsAsync(request.Ids, ct);
+    }
+
+    public class GetTagsByIdsHandler : IRequestHandler<GetTagsByIdsQuery, List<TagSuggestionDto>>
+    {
+        private readonly IReferenceSearchRepository _repo;
+        public GetTagsByIdsHandler(IReferenceSearchRepository repo) => _repo = repo;
+
+        public Task<List<TagSuggestionDto>> Handle(
+            GetTagsByIdsQuery request, CancellationToken ct)
+            => _repo.GetTagsByIdsAsync(request.Ids, ct);
+    }
 }

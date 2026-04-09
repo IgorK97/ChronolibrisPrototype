@@ -13,14 +13,57 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
     public class ReferenceSearchRepository : IReferenceSearchRepository
     {
         private readonly ApplicationDbContext _context;
-
-        // RelationTypeId = 1 означает «синоним → указывает на корневой тег»
         private const int SynonymRelationTypeId = 1;
 
         public ReferenceSearchRepository(ApplicationDbContext context)
         {
             _context = context;
         }
+
+        public Task<List<PersonSuggestionDto>> GetPersonsByIdsAsync(
+    List<long> ids, CancellationToken ct = default)
+        {
+            return _context.Persons
+                .AsNoTracking()
+                .Where(p => ids.Contains(p.Id))
+                .Select(p => new PersonSuggestionDto { Id = (int)p.Id, Name = p.Name })
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<TagSuggestionDto>> GetTagsByIdsAsync(
+    List<long> ids, CancellationToken ct = default)
+        {
+            var tags = await _context.Tags
+                .AsNoTracking()
+                .Include(t => t.ParentTag)
+                .Where(t => ids.Contains(t.Id))
+                .ToListAsync(ct);
+
+            var results = new List<TagSuggestionDto>(tags.Count);
+            var seenIds = new HashSet<long>();
+
+            foreach (var tag in tags)
+            {
+                bool isSynonym = tag.RelationTypeId == SynonymRelationTypeId
+                                 && tag.ParentTagId.HasValue
+                                 && tag.ParentTag is not null;
+
+                var rootTag = isSynonym ? tag.ParentTag! : tag;
+                var matchedName = isSynonym ? tag.Name : (string?)null;
+
+                if (!seenIds.Add(rootTag.Id)) continue;
+
+                results.Add(new TagSuggestionDto
+                {
+                    Id = (int)rootTag.Id,
+                    Name = rootTag.Name,
+                    MatchedName = matchedName,
+                });
+            }
+
+            return results;
+        }
+
 
         public Task<List<LanguageDto>> GetAllLanguagesAsync(CancellationToken ct = default)
         {
@@ -73,13 +116,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             var pattern = $"%{name.Trim()}%";
 
-            // Ищем теги по имени (ILIKE).
-            // Сразу подгружаем ParentTag — нужен если найденный тег является синонимом.
+
             var found = await _context.Tags
                 .AsNoTracking()
                 .Include(t => t.ParentTag)
                 .Where(t => EF.Functions.ILike(t.Name, pattern))
-                .Take(limit * 2) // берём с запасом — часть отфильтруется при дедупликации
+                .Take(limit * 2)
                 .ToListAsync(ct);
 
             var results = new List<TagSuggestionDto>();
@@ -87,15 +129,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             foreach (var tag in found)
             {
-                // Определяем, является ли тег синонимом
                 bool isSynonym = tag.RelationTypeId == SynonymRelationTypeId
                                  && tag.ParentTagId.HasValue
                                  && tag.ParentTag is not null;
 
                 var rootTag = isSynonym ? tag.ParentTag! : tag;
                 var matchedName = isSynonym ? tag.Name : (string?)null;
-
-                // Дедупликация: если корневой тег уже в результатах — пропускаем
                 if (!seenIds.Add(rootTag.Id))
                     continue;
 

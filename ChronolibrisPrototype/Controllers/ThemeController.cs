@@ -1,4 +1,4 @@
-﻿// File: ChronolibrisPrototype.Controllers.ThemesController.cs
+﻿
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using MediatR;
@@ -23,11 +23,7 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// Получает список всех тем верхнего уровня
-        /// </summary>
         [HttpGet("all")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ThemeDto>))]
         public async Task<ActionResult<IEnumerable<ThemeDto>>> GetAll(CancellationToken cancellationToken)
         {
             var query = new GetAllThemesQuery(null);
@@ -42,9 +38,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(themes);
         }
 
-        /// <summary>
-        /// Получает список дочерних тем для указанной родительской темы
-        /// </summary>
         [HttpGet("parent/{parentThemeId}")]
         public async Task<ActionResult<IEnumerable<ThemeDto>>> GetByParentId(long parentThemeId, CancellationToken cancellationToken)
         {
@@ -53,9 +46,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(themes);
         }
 
-        /// <summary>
-        /// Получает тему по идентификатору
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<ThemeDto>> GetById(long id, CancellationToken cancellationToken)
         {
@@ -68,13 +58,8 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(theme);
         }
 
-        /// <summary>
-        /// Создает новую запись темы
-        /// </summary>
         [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<long>> Create([FromBody] CreateThemeRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -95,9 +80,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Обновляет существующую запись темы
-        /// </summary>
         [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(long id, [FromBody] UpdateThemeRequest request, CancellationToken cancellationToken)
@@ -127,9 +109,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Удаляет запись темы
-        /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(long id, CancellationToken cancellationToken)

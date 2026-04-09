@@ -1,4 +1,4 @@
-﻿// Controllers/TagsController.cs
+﻿
 using System.Security.Claims;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;

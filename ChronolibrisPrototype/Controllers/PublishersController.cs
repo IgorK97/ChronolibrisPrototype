@@ -1,5 +1,4 @@
-﻿// File: ChronolibrisPrototype.Controllers.PublishersController.cs
-using Chronolibris.Application.Models;
+﻿using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,11 +21,8 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// Получает список всех издательств
-        /// </summary>
+
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<PublisherDto>))]
         public async Task<ActionResult<IEnumerable<PublisherDto>>> GetAllPublishers(CancellationToken cancellationToken)
         {
             var query = new GetAllPublishersQuery();
@@ -34,12 +30,8 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(publishers);
         }
 
-        /// <summary>
-        /// Получает издательство по идентификатору
-        /// </summary>
+
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PublisherDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PublisherDto>> GetPublisherById(long id, CancellationToken cancellationToken)
         {
             var query = new GetPublisherByIdQuery(id);
@@ -51,13 +43,8 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(publisher);
         }
 
-        /// <summary>
-        /// Создает новую запись издательства
-        /// </summary>
         [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<long>> CreatePublisher([FromBody] CreatePublisherRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -78,14 +65,9 @@ namespace ChronolibrisPrototype.Controllers
             return CreatedAtAction(nameof(GetPublisherById), new { id = id }, id);
         }
 
-        /// <summary>
-        /// Обновляет существующую запись издательства
-        /// </summary>
+
         [Authorize]
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdatePublisher(long id, [FromBody] UpdatePublisherRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -112,13 +94,9 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Удаляет запись издательства
-        /// </summary>
+
         [Authorize]
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeletePublisher(long id, CancellationToken cancellationToken)
         {
             var command = new DeletePublisherCommand(id);

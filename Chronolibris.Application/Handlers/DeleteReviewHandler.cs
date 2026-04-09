@@ -26,7 +26,6 @@ namespace Chronolibris.Application.Handlers
             if (review.DeletedAt != null)
                 throw new Exception("Review is already deleted.");
 
-            // Soft delete — Scenario 2: user can POST again to create a fresh review
             review.DeletedAt = DateTime.UtcNow;
             //review.ReviewStatusId = 4;
             review.IsDeleted = true;

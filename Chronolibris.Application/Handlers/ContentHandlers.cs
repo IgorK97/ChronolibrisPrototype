@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Application.Handlers.ContentHandlers.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Entities;
@@ -125,7 +124,6 @@ namespace Chronolibris.Application.Handlers
         }
     }
 
-    // File: Chronolibris.Application.Handlers.ContentHandlers.cs
     public class GetContentBooksHandler : IRequestHandler<GetContentBooksQuery, List<BookDto>>
     {
         private readonly IContentRepository _contentRepository;

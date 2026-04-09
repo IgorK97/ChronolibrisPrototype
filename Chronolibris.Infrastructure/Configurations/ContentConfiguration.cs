@@ -62,26 +62,26 @@ namespace Chronolibris.Infrastructure.Configurations
                 new Content
                 {
                     Id = 1,
-                    CountryId = 1, // Россия
+                    CountryId = 1,
                     CreatedAt = dt,
                     Description = "Монография является первой в отечественной литературе попыткой проследить процесс становления японского буддизма...",
-                    LanguageId = 2, // Русский
+                    LanguageId = 2,
                     //Position = 0,
                     Title = "Буддизм в Японии",
                     Year = 1993,
-                    ContentTypeId = 20, // Монография
+                    ContentTypeId = 20,
                 },
                 new Content
                 {
                     Id = 2,
-                    CountryId = 5, // Франция
+                    CountryId = 5,
                     CreatedAt = dt,
                     Description = "Это — второе крупное исследование Ф. Броделя. Первое — «Средиземное море и мир Средиземноморья в эпоху Филиппа II»...",
-                    LanguageId = 2, // Русский
+                    LanguageId = 2,
                     //Position = 0,
                     Title = "Структуры повседневности: возможное и невозможное",
                     Year = 1979,
-                    ContentTypeId = 19, // Историческое исследование
+                    ContentTypeId = 19,
                 }
             );
         }

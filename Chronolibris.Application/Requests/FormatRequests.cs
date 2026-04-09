@@ -1,11 +1,9 @@
-﻿// File: Chronolibris.Application.Requests.FormatRequests.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using System.Collections.Generic;
 
 namespace Chronolibris.Application.Requests
 {
-    // Queries
     public class GetAllFormatsQuery : IRequest<IEnumerable<FormatDto>> { }
 
     public class GetFormatByIdQuery : IRequest<FormatDto?>
@@ -14,7 +12,6 @@ namespace Chronolibris.Application.Requests
         public GetFormatByIdQuery(int id) => Id = id;
     }
 
-    // Commands
     public class CreateFormatCommand : IRequest<int>
     {
         public string Name { get; set; } = string.Empty;

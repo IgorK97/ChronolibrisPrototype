@@ -1,11 +1,9 @@
-﻿// File: Chronolibris.Application.Requests.PublisherRequests.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using System.Collections.Generic;
 
 namespace Chronolibris.Application.Requests
 {
-    // Queries
     public class GetAllPublishersQuery : IRequest<IEnumerable<PublisherDto>> { }
 
     public class GetPublisherByIdQuery : IRequest<PublisherDto?>
@@ -14,7 +12,6 @@ namespace Chronolibris.Application.Requests
         public GetPublisherByIdQuery(long id) => Id = id;
     }
 
-    // Commands
     public class CreatePublisherCommand : IRequest<long>
     {
         public string Name { get; set; } = string.Empty;

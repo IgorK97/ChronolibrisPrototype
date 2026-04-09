@@ -22,7 +22,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
         }
 
-
+        //DELETE THIS!!!
         public async Task<List<FtsConfigurationDto>> GetFtsConfigurationLanguages(CancellationToken token)
         {
             var sql = @"

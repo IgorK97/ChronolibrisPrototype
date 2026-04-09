@@ -1,11 +1,9 @@
-﻿// File: Chronolibris.Application.Requests.CountryRequests.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using System.Collections.Generic;
 
 namespace Chronolibris.Application.Requests
 {
-    // Queries
     public class GetAllCountriesQuery : IRequest<IEnumerable<CountryDto>> { }
 
     public class GetCountryByIdQuery : IRequest<CountryDto?>
@@ -14,7 +12,6 @@ namespace Chronolibris.Application.Requests
         public GetCountryByIdQuery(long id) => Id = id;
     }
 
-    // Commands
     public class CreateCountryCommand : IRequest<long>
     {
         public string Name { get; set; } = string.Empty;

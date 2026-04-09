@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Domain.Interfaces.IThemeRepository.cs
-using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

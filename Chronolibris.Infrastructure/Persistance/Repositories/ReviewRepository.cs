@@ -12,15 +12,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
-    /// <summary>
-    /// Репозиторий для сущности <see cref="Review"/>.
-    /// </summary>
+
     public class ReviewRepository : GenericRepository<Review>, IReviewRepository
     {
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ReviewRepository"/>.
-        /// </summary>
-        /// <param name="context">Контекст базы данных приложения.</param>
+
         public ReviewRepository(ApplicationDbContext context) : base(context) { }
 
         public async Task<ReviewDetailsWithVote?> GetActiveByUserAndBookAsync(long userId, long bookId, CancellationToken token = default)
@@ -55,29 +50,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .FirstOrDefaultAsync(token);
         }
 
-
-        //public async Task<long> CountLikesForReview(long reviewId, CancellationToken cancellationToken)
-        //{
-        //    return await _context.ReviewsRatings.LongCountAsync(rr => rr.ReviewId == reviewId && rr.Score == 1, cancellationToken);
-        //}
-
-
-        //public async Task<long> CountDislikesForReview(long reviewId, CancellationToken token)
-        //{
-        //    return await _context.ReviewsRatings.LongCountAsync(rr => rr.ReviewId == reviewId && rr.Score == -1, token);
-        //}
-
-        //public async Task<long> GetAverageForReview(long reviewId, CancellationToken token)
-        //{
-        //    return await _context.ReviewsRatings.Where(rr => rr.ReviewId == reviewId).SumAsync(rr => (long)rr.Score, token);
-        //}
-
-        /// <summary>
-        /// Асинхронно получает все отзывы для указанной книги.
-        /// </summary>
-        /// <param name="bookId">Идентификатор книги.</param>
-        /// <param name="token">Токен отмены.</param>
-        /// <returns>Коллекция отзывов.</returns>
         public async Task<List<ReviewDetailsWithVote>> GetByBookIdAsync(long bookId, long? lastId, int limit, long? userId, CancellationToken token)
         {
 
@@ -100,35 +72,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         .Select(rr => rr.ReactionType == 1 ? (bool?)true : (rr.ReactionType == 0 ? null : (bool?)false))
                         .FirstOrDefault()
                 }).ToListAsync(token);
-
-            //var limitedReviews = await query
-            //    .OrderBy(r => r.Id)
-            //    .Take(limit + 1)
-            //    .ToListAsync(token);
-
-            //if (!limitedReviews.Any())
-            //{
-            //    return new List<ReviewDetailsWithVote>();
-            //}
-
-            //var reviewIds = limitedReviews.Select(r => r.Id).ToList();
-
-            //var results = limitedReviews.AsQueryable()
-            //    .Select(r => new ReviewDetailsWithVote 
-            //    {
-            //        Review = r,
-            //        UserVote = _context.ReviewsRatings
-            //            .Where(rr => rr.ReviewId == r.Id && rr.UserId == userId)
-            //            .Select(rr => (bool?)(rr.ReactionType == 1))
-            //            .FirstOrDefault()
-            //    })
-            //    .ToList();
-
-            //return results;
-
-            //return await query.OrderBy(r => r.Id)
-            //    .Take(limit + 1)
-            //    .ToListAsync(token);
         }
 
         public async Task<ReviewDetailsWithVote?> GetByIdWithVotesAsync(long reviewId, long userId, CancellationToken token = default)
@@ -147,39 +90,5 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 })
                 .FirstOrDefaultAsync(token);
         }
-
-        /// <summary>
-        /// Атомарно пересчитывает счетчики лайков, дизлайков и средний рейтинг для отзыва, 
-        /// обновляя сущность <see cref="Review"/> в базе данных.
-        /// </summary>
-        /// <remarks>
-        /// Использует <c>ExecuteUpdateAsync</c> для выполнения обновления непосредственно на уровне SQL. 
-        /// Это обеспечивает атомарность и предотвращает проблемы конкурентности (Lost Update).
-        /// </remarks>
-        /// <param name="reviewId">Идентификатор отзыва для пересчета.</param>
-        /// <param name="token">Токен отмены.</param>
-        /// <returns>Задача, представляющая асинхронную операцию.</returns>
-        //public async Task RecalculateRatingAsync(long reviewId, CancellationToken token)
-        //{
-        //    var likesQuery = _context.ReviewsRatings
-        //        .Where(rr => rr.ReviewId == reviewId && rr.ReactionType == 1)
-        //        .LongCount();
-
-        //    var dislikesQuery = _context.ReviewsRatings
-        //        .Where(rr => rr.ReviewId == reviewId && rr.ReactionType == -1)
-        //        .LongCount();
-
-        //    var averageQuery = _context.ReviewsRatings
-        //        .Where(rr => rr.ReviewId == reviewId)
-        //        .Sum(rr => (long?)rr.ReactionType) ?? 0;
-
-        //    //await _context.Reviews
-        //    //    .Where(r => r.Id == reviewId)
-        //    //        .ExecuteUpdateAsync(setter => setter
-        //    //            .SetProperty(r => r.LikesCount, (long) likesQuery)
-        //    //            .SetProperty(r => r.DislikesCount, (long) dislikesQuery)
-        //    //            .SetProperty(r => r.AverageRating, averageQuery),
-        //    //            token);
-        //}
     }
 }

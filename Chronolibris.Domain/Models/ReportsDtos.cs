@@ -7,23 +7,18 @@ using System.Threading.Tasks;
 namespace Chronolibris.Domain.Models
 {
 
-    //Запрос для списка жалоб в панели модерации - 1
-
     public class GetReportsRequest
     {
         public long? LastTargetId {  get; set; }
         public long? LastTargetTypeId { get; set; }
         public long? LastReportTypeId { get; set; }
         public int Count { get; set; }
-        public long? ReportStatusId { get; set; } //moderatorId если что подцепится в контроллере
-        //для получения только своих взятых в обработку или обработанных
+        public long? ReportStatusId { get; set; }
         public bool TargetTypeFilter { get; set; }
         public bool ReportTypeFilter { get; set; }
         public bool ReportStatusFilter { get; set; }
         public DateTime? LastDate { get; set; }
     }
-
-    //Ответ на запрос списка жалоб в панели модерации
     public class GetReportsResponse
     {
         public List<ReportShortDto> Reports { get; set; }
@@ -49,15 +44,11 @@ namespace Chronolibris.Domain.Models
         public string Comment { get; set; } = string.Empty;
     }
 
-    //Запрос информации о таргете - 2
-
     public class GetTargetInfoRequest
     {
         public long TargetId { get; set; }
         public long TargetTypeId { get; set; }
     }
-
-    //Ответ на запрос информации о таргете
 
     public class GetTargetInfoResponse
     {
@@ -71,8 +62,6 @@ namespace Chronolibris.Domain.Models
         public string? ParentCommentText { get; set; }
     }
 
-    //Запрос списка жалоб конкретного типа на конкретный таргет - 3
-
     public class GetTargetReportsRequest
     {
         public long TargetId { get; set; }
@@ -82,7 +71,6 @@ namespace Chronolibris.Domain.Models
         public long? LastReportId { get; set; }
 
     }
-    //Ответ на запрос получения списка жалоб конкретного типа на конкретный таргет
 
     public class GetTargetReportsResponse
     {
@@ -99,19 +87,12 @@ namespace Chronolibris.Domain.Models
         public string Text { get; set; }
         public DateTime CreatedAt { get; set; }
     }
-
-    //Запрос на взятие в обработку таска - 4
-
     public class CreateModerationTaskRequest
     {
         public long TargetId { get; set; }
         public long TargetTypeId { get; set; }
         public long ReportTypeId { get; set; }
-        //Модератора контроллер подцепит из куков или токена
     }
-
-    //Ответ на запрос на взятие таска в обработку
-
     public class CreateModerationTaskResponse
     {
         public long? Id { get; set; }
@@ -119,28 +100,17 @@ namespace Chronolibris.Domain.Models
         public long TaskStatusId { get; set; }
     }
 
-    //Запрос на принятие жалобы - 5
-
     public class TaskResolutionRequest
     {
         //public long Id { get; set; }
         public bool Resolution { get; set; }
         public required string Comment { get; set; }
-        //Модератора контроллер сам подцепит из куков или токена
     }
-
-    //Ответ на запрос по принятию жалобы
     public class TaskResolutionResponse
     {
         public bool Success { get; set; }
         public DateTime? TaskResolvedAt { get; set; }
         public long? TaskStatusId { get; set; }
     }
-
-    //Запрос на отклонение жалобы - 6
-    //То же, что и выше, только резолюшин = фалсе
-
-    //Ответ на запрос по отклонению жалобы
-    //То же, что и выше, только значения полей другие
 
 }

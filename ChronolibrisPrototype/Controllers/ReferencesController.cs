@@ -19,13 +19,7 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// Получает полный справочник ролей участников (авторы, редакторы, переводчики и т.д.).
-        /// </summary>
-        /// <param name="cancellationToken">Токен отмены для асинхронной операции.</param>
-        /// <returns>Список объектов RoleDetails.</returns>
         [HttpGet("roles")]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RoleDetails>))]
         public async Task<ActionResult<IEnumerable<RoleDetails>>> GetPersonRoles()
         {
             var query = new GetRoleDetailsQuery();
@@ -35,9 +29,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(roles);
         }
 
-        /// <summary>
-        /// Получает список всех доступных FTS конфигураций из PostgreSQL
-        /// </summary>
         [HttpGet("fts-configurations")]
         public async Task<ActionResult<IEnumerable<FtsConfigurationDto>>> GetFtsConfigurations(CancellationToken cancellationToken)
         {
@@ -47,11 +38,8 @@ namespace ChronolibrisPrototype.Controllers
         }
 
 
-        /// <summary>
-        /// Получает список всех языков
-        /// </summary>
+
         [HttpGet("languages")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<LanguageDto>))]
         public async Task<ActionResult<IEnumerable<LanguageDto>>> GetAllLanguages(CancellationToken cancellationToken)
         {
             var query = new GetAllLanguagesQuery();
@@ -59,9 +47,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(languages);
         }
 
-        /// <summary>
-        /// Получает язык по идентификатору
-        /// </summary>
+
         [HttpGet("languages/{id}")]
         public async Task<ActionResult<LanguageDto>> GetLanguageById(long id, CancellationToken cancellationToken)
         {
@@ -71,9 +57,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(language);
         }
 
-        /// <summary>
-        /// Создает новую запись языка
-        /// </summary>
         [Authorize]
         [HttpPost("languages")]
         public async Task<ActionResult<long>> CreateLanguage([FromBody] CreateLanguageRequest request, CancellationToken cancellationToken)
@@ -84,9 +67,7 @@ namespace ChronolibrisPrototype.Controllers
 
             return CreatedAtAction(nameof(GetLanguageById), new { id = id }, id);
         }
-        /// <summary>
-        /// Обновляет существующую запись языка
-        /// </summary>
+
         [Authorize]
         [HttpPut("languages/{id}")]
         public async Task<ActionResult> UpdateLanguage(long id, [FromBody] UpdateLanguageRequest request, CancellationToken cancellationToken)
@@ -98,9 +79,7 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Удаляет запись языка
-        /// </summary>
+
         [Authorize]
         [HttpDelete("languages/{id}")]
         public async Task<ActionResult> DeleteLanguage(long id, CancellationToken cancellationToken)
@@ -111,9 +90,6 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Получает список всех стран
-        /// </summary>
         [HttpGet("countries")]
         public async Task<ActionResult<IEnumerable<CountryDto>>> GetAllCountries(CancellationToken cancellationToken)
         {
@@ -122,9 +98,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(countries);
         }
 
-        /// <summary>
-        /// Получает страну по идентификатору
-        /// </summary>
+
         [HttpGet("countries/{id}")]
         public async Task<ActionResult<CountryDto>> GetCountryById(long id, CancellationToken cancellationToken)
         {
@@ -137,9 +111,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(country);
         }
 
-        /// <summary>
-        /// Создает новую запись страны
-        /// </summary>
+
         [Authorize]
         [HttpPost("countries")]
         public async Task<ActionResult<long>> CreateCountry([FromBody] CreateCountryRequest request, CancellationToken cancellationToken)
@@ -154,9 +126,7 @@ namespace ChronolibrisPrototype.Controllers
             return CreatedAtAction(nameof(GetCountryById), new { id = id }, id);
         }
 
-        /// <summary>
-        /// Обновляет существующую запись страны
-        /// </summary>
+
         [Authorize]
         [HttpPut("countries/{id}")]
         public async Task<ActionResult> UpdateCountry(long id, [FromBody] UpdateCountryRequest request, CancellationToken cancellationToken)
@@ -177,9 +147,7 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Удаляет запись страны
-        /// </summary>
+
         [Authorize]
         [HttpDelete("countries/{id}")]
         public async Task<ActionResult> DeleteCountry(long id, CancellationToken cancellationToken)
@@ -193,11 +161,8 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Получает список всех форматов книг
-        /// </summary>
+
         [HttpGet("formats")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<FormatDto>))]
         public async Task<ActionResult<IEnumerable<FormatDto>>> GetAllFormats(CancellationToken cancellationToken)
         {
             var query = new GetAllFormatsQuery();
@@ -205,9 +170,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(formats);
         }
 
-        /// <summary>
-        /// Получает формат по идентификатору
-        /// </summary>
+
         [HttpGet("formats/{id}")]
         public async Task<ActionResult<FormatDto>> GetFormatById(int id, CancellationToken cancellationToken)
         {
@@ -220,9 +183,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(format);
         }
 
-        /// <summary>
-        /// Создает новую запись формата
-        /// </summary>
+
         [Authorize]
         [HttpPost("formats")]
         public async Task<ActionResult<int>> CreateFormat([FromBody] CreateFormatRequest request, CancellationToken cancellationToken)
@@ -237,9 +198,6 @@ namespace ChronolibrisPrototype.Controllers
             return CreatedAtAction(nameof(GetFormatById), new { id = id }, id);
         }
 
-        /// <summary>
-        /// Обновляет существующую запись формата
-        /// </summary>
         [Authorize]
         [HttpPut("formats/{id}")]
         public async Task<ActionResult> UpdateFormat(int id, [FromBody] UpdateFormatRequest request, CancellationToken cancellationToken)
@@ -260,9 +218,6 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Удаляет запись формата
-        /// </summary>
         [Authorize]
         [HttpDelete("formats/{id}")]
         public async Task<ActionResult> DeleteFormat(int id, CancellationToken cancellationToken)

@@ -1,5 +1,4 @@
-﻿// File: ChronolibrisPrototype.Controllers.BookFilesController.cs
-using Chronolibris.Application.Models;
+﻿using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,9 +22,6 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// Получает список всех файлов для книги
-        /// </summary>
         [HttpGet("book/{bookId}")]
         public async Task<ActionResult<List<BookFileDto>>> GetBookFiles(long bookId, CancellationToken cancellationToken)
         {
@@ -34,11 +30,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(files);
         }
 
-        /// <summary>
-        /// Получает файл книги по идентификатору
-        /// </summary>
         [HttpGet("{id}")]
-
         public async Task<ActionResult<BookFileDto>> GetBookFile(long id, CancellationToken cancellationToken)
         {
             var query = new GetBookFileDtoQuery(id);
@@ -50,11 +42,8 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(file);
         }
 
-        /// <summary>
-        /// Скачивает файл книги
-        /// </summary>
-        [HttpGet("{id}/download")]
 
+        [HttpGet("{id}/download")]
         public async Task<ActionResult> DownloadBookFile(long id, CancellationToken cancellationToken)
         {
             var query = new GetBookFileQuery(id);
@@ -66,13 +55,9 @@ namespace ChronolibrisPrototype.Controllers
             return File(stream, "application/octet-stream", $"book_file_{id}");
         }
 
-        /// <summary>
-        /// Загружает новый файл для книги
-        /// </summary>
         [Authorize]
         [HttpPost]
-        [RequestSizeLimit(100 * 1024 * 1024)] // 100 MB
-
+        [RequestSizeLimit(100 * 1024 * 1024)]
         public async Task<ActionResult<long>> UploadBookFile(
             [FromForm] long bookId,
             [FromForm] int formatId,
@@ -98,13 +83,10 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Обновляет (перезаписывает) файл книги
-        /// </summary>
+
         [Authorize]
         [HttpPut("book/{bookId}/format/{formatId}")]
-        [RequestSizeLimit(100 * 1024 * 1024)] // 100 MB
-
+        [RequestSizeLimit(100 * 1024 * 1024)]
         public async Task<ActionResult> UpdateBookFile(
             long bookId,
             int formatId,
@@ -134,12 +116,9 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Удаляет файл книги
-        /// </summary>
+
         [Authorize]
         [HttpDelete("{id}")]
-
         public async Task<ActionResult> DeleteBookFile(long id, CancellationToken cancellationToken)
         {
             if (!TryGetUserId(out var userId))

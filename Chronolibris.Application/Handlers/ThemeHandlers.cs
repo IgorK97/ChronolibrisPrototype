@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Application.Handlers.ThemeHandlers.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Entities;
@@ -110,7 +109,6 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<long> Handle(CreateThemeCommand request, CancellationToken cancellationToken)
         {
-            // Проверяем, существует ли родительская тема (если указана)
             if (request.ParentThemeId.HasValue)
             {
                 var parentTheme = await _themeRepository.GetByIdAsync(request.ParentThemeId.Value, cancellationToken);

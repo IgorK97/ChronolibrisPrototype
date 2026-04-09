@@ -13,33 +13,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
-    /// <summary>
-    /// Репозиторий для управления сущностями подборок (<see cref="Selection"/>). 
-    /// Реализует интерфейс <see cref="ISelectionsRepository"/>, предоставляя методы для 
-    /// получения подборок и книг, входящих в них, с поддержкой пагинации.
-    /// </summary>
+
     public class SelectionsRepository : ISelectionsRepository
     {
         private readonly ApplicationDbContext _context;
 
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="SelectionsRepository"/>.
-        /// </summary>
-        /// <param name="context">Контекст базы данных приложения, используемый для доступа к данным.</param>
+
         public SelectionsRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        /// <summary>
-        /// Асинхронно получает сущность подборки по ее идентификатору, включая книги, и фильтрует только активные подборки.
-        /// </summary>
-        /// <param name="id">Уникальный идентификатор подборки.</param>
-        /// <param name="ct">Токен отмены для прерывания запроса.</param>
-        /// <returns>
-        /// Задача, которая представляет асинхронную операцию. Результат задачи — 
-        /// сущность <see cref="Selection"/> со связанными книгами или <c>null</c>, если подборка не найдена или не активна.
-        /// </returns>
+
         public async Task<Selection?> GetByIdAsync(long id, long userId, string userRole, CancellationToken ct)
         {
             var selection = await _context.Selections
@@ -50,14 +35,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             return selection;
         }
 
-        /// <summary>
-        /// Асинхронно получает список всех активных подборок, которые должны отображаться пользователю.
-        /// </summary>
-        /// <param name="ct">Токен отмены для прерывания запроса.</param>
-        /// <returns>
-        /// Задача, которая представляет асинхронную операцию. Результат задачи — 
-        /// коллекция <see cref="System.Collections.Generic.IEnumerable{T}"/> активных сущностей <see cref="Selection"/>.
-        /// </returns>
         public async Task<IEnumerable<Selection>> GetActiveSelectionsAsync(CancellationToken ct)
         {
             return await _context.Selections
@@ -104,17 +81,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
         }
 
-        /// <summary>
-        /// Асинхронно получает книги, включенные в указанную активную подборку, с поддержкой пагинации.
-        /// </summary>
-        /// <param name="selectionId">Идентификатор подборки.</param>
-        /// <param name="page">Номер запрашиваемой страницы (начиная с 1).</param>
-        /// <param name="pageSize">Количество книг на странице.</param>
-        /// <param name="ct">Токен отмены для прерывания запроса.</param>
-        /// <returns>
-        /// Кортеж, содержащий коллекцию сущностей <see cref="Book"/> для текущей страницы 
-        /// и общее количество книг в подборке (<c>TotalCount</c>).
-        /// </returns>
+
         public async Task<List<BookListItem>>
             GetBooksForSelection(long selectionId, long? lastId, int limit, long userId, bool mode, CancellationToken ct)
         {

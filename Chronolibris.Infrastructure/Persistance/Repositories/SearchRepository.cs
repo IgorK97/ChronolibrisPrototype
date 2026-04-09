@@ -22,12 +22,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
         
 
-        /// <summary>
-        /// Простой поиск (по ключу), similarity
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
+
         public async Task<PagedResult<BookSearchResult>>SearchKeysetAsync(
             SimpleSearchKeysetRequest request, CancellationToken token)
         {
@@ -131,12 +126,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
        
 
-        /// <summary>
-        /// Расширенный поиск (пагинация по ключу) + similarity
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
+
         public async Task<PagedResult<BookSearchResult>> AdvancedSearchKeysetAsync(
             AdvancedSearchKeysetRequest request, CancellationToken token)
         {

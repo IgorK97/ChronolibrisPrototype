@@ -1,5 +1,4 @@
-﻿// File: ChronolibrisPrototype.Controllers.ContentsController.cs
-using Chronolibris.Application.Models;
+﻿using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Models;
 using MediatR;
@@ -24,9 +23,6 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// Получает список контентов с фильтрацией и пагинацией
-        /// </summary>
         [HttpGet]
         public async Task<ActionResult<ContentListResponse>> GetContents(
             [FromQuery] ContentFilterRequest filter, CancellationToken cancellationToken)
@@ -36,9 +32,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Получает контент по идентификатору
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<ContentDto>> GetContentById(long id, CancellationToken cancellationToken)
         {
@@ -100,9 +93,6 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Получает список книг для контента
-        /// </summary>
         [HttpGet("{id}/books")]
         public async Task<ActionResult<List<BookDto>>> GetContentBooks(long id, CancellationToken cancellationToken)
         {
@@ -111,9 +101,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(books);
         }
 
-        /// <summary>
-        /// Создает новый контент
-        /// </summary>
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<long>> CreateContent(
@@ -146,9 +133,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Обновляет существующий контент
-        /// </summary>
         [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateContent(long id,
@@ -172,9 +156,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Удаляет контент
-        /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteContent(long id, CancellationToken cancellationToken)
@@ -191,9 +172,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        /// <summary>
-        /// Привязывает книгу к контенту
-        /// </summary>
         [Authorize]
         [HttpPost("{contentId}/books/{bookId}")]
         public async Task<ActionResult> LinkBookToContent(long contentId, long bookId,

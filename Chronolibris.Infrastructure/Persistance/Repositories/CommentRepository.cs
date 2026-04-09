@@ -48,14 +48,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             var resultQuery = query.OrderByDescending(c => c.Id).Take(limit);
 
-            //if (includeReplies)
-            //{
-            //    // Загружаем первый уровень дочерних комментариев (только активные)
-            //    return await resultQuery
-            //        .Include(c => c.Replies.Where(r => r.DeletedAt == null).OrderByDescending(r => r.Id).Take(5))
-            //        .ToListAsync(token);
-            //}
-
             return await resultQuery.Join(_context.Users, c => c.UserId, u => u.Id, (c, u) => new CommentDto
             {
                 Id = c.Id,

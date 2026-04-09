@@ -20,4 +20,8 @@ namespace Chronolibris.Application.Search
     public record SearchTagsQuery(string Name, int Limit = 10)
         : IRequest<List<TagSuggestionDto>>;
 
+    public record GetPersonsByIdsQuery(List<long> Ids):IRequest<List<PersonSuggestionDto>>;
+
+    public record GetTagsByIdsQuery(List<long> Ids):IRequest<List<TagSuggestionDto>>;
+
 }

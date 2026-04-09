@@ -66,13 +66,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok();
         }
 
-        //[HttpPost("refresh")]
-        //public async Task<ActionResult> Refresh(string refreshToken)
-        //{
-        //    var result = await _mediator.Send(new RefreshTokenCommand(refreshToken));
-        //    return Ok(result);
-        //}
-
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> Me()
@@ -150,11 +143,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok();
         }
 
-        /// <summary>
-        /// POST /api/users/staff
-        /// Регистрация модератора или администратора.
-        /// Доступно только администраторам.
-        /// </summary>
         [Authorize(Roles = "admin")]
         [HttpPost("staff")]
         public async Task<IActionResult> RegisterStaff(

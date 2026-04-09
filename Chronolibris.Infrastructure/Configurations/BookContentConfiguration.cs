@@ -42,20 +42,16 @@ namespace Chronolibris.Infrastructure.Configurations
                 .HasForeignKey(bc => bc.ContentId);
 
             builder.HasData(
-                // --- Книга 1 ("Буддизм в Японии") ---
                 new BookContent
                 {
                     BookId = 1,
                     ContentId = 1,
-                    //Order = 1 // Контент 1 является первым контентом в Книге 1
                 },
 
-                // --- Книга 2 ("Структуры повседневности...") ---
                 new BookContent
                 {
                     BookId = 2,
                     ContentId = 2,
-                    //Order = 1 // Контент 2 является первым контентом в Книге 2
                 }
 
 

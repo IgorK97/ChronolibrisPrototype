@@ -11,45 +11,18 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    /// <summary>
-    /// Обработчик команды для оценки отзыва пользователем (Like, Dislike или снятие оценки).
-    /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/>
-    /// для обработки <see cref="RateReviewCommand"/> и возврата обновленного <see cref="ReviewDetails"/> DTO.
-    /// </summary>
+
     public class RateReviewHandler : IRequestHandler<RateReviewCommand, ReviewDetails?>
     {
-        /// <summary>
-        /// Приватное поле только для чтения для доступа к паттерну Unit of Work.
-        /// </summary>
+
         private readonly IUnitOfWork _unitOfWork;
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="RateReviewHandler"/>.
-        /// </summary>
-        /// <param name="unitOfWork">Интерфейс Unit of Work для взаимодействия с базой данных.</param>
+
         public RateReviewHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        /// <summary>
-        /// Обрабатывает команду оценки отзыва.
-        /// </summary>
-        /// <remarks>
-        /// Логика команды включает многоэтапный процесс для обеспечения согласованности данных:
-        /// <list type="number">
-        /// <item>Получение отзыва для проверки существования и отслеживания.</item>
-        /// <item>Обработка изменения/удаления/добавления пользовательской оценки (<c>ReviewsRating</c>).</item>
-        /// <item>**Первое сохранение** (<c>SaveChangesAsync</c>): Фиксирует изменение <c>ReviewsRating</c>.</item>
-        /// <item>**Атомарный пересчет** (<c>RecalculateRatingAsync</c>): Выполняет безопасное, не зависящее от ORM, обновление счетчиков <c>Review</c> в БД, предотвращая Lost Update.</item>
-        /// <item>**Отсоединение и Перезагрузка:** Отключает старую сущность <c>review</c> (`Detach`) и загружает ее заново (`GetByIdAsync`), чтобы получить актуальные счетчики из БД.</item>
-        /// </list>
-        /// </remarks>
-        /// <param name="request">Объект команды, содержащий <c>ReviewId</c>, <c>UserId</c> и новую <c>Score</c> (1: Like, -1: Dislike, 0: Remove).</param>
-        /// <param name="cancellationToken">Токен отмены для асинхронной операции.</param>
-        /// <returns>
-        /// Задача, представляющая асинхронную операцию.
-        /// Результат задачи — обновленный объект <see cref="ReviewDetails"/> с актуальными счетчиками, или <c>null</c>, если отзыв не найден.
-        /// </returns>
+
         public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken cancellationToken)
         {
             if (request.Score != 1 && request.Score != -1)
@@ -83,29 +56,7 @@ namespace Chronolibris.Application.Handlers
                 rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score;
             }
 
-                //if (request.Score == 0) // Снятие оценки
-                //{
-                //    if (rating != null)
-                //        _unitOfWork.ReviewsRatings.Delete(rating);
-                //}
-                //else // Установка или изменение оценки
-                //{
-                //    if (rating == null)
-                //    {
-                //        rating = new ReviewsReaction
-                //        {
-                //            Id = 0,
-                //            ReviewId = request.ReviewId,
-                //            ReactionType = request.Score,
-                //            UserId = request.UserId,
-                //        };
-                //        await _unitOfWork.ReviewsRatings.AddAsync(rating, cancellationToken);
-                //    }
-                //    else
-                //    {
-                //        rating.ReactionType = request.Score;
-                //    }
-                //}
+
 
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);

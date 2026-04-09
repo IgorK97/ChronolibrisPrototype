@@ -13,10 +13,6 @@ namespace Chronolibris.Application.Handlers
     public class SeekBookInShelvesHandler : IRequestHandler<SeekBookInShelvesQuery, long[]>
     {
         private readonly IUnitOfWork _unitOfWork;
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="SeelBookInShelvesHandler"/>.
-        /// </summary>
-        /// <param name="unitOfWork">Интерфейс Unit of Work для взаимодействия с базой данных.</param>
         public SeekBookInShelvesHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

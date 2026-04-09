@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Application.Handlers.PublisherHandlers.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Entities;

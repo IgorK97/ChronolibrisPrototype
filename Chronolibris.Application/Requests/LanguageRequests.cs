@@ -1,12 +1,10 @@
-﻿// File: Chronolibris.Application.Requests.LanguageRequests.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using System.Collections.Generic;
 using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Requests
 {
-    // Queries
     public class GetAllLanguagesQuery : IRequest<IEnumerable<LanguageDto>> { }
 
     public class GetFtsConfigurationsQuery : IRequest<IEnumerable<FtsConfigurationDto>> { }
@@ -17,7 +15,6 @@ namespace Chronolibris.Application.Requests
         public GetLanguageByIdQuery(long id) => Id = id;
     }
 
-    // Commands
     public class CreateLanguageCommand : IRequest<long>
     {
         public string Name { get; set; } = string.Empty;

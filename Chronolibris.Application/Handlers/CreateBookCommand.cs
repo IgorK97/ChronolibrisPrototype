@@ -49,8 +49,6 @@ namespace Chronolibris.Application.Commands
 
             if (string.IsNullOrWhiteSpace(cmd.CoverBase64))
                 throw new ArgumentException("Файл обложки обязателен при создании книги.");
-
-            // 1. Сохраняем запись в БД без coverPath
             var book = new Book
             {
                 Id=0,
@@ -73,9 +71,8 @@ namespace Chronolibris.Application.Commands
 
             var bookId = await _bookRepository.CreateAsync(book, cmd.PersonFilters, ct);
 
-            // 2. Декодируем Base64 и загружаем обложку в MinIO: covers/{bookId}/cover.{ext}
             var imageBytes = DecodeCover(cmd.CoverBase64);
-            var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant(); // ".jpg"
+            var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant();
             var fileName = $"cover{extension}";
             var coverPath = $"covers/{bookId}/{fileName}";
 
@@ -88,11 +85,6 @@ namespace Chronolibris.Application.Commands
 
             return bookId;
         }
-
-        /// <summary>
-        /// Принимает Base64 как с префиксом data URI ("data:image/jpeg;base64,..."),
-        /// так и без него (чистый Base64).
-        /// </summary>
         private static byte[] DecodeCover(string base64)
         {
             var data = base64.Contains(',')

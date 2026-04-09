@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
-//using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Models;
@@ -14,19 +13,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
-    /// <summary>
-    /// Репозиторий для управления сущностями книг (<see cref="Book"/>). 
-    /// Предоставляет специализированные методы доступа к данным, расширяя <see cref="GenericRepository{TEntity}"/>.
-    /// Реализует интерфейс <see cref="IBookRepository"/>.
-    /// </summary>
+
     public class BookRepository : GenericRepository<Book>, IBookRepository
     {
         private readonly DbSet<Book> _set;
-
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="BookRepository"/>.
-        /// </summary>
-        /// <param name="context">Контекст базы данных приложения, используемый для доступа к данным.</param>
         public BookRepository(ApplicationDbContext context) : base(context) { _set = context.Set<Book>(); }
         public async Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, bool mode, CancellationToken token)
         {

@@ -41,9 +41,6 @@ namespace ChronolibrisPrototype.Controllers
             return Ok();
         }
 
-        /// <summary>
-        /// Обновляет заметку к закладке
-        /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult<bool>> UpdateBookmark(
             long id,

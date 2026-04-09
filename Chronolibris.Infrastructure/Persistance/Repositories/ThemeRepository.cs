@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Infrastructure.Persistence.Repositories.ThemeRepository.cs
-using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Application.Models.BookDtos.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -91,24 +90,6 @@ namespace Chronolibris.Application.Models
         public List<long> PersonIds { get; set; } = new();
         public List<long> ThemeIds { get; set; } = new();
     }
-
-    //public class BookFilterRequest
-    //{
-    //    public string? SearchQuery { get; set; }
-    //    public string? AuthorName { get; set; }
-    //    public List<long>? IncludeThemeIds { get; set; }
-    //    public List<long>? ExcludeThemeIds { get; set; }
-    //    public long? PublisherId { get; set; }
-    //    public long? SeriesId { get; set; }
-    //    public long? LanguageId { get; set; }
-    //    public int? YearFrom { get; set; }
-    //    public int? YearTo { get; set; }
-    //    public bool? IsAvailable { get; set; }
-    //    public string? Cursor { get; set; }
-    //    public int Limit { get; set; } = 20;
-    //}
-
-
     public class BookListResponse
     {
         public List<BookDto> Items { get; set; } = new();

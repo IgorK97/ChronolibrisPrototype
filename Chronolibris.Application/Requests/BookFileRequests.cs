@@ -25,8 +25,6 @@ namespace Chronolibris.Application.Requests
         public long BookFileId { get; set; }
         public GetBookFileQuery(long bookFileId) => BookFileId = bookFileId;
     }
-
-    // Commands
     public class UploadBookFileCommand : IRequest<long>
     {
         public long BookId { get; set; }

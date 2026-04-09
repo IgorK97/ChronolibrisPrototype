@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Infrastructure.Persistence.Repositories.ContentRepository.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -137,6 +136,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
         {
             return await _set.ToListAsync(cancellationToken);
         }
+        //Simplify this!!!
 
         public async Task<(List<Content> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
             ContentFilterRequest filter, CancellationToken cancellationToken = default)

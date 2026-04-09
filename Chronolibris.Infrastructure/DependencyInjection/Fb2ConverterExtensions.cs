@@ -14,9 +14,6 @@ namespace Chronolibris.Infrastructure.DataAccess.DependencyInjection
 {
     public static class Fb2ConverterExtensions
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public static IServiceCollection AddFb2Converter(
             this IServiceCollection services,
             IConfiguration configuration)

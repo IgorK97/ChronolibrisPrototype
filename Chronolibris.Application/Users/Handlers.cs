@@ -18,18 +18,12 @@ namespace Chronolibris.Application.Users
         public required string PhoneNumber { get; set; }
 
         public string Password { get; set; } = string.Empty;
-        /// <summary>"Moderator" или "Admin"</summary>
         public string Role { get; set; } = string.Empty;
     }
-
-    // ── Хендлер ───────────────────────────────────────────────────────────────
 
     public class RegisterStaffHandler : IRequestHandler<RegisterStaffCommand, RegistrationResult>
     {
         private readonly IIdentityService _identityService;
-
-        // Роли, которые разрешено назначать через этот хендлер.
-        // Reader сюда не входит — для него отдельный RegisterUserHandler.
         private static readonly HashSet<string> AllowedRoles =
             new(StringComparer.OrdinalIgnoreCase) { "moderator", "admin" };
 
@@ -41,7 +35,6 @@ namespace Chronolibris.Application.Users
         public async Task<RegistrationResult> Handle(
             RegisterStaffCommand request, CancellationToken ct)
         {
-            // ── Валидация роли ────────────────────────────────────────────────
             if (!AllowedRoles.Contains(request.Role))
                 return new RegistrationResult
                 {
@@ -49,8 +42,6 @@ namespace Chronolibris.Application.Users
                     Success = false,
                     Message = $"Недопустимая роль «{request.Role}». Допустимые: Moderator, Admin.",
                 };
-
-            // ── Проверка уникальности username (глобально) ────────────────────
             if (!await _identityService.IsUserNameUniqueAsync(request.UserName))
                 return new RegistrationResult
                 {
@@ -59,13 +50,11 @@ namespace Chronolibris.Application.Users
                     Message = "Это имя пользователя уже занято.",
                 };
 
-            // ── Проверка уникальности email (глобально) ───────────────────────
             if (!await _identityService.IsEmailUniqueAsync(request.Email))
                 return new RegistrationResult {UserId=0, Success = false, Message = "Этот email уже зарегистрирован." };
 
             if (!await _identityService.IsPhoneUniqueAsync(request.PhoneNumber!))
                 return new RegistrationResult { UserId=0, Success = false, Message = "Этот номер телефона уже зарегистрирован." };
-            // ── Регистрация с нужной ролью ────────────────────────────────────
             return await _identityService.RegisterUserAsync(new RegisterRequest
             {
             
@@ -75,7 +64,7 @@ namespace Chronolibris.Application.Users
                 Email = request.Email,
                 Password = request.Password,
                 PhoneNumber = request.PhoneNumber,
-                Role = request.Role,   // передаём роль в сервис
+                Role = request.Role,
             });
         }
     }

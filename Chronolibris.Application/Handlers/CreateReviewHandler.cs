@@ -10,41 +10,14 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    /// <summary>
-    /// Обработчик команды для создания нового отзыва (<see cref="Review"/>) о книге.
-    /// Реализует интерфейс <see cref="IRequestHandler{TRequest, TResponse}"/> 
-    /// для обработки <see cref="CreateReviewCommand"/> и возврата идентификатора отзыва (<see cref="long"/>).
-    /// </summary>
     public class CreateReviewHandler : IRequestHandler<CreateReviewCommand, long>
     {
-        /// <summary>
-        /// Приватное поле только для чтения для доступа к Unit of Work.
-        /// </summary>
         private readonly IUnitOfWork _unitOfWork;
 
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="CreateReviewHandler"/>.
-        /// </summary>
-        /// <param name="unitOfWork">Интерфейс Unit of Work для взаимодействия с базой данных.</param>
         public CreateReviewHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-
-        /// <summary>
-        /// Обрабатывает команду создания нового отзыва.
-        /// </summary>
-        /// <remarks>
-        /// Создает новую сущность <see cref="Review"/> из данных команды, 
-        /// добавляет ее через репозиторий и сохраняет изменения в базе данных.
-        /// В конце возвращает сгенерированный базой данных идентификатор нового отзыва.
-        /// </remarks>
-        /// <param name="request">Объект команды, содержащий данные для нового отзыва.</param>
-        /// <param name="cancellationToken">Токен отмены для асинхронной операции.</param>
-        /// <returns>
-        /// Задача, представляющая асинхронную операцию. 
-        /// Результат задачи — <see cref="long"/>, представляющий идентификатор нового отзыва.
-        /// </returns>
         public async Task<long> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
 

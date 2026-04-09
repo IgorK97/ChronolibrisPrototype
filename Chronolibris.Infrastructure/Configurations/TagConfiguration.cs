@@ -13,9 +13,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
-
-
-            // Самореферентное отношение
             builder.HasOne(t => t.ParentTag)
                 .WithMany(t => t.ChildTags)
                 .HasForeignKey(t => t.ParentTagId)

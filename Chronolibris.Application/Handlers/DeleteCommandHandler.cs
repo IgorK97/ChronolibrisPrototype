@@ -11,11 +11,10 @@ using MediatR;
 namespace Chronolibris.Application.Handlers
 {
     public record DeleteCommentCommand(long CommentId, long UserId) : IRequest;
-    // --- ОБРАБОТЧИК УДАЛЕНИЯ ---
     public class DeleteCommentHandler : IRequestHandler<DeleteCommentCommand>
         {
             private readonly ICommentRepository _repository;
-            private readonly IUnitOfWork _unitOfWork; // Предполагаем наличие UoW для SaveChanges
+            private readonly IUnitOfWork _unitOfWork;
 
             public DeleteCommentHandler(ICommentRepository repository, IUnitOfWork unitOfWork)
             {
@@ -27,10 +26,8 @@ namespace Chronolibris.Application.Handlers
             {
                 var comment = await _repository.GetByIdAsync(request.CommentId, ct);
 
-                // Проверяем существование и права доступа
                 if (comment == null || comment.UserId != request.UserId) return;
 
-                // Выполняем Soft Delete
                 comment.DeletedAt = DateTime.UtcNow;
                 _repository.Update(comment);
                 await _unitOfWork.SaveChangesAsync(ct);

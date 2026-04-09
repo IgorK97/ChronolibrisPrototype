@@ -1,12 +1,10 @@
-﻿// File: Chronolibris.Application.Requests.ContentRequests.cs
-using MediatR;
+﻿using MediatR;
 using Chronolibris.Application.Models;
 using System.Collections.Generic;
 using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Requests
 {
-    // Queries
     public class GetContentsQuery : IRequest<ContentListResponse>
     {
         public ContentFilterRequest Filter { get; set; } = new();
@@ -28,8 +26,6 @@ namespace Chronolibris.Application.Requests
         public long ContentId { get; set; }
         public GetContentBooksQuery(long contentId) => ContentId = contentId;
     }
-
-    // Commands
     public class CreateContentCommand : IRequest<long>
     {
         public string Title { get; set; } = string.Empty;
@@ -59,22 +55,6 @@ namespace Chronolibris.Application.Requests
             ThemeIds = themeIds;
         }
     }
-
-    //public class UpdateContentCommand : IRequest<Unit>
-    //{
-    //    public long Id { get; set; }
-    //    public string Title { get; set; } = string.Empty;
-    //    public string Description { get; set; } = string.Empty;
-    //    public long CountryId { get; set; }
-    //    public long ContentTypeId { get; set; }
-    //    public long LanguageId { get; set; }
-    //    public int? Year { get; set; }
-    //    public long? ParentContentId { get; set; }
-    //    public int? Position { get; set; }
-    //    public List<long> PersonIds { get; set; } = new();
-    //    public List<long> ThemeIds { get; set; } = new();
-
-    //}
 
     public class DeleteContentCommand : IRequest<Unit>
     {

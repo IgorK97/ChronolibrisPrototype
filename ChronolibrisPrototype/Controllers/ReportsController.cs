@@ -119,6 +119,8 @@ namespace ChronolibrisPrototype.Controllers
             long id, [FromBody] TaskResolutionRequest request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            
             if (!long.TryParse(userIdClaim, out var moderatorId))
                 return Unauthorized();
 

@@ -16,7 +16,7 @@ namespace Chronolibris.Application.Handlers
 
     public class CreatePersonHandler : IRequestHandler<CreatePersonCommand, long>
     {
-        private readonly IGenericRepository<Person> _repository; // Используем твой GenericRepository
+        private readonly IGenericRepository<Person> _repository;
         private readonly IStorageService _fileService;
         private readonly IUnitOfWork _unitOfWork;
 

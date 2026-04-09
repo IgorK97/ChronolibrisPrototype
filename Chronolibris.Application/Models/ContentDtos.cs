@@ -1,5 +1,4 @@
-﻿// File: Chronolibris.Application.Models.ContentDtos.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Chronolibris.Domain.Models;
