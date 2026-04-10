@@ -11,5 +11,6 @@ namespace Chronolibris.Domain.Models
         public long RoleId { get; set; }
 
         public List<long> PersonIds { get; set; } = [];
+        public List<string>? PersonNames { get; set; } = [];
     }
 }

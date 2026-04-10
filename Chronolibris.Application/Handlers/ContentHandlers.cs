@@ -92,7 +92,8 @@ namespace Chronolibris.Application.Handlers
                 .Select(g => new PersonRoleFilter
                 {
                     RoleId = g.Key,
-                    PersonIds = g.Select(p => p.PersonId).ToList()
+                    PersonIds = g.Select(p => p.PersonId).ToList(),
+                    PersonNames = g.Select(p=> p.Person.Name).ToList(),
                 })
                 .ToList();
 
