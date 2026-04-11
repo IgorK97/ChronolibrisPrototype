@@ -154,16 +154,13 @@ var app = builder.Build();
 var configuration = app.Configuration;
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-//if (app.Environment.IsDevelopment())
-//{
-//    await TestConvertAsync(app.Services);
-//}
+
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseDeveloperExceptionPage();
+//}
 
 app.UseHttpsRedirection();
 app.UseHttpLogging();
