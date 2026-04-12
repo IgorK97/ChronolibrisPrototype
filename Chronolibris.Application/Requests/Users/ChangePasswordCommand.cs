@@ -7,10 +7,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Users
 {
-    public class ChangePasswordCommand : IRequest<Unit>
-    {
-        public string CurrentPassword { get; set; }
-        public string NewPassword { get; set; }
-        public long UserId { get; set; }
-    }
+    public record ChangePasswordCommand(string CurrentPassword, string NewPassword, long UserId) : IRequest<Unit>;
 }

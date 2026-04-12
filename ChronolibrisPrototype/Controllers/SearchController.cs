@@ -87,7 +87,7 @@ namespace ChronolibrisWeb.Controllers
                     ExcludedTagIds: request.ExcludedTagIds,
                     ThemeId: request.ThemeId,
                     SelectionId:request.SelectionId,
-                    mode:hiddenIsAvailableMode),
+                    Mode:hiddenIsAvailableMode),
                 cancellationToken);
 
             return Ok(result);

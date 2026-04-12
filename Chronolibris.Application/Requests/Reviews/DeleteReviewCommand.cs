@@ -7,9 +7,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Reviews
 {
-    public class DeleteReviewCommand : IRequest<Unit>
-    {
-        public long ReviewId { get; set; }
-        public long UserId { get; set; }
-    }
+    public record DeleteReviewCommand(long ReviewId, long UserId) : IRequest<Unit>;
 }

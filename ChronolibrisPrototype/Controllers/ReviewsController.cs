@@ -64,13 +64,7 @@ namespace ChronolibrisWeb.Controllers
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
-            var command = new CreateReviewCommand
-            {
-                BookId = request.BookId,
-                UserId = userId,
-                ReviewText = request.ReviewText,
-                Score = request.Score
-            };
+            var command = new CreateReviewCommand(request.BookId, userId, request.ReviewText, request.Score);
             var reviewId = await _mediator.Send(command);
             return Ok(reviewId);
         }
@@ -81,13 +75,7 @@ namespace ChronolibrisWeb.Controllers
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            var command = new UpdateReviewCommand
-            {
-                ReviewId = reviewId,
-                UserId = userId,
-                ReviewText = request.ReviewText,
-                Score = request.Score,
-            };
+            var command = new UpdateReviewCommand(reviewId, userId, request.ReviewText, request.Score);
             await _mediator.Send(command);
             return NoContent();
         }
@@ -98,7 +86,7 @@ namespace ChronolibrisWeb.Controllers
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            await _mediator.Send(new DeleteReviewCommand { ReviewId = reviewId, UserId = userId });
+            await _mediator.Send(new DeleteReviewCommand(reviewId, userId));
             return NoContent();
         }
 
@@ -108,12 +96,8 @@ namespace ChronolibrisWeb.Controllers
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            var result = await _mediator.Send(
-                new RateReviewCommand { 
-                    ReviewId=request.ReviewId,
-                    Score=request.Score,
-                    UserId=userId
-                });
+            var result = await _mediator.Send
+                (new RateReviewCommand(request.ReviewId, userId, request.Score));
 
             return Ok(result);
         }

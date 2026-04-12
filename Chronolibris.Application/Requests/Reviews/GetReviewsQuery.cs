@@ -8,5 +8,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Reviews
 {
-    public record GetReviewsQuery(long BookId, long? lastId, int limit, long? userId=null):IRequest<PagedResult<ReviewDetails>>;
+    public record GetReviewsQuery(long BookId, long? LastId, int Limit, long? UserId=null):IRequest<PagedResult<ReviewDetails>>;
 }

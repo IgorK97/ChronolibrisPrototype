@@ -8,13 +8,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Users
 {
-    public class UpdateUserProfileCommand : IRequest<UserProfileResponse>
-    {
-        public required string FirstName { get; set; }
-        public required string LastName { get; set; }
-        public string? Email { get; set; }
-        public long UserId { get; set; } 
-        public string? PhoneNumber { get; set; }
-        public required string UserName { get; set; }
-    }
+    public record UpdateUserProfileCommand(string FirstName, string LastName, string? Email, long UserId, string? PhoneNumber, string UserName) : IRequest<UserProfileResponse>;
 }

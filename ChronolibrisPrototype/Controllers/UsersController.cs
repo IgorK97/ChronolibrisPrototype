@@ -87,15 +87,8 @@ namespace ChronolibrisWeb.Controllers
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
-            var command = new UpdateUserProfileCommand
-            {
-                UserId = userId,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                UserName = request.UserName,
-            };
+            var command = new UpdateUserProfileCommand(request.FirstName, request.LastName, request.Email,
+                userId, request.PhoneNumber, request.UserName);
 
             var result = await _mediator.Send(command);
             return Ok(result);
@@ -110,12 +103,7 @@ namespace ChronolibrisWeb.Controllers
             if (!long.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
 
-            var command = new ChangePasswordCommand
-            {
-                UserId = userId,
-                CurrentPassword = request.CurrentPassword,
-                NewPassword = request.NewPassword,
-            };
+            var command = new ChangePasswordCommand(request.CurrentPassword, request.NewPassword, userId);
             await _mediator.Send(command);
 
             return Ok();

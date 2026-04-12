@@ -10,7 +10,7 @@ namespace Chronolibris.Application.Requests.Search
         long? UserId,
         double? LastBestSimilarity,
         long? LastId,
-        bool mode
+        bool Mode
     ) : IRequest<PagedResult<BookSearchResult>>;
     public record AdvancedSearchKeysetQuery(
         string? Query,
@@ -23,6 +23,6 @@ namespace Chronolibris.Application.Requests.Search
         long SelectionId,
         List<long> RequiredTagIds,
         List<long> ExcludedTagIds,
-        bool mode
+        bool Mode
     ) : IRequest<PagedResult<BookSearchResult>>;
 }

@@ -19,9 +19,9 @@ namespace Chronolibris.Application.Handlers.Reviews
         {
 
             var reviews = await reviewRepository.GetByBookIdAsync(request.BookId,
-                request.lastId, request.limit,request.userId, cancellationToken);
+                request.LastId, request.Limit,request.UserId, cancellationToken);
 
-            bool hasNext = reviews.Count() > request.limit;
+            bool hasNext = reviews.Count() > request.Limit;
             if (hasNext)
             {
                 reviews.RemoveAt(reviews.Count() - 1);
@@ -47,7 +47,7 @@ namespace Chronolibris.Application.Handlers.Reviews
             return new PagedResult<ReviewDetails>
             {
                 Items = rDtos,
-                Limit = request.limit,
+                Limit = request.Limit,
                 HasNext = hasNext,
                 LastId = reviews.LastOrDefault()?.Review.Id
             };

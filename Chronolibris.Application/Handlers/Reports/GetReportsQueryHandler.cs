@@ -21,7 +21,7 @@ namespace Chronolibris.Application.Handlers.Reports
         public async Task<GetReportsResponse> Handle(
             GetReportsQuery request, CancellationToken token)
         {
-            var items = await _reports.GetReports(request.moderatorId, request.LastTargetId,
+            var items = await _reports.GetReports(request.ModeratorId, request.LastTargetId,
                 request.LastTargetTypeId,
                 request.LastReportTypeId,
                 request.Count + 1,

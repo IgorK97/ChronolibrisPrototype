@@ -14,7 +14,7 @@ namespace Chronolibris.Application.Handlers.Users
     {
         public async Task<UserProfileResponse?> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
         {
-            return await identityService.GetUserProfileAsync(request.userId);
+            return await identityService.GetUserProfileAsync(request.UserId);
 
         }
     }

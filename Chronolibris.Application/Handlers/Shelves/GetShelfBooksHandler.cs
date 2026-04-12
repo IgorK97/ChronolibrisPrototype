@@ -17,11 +17,11 @@ namespace Chronolibris.Application.Handlers.Shelves
         public async Task<PagedResult<BookListItem>> Handle(GetShelfBooksQuery request, CancellationToken ct)
         {
 
-            long? lastId = request.lastId;
+            long? lastId = request.LastId;
 
 
             var books = await unitOfWork.Shelves.GetBooksForShelfAsync(
-                request.ShelfId, lastId, request.Limit, request.userId, ct);
+                request.ShelfId, lastId, request.Limit, request.UserId, ct);
 
             var hasNext = books.Count() > request.Limit;
             if (hasNext)

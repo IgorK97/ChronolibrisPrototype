@@ -18,7 +18,7 @@ namespace Chronolibris.Application.Handlers.Selections
         public async Task<PagedResult<BookListItem>> Handle(GetSelectionBooksQuery request, CancellationToken ct)
         {
             var books = await selectionsRepository
-                .GetBooksForSelection(request.SelectionId, request.LastId, request.Limit, request.userId, request.mode, ct);
+                .GetBooksForSelection(request.SelectionId, request.LastId, request.Limit, request.UserId, request.Mode, ct);
 
             bool hasNext = books.Count > request.Limit;
 

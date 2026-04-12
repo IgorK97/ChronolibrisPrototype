@@ -7,11 +7,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Reviews
 {
-    public class UpdateReviewCommand : IRequest<Unit>
-    {
-        public long ReviewId { get; set; }
-        public long UserId { get; set; }
-        public string? ReviewText { get; set; }
-        public short Score { get; set; }
-    }
+    public record UpdateReviewCommand(long ReviewId, long UserId, string? ReviewText, short Score) : IRequest<Unit>;
 }
