@@ -1,13 +1,9 @@
 ﻿using System.Security.Claims;
-using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Reviews;
 using Chronolibris.Application.Requests.Users;
-using Chronolibris.Infrastructure.Data;
 using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronolibrisWeb.Controllers

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Domain.SystemConstants
+namespace Chronolibris.Domain.Utils
 {
     public static class ShelfTypes
     {

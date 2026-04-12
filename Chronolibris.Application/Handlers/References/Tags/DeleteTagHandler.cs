@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Requests.References;
+﻿using Chronolibris.Application.Requests.References.Tags;
 using Chronolibris.Domain.Interfaces;
 using MediatR;
 
-namespace Chronolibris.Application.Handlers.References
+namespace Chronolibris.Application.Handlers.References.Tags
 {
     public class DeleteTagHandler : IRequestHandler<DeleteTagRequest, bool>
     {

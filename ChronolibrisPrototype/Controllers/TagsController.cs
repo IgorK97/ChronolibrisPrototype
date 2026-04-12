@@ -1,13 +1,10 @@
 ﻿
-using System.Security.Claims;
 using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests;
-using Chronolibris.Application.Requests.References;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Application.Requests.References.Tags;
+using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronolibrisWeb.Controllers
@@ -17,63 +14,35 @@ namespace ChronolibrisWeb.Controllers
     public class TagsController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ITagsRepository _tagsRepository;
 
-        public TagsController(IMediator mediator, ITagsRepository tagsRepository)
+        public TagsController(IMediator mediator)
         {
             _mediator = mediator;
-            _tagsRepository = tagsRepository;
         }
 
         [HttpGet("types")]
-        public async Task<IActionResult> GetTagTypes()
+        public async Task<List<TagType>> GetTagTypes()
         {
-            var types = await _tagsRepository.GetTagTypesAsync(CancellationToken.None);
-            return Ok(types);
+            return await _mediator.Send(new GetTagTypesQuery());
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTags(
+        public async Task<PagedResult<TagDetails>> GetTags(
             long? tagTypeId = null,
             string? searchTerm = null,
             long? lastId = null,
             int pageSize = 20)
         {
-
-            var items = await _tagsRepository.GetRootTagsAsync(
-                tagTypeId, searchTerm, lastId, pageSize, CancellationToken.None);
-
-            var hasNext = items.Count > pageSize;
-            var result = items.Take(pageSize).ToList();
-
-            return Ok(new PagedResult<TagDetails>
-            {
-                Items = result,
-                Limit = pageSize,
-                HasNext = hasNext,
-                LastId = result.LastOrDefault()?.Id
-            });
+            return await _mediator.Send(new GetRootTagsQuery(tagTypeId, searchTerm, lastId, pageSize));
         }
 
         [HttpGet("{parentId}/children")]
-        public async Task<IActionResult> GetChildTags(
+        public async Task<PagedResult<TagDetails>> GetChildTags(
             long parentId,
             long? lastId = null,
             int pageSize = 20)
         {
-            var items = await _tagsRepository.GetChildTagsAsync(
-                parentId, lastId, pageSize, CancellationToken.None);
-
-            var hasNext = items.Count > pageSize;
-            var result = items.Take(pageSize).ToList();
-
-            return Ok(new PagedResult<TagDetails>
-            {
-                Items = result,
-                Limit = pageSize,
-                HasNext = hasNext,
-                LastId = result.LastOrDefault()?.Id
-            });
+            return await _mediator.Send(new GetChildTagsQuery(parentId, lastId, pageSize));
         }
 
         [HttpPost]

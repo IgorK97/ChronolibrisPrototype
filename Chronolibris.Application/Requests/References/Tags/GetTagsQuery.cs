@@ -7,7 +7,7 @@ using Chronolibris.Application.Models;
 using Chronolibris.Domain.Models;
 using MediatR;
 
-namespace Chronolibris.Application.Requests.References
+namespace Chronolibris.Application.Requests.References.Tags
 {
     public record GetTagsQuery(
         long? TagTypeId = null,

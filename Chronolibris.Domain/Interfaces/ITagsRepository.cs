@@ -15,7 +15,7 @@ namespace Chronolibris.Domain.Interfaces
            CancellationToken ct);
         Task<List<TagDetails>> GetChildTagsAsync(long parentTagId,
             long? lastId, int limit, CancellationToken ct);
-        Task<IReadOnlyList<TagType>> GetTagTypesAsync(CancellationToken ct);
+        Task<List<TagType>> GetTagTypesAsync(CancellationToken ct);
         Task<List<TagDetails>> GetTagsAsync(long? tagTypeId,
     string? searchTerm,
     long? lastId,      

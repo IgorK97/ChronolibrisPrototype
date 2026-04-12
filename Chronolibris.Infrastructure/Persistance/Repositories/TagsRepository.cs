@@ -21,7 +21,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             _context = context;
         }
 
-        public async Task<IReadOnlyList<TagType>> GetTagTypesAsync(CancellationToken ct)
+        public async Task<List<TagType>> GetTagTypesAsync(CancellationToken ct)
         {
             return await _context.TagTypes
                 .OrderBy(t => t.Id)

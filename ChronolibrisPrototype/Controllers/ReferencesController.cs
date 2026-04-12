@@ -1,10 +1,7 @@
 ﻿using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.References;
-using Chronolibris.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronolibrisWeb.Controllers

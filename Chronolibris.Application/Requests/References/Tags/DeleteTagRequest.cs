@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace Chronolibris.Application.Requests.References
+namespace Chronolibris.Application.Requests.References.Tags
 {
     public record DeleteTagRequest(long TagId) : IRequest<bool>;
 }

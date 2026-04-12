@@ -1,16 +1,10 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Chronolibris.Application.Handlers.Users;
-using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Users;
 using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using YamlDotNet.Core.Tokens;
 
 namespace ChronolibrisWeb.Controllers
 {

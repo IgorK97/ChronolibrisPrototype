@@ -1,9 +1,7 @@
 ﻿using System.Security.Claims;
-using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Bookmarks;
 using ChronolibrisWeb.InputModels;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronolibrisWeb.Controllers

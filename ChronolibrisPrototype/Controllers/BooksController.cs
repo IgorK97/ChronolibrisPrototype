@@ -1,13 +1,10 @@
 ﻿using System.Security.Claims;
-using System.Threading;
 using Chronolibris.Application.Handlers.Books;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Books;
-using Chronolibris.Application.Requests.Search;
 using Chronolibris.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronolibrisWeb.Controllers
