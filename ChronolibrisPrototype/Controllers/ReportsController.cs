@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Models;
+using ChronolibrisWeb.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,17 +19,11 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        public class CreateReportRequest
-        {
-            public long TargetId { get; set; }
-            public long TargetTypeId { get; set; }
-            public long ReasonTypeId { get; set; }
-            public string? Description { get; set; }
-        }
+
 
         [HttpPost]
         [Authorize(Roles = "reader")]
-        public async Task<IActionResult> CreateReport([FromBody] CreateReportRequest request)
+        public async Task<IActionResult> CreateReport([FromBody] CreateReportModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))

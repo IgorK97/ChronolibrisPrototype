@@ -40,10 +40,18 @@ namespace ChronolibrisPrototype.Controllers
             var query = new GetContentByIdQuery(id);
             var content = await _mediator.Send(query, cancellationToken);
 
-            if (content == null)
-                return NotFound(new { message = $"Контент с ID {id} не найден" });
+            //if (content == null)
+            //    return NotFound(new { message = $"Контент с ID {id} не найден" });
 
             return Ok(content);
+        }
+
+        [HttpGet("{id}/books")]
+        public async Task<ActionResult<List<BookDto>>> GetContentBooks(long id, CancellationToken cancellationToken)
+        {
+            var query = new GetContentBooksQuery(id);
+            var books = await _mediator.Send(query, cancellationToken);
+            return Ok(books);
         }
 
         [HttpGet("{id}/tags")]
@@ -61,120 +69,86 @@ namespace ChronolibrisPrototype.Controllers
         [FromQuery] int limit = 5,
         CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
-                return BadRequest(new { message = "Search term is required" });
-
             var query = new GetTagsQuery(searchTerm, tagTypeId, Math.Min(limit, 10));
             var tags = await _mediator.Send(query, cancellationToken);
             return Ok(tags);
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpPost("{contentId}/tags/{tagId}")]
         public async Task<ActionResult> AddTagToContent(long contentId, long tagId, CancellationToken cancellationToken)
         {
             var command = new AddTagToContentCommand(contentId, tagId);
             var result = await _mediator.Send(command, cancellationToken);
 
-            if (!result)
-                return NotFound(new { message = "Контент или тег не найден" });
+            //if (!result)
+            //    return NotFound(new { message = "Контент или тег не найден" });
 
             return NoContent();
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpDelete("{contentId}/tags/{tagId}")]
         public async Task<ActionResult> RemoveTagFromContent(long contentId, long tagId, CancellationToken cancellationToken)
         {
             var command = new RemoveTagFromContentCommand(contentId, tagId);
             var result = await _mediator.Send(command, cancellationToken);
 
-            if (!result)
-                return NotFound(new { message = "Связь не найдена" });
+            //if (!result)
+            //    return NotFound(new { message = "Связь не найдена" });
 
             return NoContent();
         }
 
-        [HttpGet("{id}/books")]
-        public async Task<ActionResult<List<BookDto>>> GetContentBooks(long id, CancellationToken cancellationToken)
-        {
-            var query = new GetContentBooksQuery(id);
-            var books = await _mediator.Send(query, cancellationToken);
-            return Ok(books);
-        }
 
-        [Authorize]
+
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<long>> CreateContent(
             [FromBody] CreateContentRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
 
-            try
-            {
-                var command = new CreateContentCommand(
-                    request.Title,
-                    request.Description,
-                    request.CountryId,
-                    request.ContentTypeId,
-                    request.LanguageId,
-                    request.Year,
-                    request.ParentContentId,
-                    request.Position,
-                    request.PersonIds,
-                    request.ThemeIds
-                );
+            var command = new CreateContentCommand(
+                request.Title,
+                request.Description,
+                request.CountryId,
+                request.ContentTypeId,
+                request.LanguageId,
+                request.Year,
+                request.ParentContentId,
+                request.Position,
+                request.PersonIds,
+                request.ThemeIds
+            );
 
-                var id = await _mediator.Send(command, cancellationToken);
-                return CreatedAtAction(nameof(GetContentById), new { id = id }, id);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var id = await _mediator.Send(command, cancellationToken);
+            return Ok(id);
+
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateContent(long id,
             [FromBody] UpdateContentRequest request, CancellationToken cancellationToken)
         {
-            //Как лучше переписать этот код?
-            try
-            {
 
+            await _mediator.Send(request, cancellationToken);
+            return NoContent();
 
-                await _mediator.Send(request, cancellationToken);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"Контент с ID {id} не найден" });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteContent(long id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var command = new DeleteContentCommand(id);
-                await _mediator.Send(command, cancellationToken);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"Контент с ID {id} не найден" });
-            }
+
+            var command = new DeleteContentCommand(id);
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpPost("{contentId}/books/{bookId}")]
         public async Task<ActionResult> LinkBookToContent(long contentId, long bookId,
             [FromBody] BookContentLinkRequest request, CancellationToken cancellationToken)
@@ -182,36 +156,23 @@ namespace ChronolibrisPrototype.Controllers
             if (request.ContentId != contentId || request.BookId != bookId)
                 return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
-            try
-            {
-                var command = new LinkBookToContentCommand(contentId, bookId, request.Order);
-                await _mediator.Send(command, cancellationToken);
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var command = new LinkBookToContentCommand(contentId, bookId, request.Order);
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+
         }
 
-        /// <summary>
-        /// Отвязывает книгу от контента
-        /// </summary>
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpDelete("{contentId}/books/{bookId}")]
         public async Task<ActionResult> UnlinkBookFromContent(long contentId, long bookId,
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var command = new UnlinkBookFromContentCommand(contentId, bookId);
-                await _mediator.Send(command, cancellationToken);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"Связь не найдена" });
-            }
+
+            var command = new UnlinkBookFromContentCommand(contentId, bookId);
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+
         }
     }
 }

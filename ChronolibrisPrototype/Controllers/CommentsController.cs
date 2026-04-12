@@ -20,7 +20,26 @@ namespace ChronolibrisPrototype.Controllers
         private readonly IMediator _mediator;
         public CommentsController(IMediator mediator) => _mediator = mediator;
 
-        [Authorize]
+        [HttpGet("book/{bookId}")]
+        public async Task<ActionResult<List<CommentDto>>> GetBookComments(
+    long bookId, long? lastId, int limit = 20)
+        {
+            if (!TryGetUserId(out var userId))
+                userId = 0;
+            var result = await _mediator.Send(new GetBookCommentsQuery(bookId, lastId, limit, userId));
+            return Ok(result);
+        }
+
+        [HttpGet("{parentId}/replies")]
+        public async Task<ActionResult<List<CommentDto>>> GetReplies(
+    long parentId, long? lastId, int limit = 20)
+        {
+            if (!TryGetUserId(out var userId)) userId = 0;
+            var result = await _mediator.Send(new GetCommentRepliesQuery(parentId, lastId, limit, userId));
+            return Ok(result);
+        }
+
+        [Authorize(Roles ="reader")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateCommentRequest request)
         {
@@ -40,31 +59,7 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        [HttpGet("book/{bookId}")]
-        public async Task<ActionResult<List<CommentDto>>> GetBookComments(
-            long bookId, long? lastId, int limit = 20)
-        {
-            if (!TryGetUserId(out var userId)) 
-                userId = 0;
-            var result = await _mediator.Send(new GetBookCommentsQuery(bookId, lastId, limit, userId));
-            return Ok(result);
-        }
-
-        [HttpGet("{parentId}/replies")]
-        public async Task<ActionResult<List<CommentDto>>> GetReplies(
-            long parentId, long? lastId, int limit = 20)
-        {
-            if (!TryGetUserId(out var userId)) userId = 0;
-            var result = await _mediator.Send(new GetCommentRepliesQuery(parentId, lastId, limit, userId));
-            return Ok(result);
-        }
-
-        private bool TryGetUserId(out long userId)
-        {
-            return long.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
-        }
-
-        [Authorize]
+        [Authorize(Roles ="reader")]
         [HttpPost("rate")]
         public async Task<IActionResult> RateComment(RateCommentRequest request)
         {
@@ -80,5 +75,12 @@ namespace ChronolibrisPrototype.Controllers
 
             return Ok(result);
         }
+
+        private bool TryGetUserId(out long userId)
+        {
+            return long.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
+        }
+
+
     }
 }

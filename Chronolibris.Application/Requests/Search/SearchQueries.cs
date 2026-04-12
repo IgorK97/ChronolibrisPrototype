@@ -1,4 +1,5 @@
-﻿using Chronolibris.Domain.Models.Search;
+﻿using Chronolibris.Domain.Models;
+using Chronolibris.Domain.Models.Search;
 using MediatR;
 
 namespace Chronolibris.Application.Requests.Search

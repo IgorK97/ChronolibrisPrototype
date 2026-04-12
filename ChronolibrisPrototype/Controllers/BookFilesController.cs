@@ -37,8 +37,8 @@ namespace ChronolibrisPrototype.Controllers
             var query = new GetBookFileDtoQuery(id);
             var file = await _mediator.Send(query, cancellationToken);
 
-            if (file == null)
-                return NotFound(new { message = $"Файл с ID {id} не найден" });
+            //if (file == null)
+            //    return NotFound(new { message = $"Файл с ID {id} не найден" });
 
             return Ok(file);
         }
@@ -56,7 +56,7 @@ namespace ChronolibrisPrototype.Controllers
             return File(stream, "application/octet-stream", $"book_file_{id}");
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [RequestSizeLimit(100 * 1024 * 1024)]
         public async Task<ActionResult<long>> UploadBookFile(
@@ -72,20 +72,15 @@ namespace ChronolibrisPrototype.Controllers
             if (!TryGetUserId(out var userId))
                 return Unauthorized(new { message = "Пользователь не авторизован" });
 
-            try
-            {
-                var command = new UploadBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length,userId);
-                var id = await _mediator.Send(command, cancellationToken);
-                return CreatedAtAction(nameof(GetBookFile), new { id = id }, id);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var command = new UploadBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
+            var id = await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetBookFile), new { id = id }, id);
+
         }
 
 
-        [Authorize]
+        [Authorize(Roles = "admin, moderator")]
         [HttpPut("book/{bookId}/format/{formatId}")]
         [RequestSizeLimit(100 * 1024 * 1024)]
         public async Task<ActionResult> UpdateBookFile(
@@ -101,40 +96,25 @@ namespace ChronolibrisPrototype.Controllers
             if (!TryGetUserId(out var userId))
                 return Unauthorized(new { message = "Пользователь не авторизован" });
 
-            try
-            {
-                var command = new UpdateBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
-                var id = await _mediator.Send(command, cancellationToken);
-                return Ok(new { id = id });
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"Файл не найден для книги {bookId} и формата {formatId}" });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var command = new UpdateBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
+            var id = await _mediator.Send(command, cancellationToken);
+            return Ok(new { id = id });
+
         }
 
 
-        [Authorize]
+        [Authorize(Roles = "admin, moderator")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBookFile(long id, CancellationToken cancellationToken)
         {
             if (!TryGetUserId(out var userId))
                 return Unauthorized(new { message = "Пользователь не авторизован" });
 
-            try
-            {
-                var command = new DeleteBookFileCommand(id, userId);
-                await _mediator.Send(command, cancellationToken);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"Файл с ID {id} не найден" });
-            }
+            var command = new DeleteBookFileCommand(id, userId);
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+
         }
 
         private bool TryGetUserId(out long userId)

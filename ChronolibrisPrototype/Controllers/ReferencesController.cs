@@ -30,13 +30,13 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(roles);
         }
 
-        [HttpGet("fts-configurations")]
-        public async Task<ActionResult<IEnumerable<FtsConfigurationDto>>> GetFtsConfigurations(CancellationToken cancellationToken)
-        {
-            var query = new GetFtsConfigurationsQuery();
-            var configurations = await _mediator.Send(query, cancellationToken);
-            return Ok(configurations);
-        }
+        //[HttpGet("fts-configurations")]
+        //public async Task<ActionResult<IEnumerable<FtsConfigurationDto>>> GetFtsConfigurations(CancellationToken cancellationToken)
+        //{
+        //    var query = new GetFtsConfigurationsQuery();
+        //    var configurations = await _mediator.Send(query, cancellationToken);
+        //    return Ok(configurations);
+        //}
 
 
 
@@ -58,7 +58,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(language);
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPost("languages")]
         public async Task<ActionResult<long>> CreateLanguage([FromBody] CreateLanguageRequest request, CancellationToken cancellationToken)
         {
@@ -69,7 +69,7 @@ namespace ChronolibrisPrototype.Controllers
             return CreatedAtAction(nameof(GetLanguageById), new { id = id }, id);
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPut("languages/{id}")]
         public async Task<ActionResult> UpdateLanguage(long id, [FromBody] UpdateLanguageRequest request, CancellationToken cancellationToken)
         {
@@ -81,7 +81,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpDelete("languages/{id}")]
         public async Task<ActionResult> DeleteLanguage(long id, CancellationToken cancellationToken)
         {
@@ -101,55 +101,39 @@ namespace ChronolibrisPrototype.Controllers
 
 
         [HttpGet("countries/{id}")]
-        public async Task<ActionResult<CountryDto>> GetCountryById(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<CountryDto?>> GetCountryById(long id, CancellationToken cancellationToken)
         {
             var query = new GetCountryByIdQuery(id);
             var country = await _mediator.Send(query, cancellationToken);
-
-            if (country == null)
-                return NotFound(new { message = $"Страна с ID {id} не найдена" });
 
             return Ok(country);
         }
 
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPost("countries")]
         public async Task<ActionResult<long>> CreateCountry([FromBody] CreateCountryRequest request, CancellationToken cancellationToken)
         {
 
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest(new { message = "Название страны обязательно" });
-
             var command = new CreateCountryCommand(request.Name);
             var id = await _mediator.Send(command, cancellationToken);
 
-            return CreatedAtAction(nameof(GetCountryById), new { id = id }, id);
+            return Ok(id);
         }
 
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPut("countries/{id}")]
         public async Task<ActionResult> UpdateCountry(long id, [FromBody] UpdateCountryRequest request, CancellationToken cancellationToken)
         {
-
-            if (id != request.Id)
-                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
-
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest(new { message = "Название страны обязательно" });
-
             var command = new UpdateCountryCommand(request.Id, request.Name);
             var result = await _mediator.Send(command, cancellationToken);
-
-            if (!result)
-                return NotFound(new { message = $"Страна с ID {id} не найдена" });
 
             return NoContent();
         }
 
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpDelete("countries/{id}")]
         public async Task<ActionResult> DeleteCountry(long id, CancellationToken cancellationToken)
         {
@@ -173,61 +157,43 @@ namespace ChronolibrisPrototype.Controllers
 
 
         [HttpGet("formats/{id}")]
-        public async Task<ActionResult<FormatDto>> GetFormatById(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<FormatDto?>> GetFormatById(int id, CancellationToken cancellationToken)
         {
             var query = new GetFormatByIdQuery(id);
             var format = await _mediator.Send(query, cancellationToken);
-
-            if (format == null)
-                return NotFound(new { message = $"Формат с ID {id} не найден" });
 
             return Ok(format);
         }
 
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPost("formats")]
         public async Task<ActionResult<int>> CreateFormat([FromBody] CreateFormatRequest request, CancellationToken cancellationToken)
         {
 
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest(new { message = "Название формата обязательно" });
-
             var command = new CreateFormatCommand(request.Name);
             var id = await _mediator.Send(command, cancellationToken);
 
-            return CreatedAtAction(nameof(GetFormatById), new { id = id }, id);
+            return Ok(id);
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPut("formats/{id}")]
         public async Task<ActionResult> UpdateFormat(int id, [FromBody] UpdateFormatRequest request, CancellationToken cancellationToken)
         {
 
-            if (id != request.Id)
-                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
-
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest(new { message = "Название формата обязательно" });
-
             var command = new UpdateFormatCommand(request.Id, request.Name);
             var result = await _mediator.Send(command, cancellationToken);
-
-            if (!result)
-                return NotFound(new { message = $"Формат с ID {id} не найден" });
 
             return NoContent();
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpDelete("formats/{id}")]
         public async Task<ActionResult> DeleteFormat(int id, CancellationToken cancellationToken)
         {
             var command = new DeleteFormatCommand(id);
             var result = await _mediator.Send(command, cancellationToken);
-
-            if (!result)
-                return NotFound(new { message = $"Формат с ID {id} не найден" });
 
             return NoContent();
         }

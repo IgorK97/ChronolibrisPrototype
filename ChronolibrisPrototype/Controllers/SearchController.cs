@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Requests.Search;
+using Chronolibris.Domain.Models;
 using Chronolibris.Domain.Models.Search;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
