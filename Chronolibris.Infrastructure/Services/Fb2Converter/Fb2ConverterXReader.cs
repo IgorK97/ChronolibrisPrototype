@@ -281,8 +281,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         {
             // Накапливаем элементы текущего фрагмента
             var currentPart = new List<ParsedElement>();
-            var allChapters = new List<TocChapterEntry>();
-            var tocParts = new List<TocPartEntry>();
+            var allChapters = new List<TocChapter>();
+            var tocParts = new List<TocPart>();
 
             int globalIdx = 0;   // сквозной счётчик элементов
             int bodyIdx = 0;   // индекс текущего основного body
@@ -504,7 +504,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             if (allChapters.Count > 0 && lastElement != null)
             {
                 var last = allChapters[^1];
-                allChapters[^1] = new TocChapterEntry
+                allChapters[^1] = new TocChapter
                 {
                     S = last.S,
                     E = lastElement.GlobalIndex,
@@ -520,7 +520,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 Meta = meta,
                 FullLength = fullLength,
                 Body = totalElements > 0
-                    ? [new TocBodyEntry
+                    ? [new TocBody
                     {
                         S = tocParts.FirstOrDefault()?.S ?? 0,
                         E = tocParts.LastOrDefault()?.E  ?? 0,
@@ -682,7 +682,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         private async Task<int> FlushPartAsync(
             string bookId,
             List<ParsedElement> part,
-            List<TocPartEntry> tocParts,
+            List<TocPart> tocParts,
             int partIndex,
             CancellationToken ct)
         {
@@ -698,7 +698,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
             await _storage.SaveChunkAsync(bookId, fileName, json, false, ct);
 
-            tocParts.Add(new TocPartEntry
+            tocParts.Add(new TocPart
             {
                 S = first.GlobalIndex,
                 E = last.GlobalIndex,
@@ -712,7 +712,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         }
 
         private static void UpdateChapters(
-            List<TocChapterEntry> chapters,
+            List<TocChapter> chapters,
             ParsedElement titleElement,
             int globalIdx)
         {
@@ -720,7 +720,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             if (chapters.Count > 0)
             {
                 var prev = chapters[^1];
-                chapters[^1] = new TocChapterEntry
+                chapters[^1] = new TocChapter
                 {
                     S = prev.S,
                     E = globalIdx - 1,
@@ -728,7 +728,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 };
             }
             // Открываем новую
-            chapters.Add(new TocChapterEntry
+            chapters.Add(new TocChapter
             {
                 S = globalIdx,
                 E = globalIdx,
