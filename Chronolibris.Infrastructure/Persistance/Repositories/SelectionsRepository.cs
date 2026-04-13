@@ -147,13 +147,13 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<long> CreateAsync(Selection selection, CancellationToken ct)
         {
             _context.Selections.Add(selection);
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync(ct); //Пока здесь оставлю
             return selection.Id;
         }
 
         public async Task<bool> UpdateAsync(long selectionId, string? name, string? description, bool? isActive, CancellationToken ct)
         {
-            var selection = await _context.Selections.FindAsync(new object[] { selectionId }, ct);
+            var selection = await _context.Selections.Where(s => s.Id == selectionId).FirstOrDefaultAsync(ct);
             if (selection == null) return false;
 
             if (name != null) selection.Name = name;

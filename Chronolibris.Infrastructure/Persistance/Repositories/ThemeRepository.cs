@@ -52,7 +52,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
         //        .ToListAsync(cancellationToken);
         //}
 
-        public async Task<IReadOnlyList<Theme>> GetByParentIdAsync(long? parentThemeId, CancellationToken cancellationToken = default)
+        public async Task<List<Theme>> GetByParentIdAsync(long? parentThemeId, CancellationToken cancellationToken = default)
         {
             return await _context.Themes
                 .Include(t => t.ParentTheme)
@@ -85,7 +85,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             return await _context.Themes.AnyAsync(t => t.ParentThemeId == themeId, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<Theme>> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<List<Theme>> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             return await _context.Themes.Where(t => EF.Functions.ILike(t.Name, $"%{name}%")).ToListAsync(cancellationToken);
         }

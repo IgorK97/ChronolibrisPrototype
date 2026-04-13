@@ -88,7 +88,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
         public async Task<bool> DeleteAsync(long tagId, CancellationToken ct)
         {
-            var tag = await _context.Tags.FindAsync(new object[] { tagId }, ct);
+            var tag = await _context.Tags.Where(s => s.Id == tagId).FirstOrDefaultAsync(ct);
             if (tag == null)
                 return false;
 

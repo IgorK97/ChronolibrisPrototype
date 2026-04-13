@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
@@ -30,8 +31,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             var bookFile = await _context.BookFiles
                 .FirstOrDefaultAsync(f => f.Id == bookFileId, ct)
-                ?? throw new InvalidOperationException(
-                    $"BookFile {bookFileId} не найден");
+                ?? throw new ChronolibrisException(
+                    $"Файл книги {bookFileId} не найден", ErrorType.NotFound);
 
             var fragments = result.PartFiles
                 .Where(f => f.FileType == StoredFileType.Part)

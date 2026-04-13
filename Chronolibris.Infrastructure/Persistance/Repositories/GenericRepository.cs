@@ -12,10 +12,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
     /// <summary>
     /// Обобщенная реализация репозитория, предоставляющая базовые операции CRUD 
-    /// (Create, Read, Update, Delete) для сущностей домена с использованием Entity Framework Core.
+    /// (Create, Read, Update, Delete) для сущностей с использованием Entity Framework Core
     /// Реализует интерфейс <see cref="IGenericRepository{TEntity}"/>.
     /// </summary>
-    /// <typeparam name="TEntity">Тип сущности домена, которой управляет репозиторий. Должен быть ссылочным типом.</typeparam>
+    /// <typeparam name="TEntity">Тип сущности домена, которой управляет репозиторий. Должен быть ссылочным типом</typeparam>
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity:class
     {
         protected readonly ApplicationDbContext _context;
@@ -41,11 +41,11 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             _set.Remove(entity);
         //public void Detach(TEntity entity)
         //{
-        //    // Получаем объект Entry (запись отслеживания) для данной сущности
+        //    // объект Entry (запись отслеживания) для данной сущности
         //    var entityEntry = _context.Entry(entity);
 
         //    // Если сущность отслеживается (ее состояние не Detached), 
-        //    // принудительно устанавливаем ее состояние в Detached.
+        //    // принудительно установить ее состояние в Detached.
         //    if (entityEntry.State != EntityState.Detached)
         //    {
         //        entityEntry.State = EntityState.Detached;

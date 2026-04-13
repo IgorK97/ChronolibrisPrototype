@@ -224,7 +224,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
         public override async Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
-            return await _set
+            return await _context.Books
                 .Include(b => b.Country)
                 .Include(b => b.Language)
                 .Include(b => b.Publisher)
@@ -239,7 +239,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
         public override async Task<List<Book>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _set.ToListAsync(cancellationToken);
+            return await _context.Books.ToListAsync(cancellationToken);
         }
 
         //public async Task<(List<Book> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(

@@ -9,8 +9,8 @@ namespace Chronolibris.Domain.Interfaces.Repository
     {
         Task<Theme?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
         //Task<IReadOnlyList<Theme>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<IReadOnlyList<Theme>> GetByParentIdAsync(long? parentThemeId, CancellationToken cancellationToken = default);
-        Task<IReadOnlyList<Theme>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<List<Theme>> GetByParentIdAsync(long? parentThemeId, CancellationToken cancellationToken = default);
+        Task<List<Theme>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
         Task AddAsync(Theme theme, CancellationToken cancellationToken = default);
         void Update(Theme theme);
         void Delete(Theme theme);
