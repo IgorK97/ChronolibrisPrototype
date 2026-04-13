@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Requests.Reports;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using MediatR;
@@ -25,13 +27,15 @@ namespace Chronolibris.Application.Handlers.Reports
             var task = await _unitOfWork.ModerationTasks
                 .GetByIdAsync(command.TaskId, token);
 
-            if (task is null ||
-                task.ModeratedBy != command.ModeratorId ||
-                task.StatusId!=2)
-                return new TaskResolutionResponse
-                {
-                    Success = false,
-                };
+            if (task is null)
+                throw new ChronolibrisException("Задача модерации не найдена", ErrorType.NotFound);
+
+            if (task.ModeratedBy != command.ModeratorId)
+                throw new ChronolibrisException("Эта задача назначена на другого модератора", ErrorType.Forbidden);
+
+            if (task.StatusId != 2)
+                throw new ChronolibrisException("Задача должна быть в статусе 'В работе'", ErrorType.Validation);
+
             var now = DateTime.UtcNow;
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync(token);

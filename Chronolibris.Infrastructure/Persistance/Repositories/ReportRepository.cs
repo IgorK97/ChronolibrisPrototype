@@ -16,47 +16,57 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
     {
         public ReportRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<ModerationTask?> CreateModerationTaskWithReportsAsync(long TargetId, long TargetTypeId, long ReportTypeId, long ModeratorId, ITransaction transaction)
+        public async Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, long reportTypeId, CancellationToken token)
         {
-            var lastTask = await _context.ModerationTasks
-                .Where(t =>
-                t.TargetId == TargetId &&
-                t.TargetTypeId == TargetTypeId).OrderByDescending(t => t.StartedAt).FirstOrDefaultAsync();
-            var stamp_number = 0;
-            if(lastTask != null)
-            {
-                if(lastTask.StatusId == 2)
-                    return null;
-                stamp_number = lastTask.CheckNumber + 1;
-            }
-
-            var task = new ModerationTask
-            {
-                TargetId = TargetId,
-                TargetTypeId = TargetTypeId,
-                ModeratedBy = ModeratorId,
-                StartedAt = DateTime.UtcNow,
-                StatusId = 2,
-                Comment = "",
-                CheckNumber = stamp_number,
-                ReasonTypeId = ReportTypeId,
-            };
-
-            await _context.ModerationTasks.AddAsync(task);
-
-            await _context.SaveChangesAsync();
-
-            await _context.Reports.Where(r => r.TargetId == TargetId &&
-            r.TargetTypeId == TargetTypeId &&
-            r.ReasonTypeId == ReportTypeId &&
-            r.ModerationTaskId == null)
-                .ExecuteUpdateAsync(s => s.SetProperty(
-                    r => r.ModerationTaskId, task.Id));
-
-            return task;
-            
-
+            await _context.Reports
+                .Where(r => r.TargetId == targetId &&
+                            r.TargetTypeId == targetTypeId &&
+                            r.ReasonTypeId == reportTypeId &&
+                            r.ModerationTaskId == null)
+                .ExecuteUpdateAsync(s => s.SetProperty(r => r.ModerationTaskId, taskId), token);
         }
+
+        //public async Task<ModerationTask?> CreateModerationTaskWithReportsAsync(long TargetId, long TargetTypeId, long ReportTypeId, long ModeratorId, ITransaction transaction)
+        //{
+        //    var lastTask = await _context.ModerationTasks
+        //        .Where(t =>
+        //        t.TargetId == TargetId &&
+        //        t.TargetTypeId == TargetTypeId).OrderByDescending(t => t.StartedAt).FirstOrDefaultAsync();
+        //    var stamp_number = 0;
+        //    if(lastTask != null)
+        //    {
+        //        if(lastTask.StatusId == 2)
+        //            return null;
+        //        stamp_number = lastTask.CheckNumber + 1;
+        //    }
+
+        //    var task = new ModerationTask
+        //    {
+        //        TargetId = TargetId,
+        //        TargetTypeId = TargetTypeId,
+        //        ModeratedBy = ModeratorId,
+        //        StartedAt = DateTime.UtcNow,
+        //        StatusId = 2,
+        //        Comment = "",
+        //        CheckNumber = stamp_number,
+        //        ReasonTypeId = ReportTypeId,
+        //    };
+
+        //    await _context.ModerationTasks.AddAsync(task);
+
+        //    await _context.SaveChangesAsync();
+
+        //    await _context.Reports.Where(r => r.TargetId == TargetId &&
+        //    r.TargetTypeId == TargetTypeId &&
+        //    r.ReasonTypeId == ReportTypeId &&
+        //    r.ModerationTaskId == null)
+        //        .ExecuteUpdateAsync(s => s.SetProperty(
+        //            r => r.ModerationTaskId, task.Id));
+
+        //    return task;
+
+
+        //}
 
         public async Task<Report?> GetLastUserReport(long UserId, long TargetTypeId, long TargetId, long ReasonTypeId)
         {

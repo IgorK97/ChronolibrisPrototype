@@ -17,6 +17,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
         }
 
+        public async Task<ModerationTask?> GetLastTaskAsync(long targetId, long targetTypeId, CancellationToken token)
+        {
+            return await _context.ModerationTasks
+                .Where(t => t.TargetId == targetId && t.TargetTypeId == targetTypeId)
+                .OrderByDescending(t => t.StartedAt)
+                .FirstOrDefaultAsync(token);
+        }
+
         public async Task<ModerationTask?> GetActiveByTarget(long TargetId, long TargetTypeId)
         {
             return await _context.ModerationTasks.AsNoTracking().Where(t =>

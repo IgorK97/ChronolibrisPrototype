@@ -24,10 +24,13 @@ namespace Chronolibris.Domain.Interfaces.Repository
             long TargetTypeId, long TargetId,
             long ReasonTypeId);
 
-        Task<ModerationTask?> CreateModerationTaskWithReportsAsync(
-            long TargetId, long TargetTypeId, long ReportTypeId,
-            long ModeratorId,
-            ITransaction transaction);
+        Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, long reportTypeId, CancellationToken token);
+
+
+        //Task<ModerationTask?> CreateModerationTaskWithReportsAsync(
+        //    long TargetId, long TargetTypeId, long ReportTypeId,
+        //    long ModeratorId,
+        //    ITransaction transaction);
 
     }
 }
