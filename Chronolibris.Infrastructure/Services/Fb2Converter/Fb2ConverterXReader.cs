@@ -65,41 +65,48 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
 
         private async Task<ConversionResult> ConvertSeekableAsync(
-            Stream stream, string? bookId, ConversionOptions options, CancellationToken ct)
+            Stream stream, string bookId, ConversionOptions options, CancellationToken ct)
         {
             // ПРОХОД 1
             stream.Position = 0;
             var (rawMeta, notes, imageMap) =
                 await FirstPassAsync(stream, bookId, options, ct);
 
-            var resolvedBookId = bookId ?? rawMeta.Uuid ?? Guid.NewGuid().ToString("D");
-            var meta = rawMeta with { Uuid = resolvedBookId };
+            if (rawMeta == null)
+            {
+                rawMeta = new BookMeta
+                {
+                    Id = bookId
+                };
+            }
+
+            else rawMeta = rawMeta with { Id = bookId };
 
             // ПРОХОД 2
             stream.Position = 0;
             var (elements, tocDoc) = await SecondPassAsync(
-                stream, resolvedBookId, meta, notes, imageMap, options, ct);
+                stream, bookId, rawMeta, notes, imageMap, options, ct);
 
             // toc.json
             var tocJson = JsonSerializer.Serialize(tocDoc, JsonOpts);
             var tocBytes = Encoding.UTF8.GetByteCount(tocJson);
-            await _storage.SaveChunkAsync(resolvedBookId, "toc.json", tocJson, true, ct);
+            await _storage.SaveChunkAsync(bookId, "toc.json", tocJson, true, ct);
 
             return new ConversionResult
             {
-                BookId = resolvedBookId,
-                Meta = meta,
+                BookId = bookId,
+                //Meta = meta,
                 TotalElements = elements,
                 TocFile = new StoredFileInfo
                 {
-                    BookId = resolvedBookId,
+                    BookId = bookId,
                     FileName = "toc.json",
                     FileType = StoredFileType.Toc,
                     SizeBytes = tocBytes
                 },
                 PartFiles = tocDoc.Parts.Select(p => new StoredFileInfo
                 {
-                    BookId = resolvedBookId,
+                    BookId = bookId,
                     FileName = p.Url,
                     FileType = StoredFileType.Part,
                     GlobalStart = p.S,
@@ -108,17 +115,17 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     XpEnd = p.Xpe,
                     SizeBytes = 0   // уже сохранено в проходе 2; для БД достаточно
                 }).ToList(),
-                CompletedAt = DateTimeOffset.UtcNow
+                CompletedAt = DateTime.UtcNow
             };
         }
 
         // ПРОХОД 1: метаданные + сноски + картинки
 
-        private async Task<(BookMeta meta,
+        private async Task<(BookMeta? meta,
                              Dictionary<string, ParsedNote> notes,
                              Dictionary<string, string> imageMap
                              )>
-            FirstPassAsync(Stream stream, string? bookId, ConversionOptions options,
+            FirstPassAsync(Stream stream, string bookId, ConversionOptions options,
                            CancellationToken ct)
         {
             BookMeta? meta = null;
@@ -127,7 +134,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             
 
             // Используем временный bookId для именования — потом заменим
-            var tempBookId = bookId ?? "__temp__";
+            var tempBookId = bookId;
             int imageIndex = 1;
 
             // Контекст состояния парсера прохода 1
@@ -137,7 +144,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             string currentNoteId = "";
             int noteSectionIdx = 0;
             int noteElemIdx = 0;
-            int noteBodyIdx = 0; // порядковый номер notes-body (определяем при встрече)
+            int noteBodyIdx = 0;
             int bodyCount = 0;
 
             using var reader = CreateXmlReader(stream);
@@ -151,7 +158,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     var localName = reader.LocalName;
                     var ns = reader.NamespaceURI;
 
-                    // description → собираем метаданные
+                    // в description могут быть нужные метаданные
                     if (localName == "description" && ns == Fb2Ns)
                     {
                         inDescription = true;
@@ -229,9 +236,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             {
                                 try
                                 {
-                                    //var bytes = Convert.FromBase64String(base64);
-                                    //await _storage.SaveCoverAsync(
-                                    //    tempBookId, fileName, bytes, contentType, ct);
                                     var bytes = Convert.FromBase64String(base64);
 
                                     using (var coverStream = new MemoryStream(bytes))
@@ -258,12 +262,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         inNoteSection = false;
                 }
             }
-
-            meta ??= new BookMeta
-            {
-                Created = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz"),
-                Updated = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz"),
-            };
 
             return (meta, notes, imageMap);
         }
@@ -672,7 +670,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             }
 
             var flatText = string.Concat(mixed.OfType<string>()).Trim();
-            return (mixed, flatText.NullIfEmpty());
+            var s = string.IsNullOrEmpty(flatText) ? null : flatText;
+            return (mixed, s);
         }
 
         /// <summary>
@@ -736,23 +735,15 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             });
         }
 
-        // Метаданные (парсим outerXml блока description)
+        // Метаданные (название книги) (парсим outerXml блока description)
 
         private static BookMeta ParseMetaFromXml(string descXml)
         {
             using var r = XmlReader.Create(new StringReader(descXml),
                 new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore });
 
-            var authors = new List<AuthorInfo>();
-            var sequences = new List<string>();
-            string? title = null, lang = null, annotation = null;
-            string? yearPublic = null, yearWritten = null, uuid = null;
-            var now = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz");
 
-            string? firstName = null, lastName = null;
-            bool inAuthor = false, inAnnotation = false;
-            var annBuf = new StringBuilder();
-
+            string? title = null;
             while (r.Read())
             {
                 if (r.NodeType == XmlNodeType.Element)
@@ -760,47 +751,12 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     switch (r.LocalName)
                     {
                         case "book-title": title = r.ReadElementContentAsString().Trim(); break;
-                        case "lang": lang = r.ReadElementContentAsString().Trim(); break;
-                        case "year": yearPublic = r.ReadElementContentAsString().Trim(); break;
-                        case "id": uuid = r.ReadElementContentAsString().Trim(); break;
-                        case "author": inAuthor = true; firstName = null; lastName = null; break;
-                        case "first-name": if (inAuthor) firstName = r.ReadElementContentAsString().Trim(); break;
-                        case "last-name": if (inAuthor) lastName = r.ReadElementContentAsString().Trim(); break;
-                        case "sequence": var sn = r.GetAttribute("name"); if (sn != null) sequences.Add(sn); break;
-                        case "date":
-                            yearWritten = r.GetAttribute("value")?.Trim()
-                                ?? r.ReadElementContentAsString().Trim();
-                            break;
-                        case "annotation": inAnnotation = true; break;
-                        case "p": if (inAnnotation) { annBuf.Append(r.ReadElementContentAsString()); annBuf.Append(' '); } break;
                     }
-                }
-                else if (r.NodeType == XmlNodeType.EndElement)
-                {
-                    if (r.LocalName == "author")
-                    {
-                        authors.Add(new AuthorInfo { First = firstName, Last = lastName });
-                        inAuthor = false;
-                    }
-                    if (r.LocalName == "annotation") inAnnotation = false;
                 }
             }
-
-            annotation = annBuf.Length > 0 ? annBuf.ToString().Trim() : null;
-
             return new BookMeta
             {
                 Title = title,
-                Lang = lang,
-                Annotation = annotation,
-                Authors = authors.Count > 0 ? authors : null,
-                Sequences = sequences.Count > 0 ? sequences : null,
-                Written = yearWritten != null || yearPublic != null
-                    ? new WrittenInfo { Date = yearWritten, DatePublic = yearPublic }
-                    : null,
-                Uuid = uuid,
-                Created = now,
-                Updated = now,
             };
         }
 
@@ -835,23 +791,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             }
             catch { return string.Empty; }
         }
-
-        //private static PartElement MapToPartElement(ParsedElement pe)
-        //{
-        //    object? c = pe.Content;
-
-        //    // Если Content — одиночный ImgSegment, передаём как есть (список из одного)
-        //    // PartElementJsonConverter умеет сериализовать List<object> и string
-        //    if (c is ImgSegment img)
-        //        c = new List<object> { img };
-
-        //    return new PartElement
-        //    {
-        //        T = pe.Type,
-        //        Xp = [pe.BodyIndex, pe.SectionIndex, pe.ElemIndex],
-        //        C = c
-        //    };
-        //}
 
         private static PartElement MapToPartElement(ParsedElement pe)
         {
@@ -903,12 +842,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         /// <summary>Параграфы тела сноски.</summary>
         /// <summary>Параграфы тела сноски — plain strings.</summary>
         public required List<string> Paragraphs { get; init; }
-    }
-
-    public static class StringExtensions
-    {
-        public static string? NullIfEmpty(this string s)
-            => string.IsNullOrEmpty(s) ? null : s;
     }
 
     public class PageNumberSegment

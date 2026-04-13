@@ -52,37 +52,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 await _context.BookFragments.AddRangeAsync(fragments, ct);
 
             bookFile.BookFileStatusId = BookFileStatuses.COMPLETED;
-            bookFile.CompletedAt = result.CompletedAt.UtcDateTime;
+            bookFile.CompletedAt = result.CompletedAt;
 
             await _context.SaveChangesAsync(ct);
         }
-
-        //public async Task SetErrorAsync(
-        //    long bookFileId,
-        //    string errorMessage,
-        //    CancellationToken ct = default)
-        //{
-
-        //    var updated = await _context.BookFiles
-        //        .Where(f => f.Id == bookFileId)
-        //        .ExecuteUpdateAsync(
-        //            setters => setters
-        //                .SetProperty(f => f.BookFileStatusId, BookFileStatuses.FAILED),
-        //            ct);
-        //}
-
-        //public async Task SetStatusAsync(
-        //    long bookFileId,
-        //    int status,
-        //    CancellationToken ct = default)
-        //{
-        //    await _context.BookFiles
-        //        .Where(f => f.Id == bookFileId)
-        //        .ExecuteUpdateAsync(
-        //            setters => setters
-        //                .SetProperty(f => f.BookFileStatusId, status),
-        //            ct);
-        //}
 
         public async Task<List<BookFile>> GetByBookIdAsync(long bookId, CancellationToken cancellationToken = default)
         {
@@ -100,9 +73,5 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .FirstOrDefaultAsync(bf => bf.BookId == bookId && bf.FormatId == formatId, cancellationToken);
         }
 
-        //public async Task<BookFile> ExistsAvailableAsync(long id, CancellationToken cancellationToken = default)
-        //{
-        //    return await _context.BookFiles.AnyAsync(bf => bf.Id == id && bf.Book.IsAvailable, cancellationToken);
-        //}
     }
 }
