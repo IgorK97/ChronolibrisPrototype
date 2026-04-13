@@ -105,18 +105,23 @@ namespace Chronolibris.Application.Handlers.Books
         private readonly IBookFileRepository _bookFileRepository;
         private readonly IStorageService _bookStorage;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBookConversionService _bookConversionService;
+        //private readonly IBookConversionService _bookConversionService;
+        private readonly IFb2Converter _converter;
+
 
         public UploadBookFileHandler(
             IBookFileRepository bookFileRepository,
             IStorageService bookStorage,
             IUnitOfWork unitOfWork,
-            IBookConversionService bookConversionJob)
+            IFb2Converter converter
+
+            //IBookConversionService bookConversionJob
+            )
         {
             _bookFileRepository = bookFileRepository;
             _bookStorage = bookStorage;
             _unitOfWork = unitOfWork;
-            _bookConversionService = bookConversionJob;
+            _converter = converter;
         }
 
         public async Task<long> Handle(UploadBookFileCommand request, CancellationToken cancellationToken)
@@ -149,10 +154,8 @@ namespace Chronolibris.Application.Handlers.Books
 
             try
             {
-                // расширение из имени файла — единственный источник правды
                 var extension = Path.GetExtension(request.FileName).ToLowerInvariant();
 
-                // метод сам строит ключ и возвращает storageUrl
                 var storageUrl = await _bookStorage.SaveBookSourceAsync(
                     bookFile.Id.ToString(),
                     extension,
@@ -165,9 +168,22 @@ namespace Chronolibris.Application.Handlers.Books
 
                 _bookFileRepository.Update(bookFile);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+                var bookFileId = bookFile.Id;
 
                 if (request.IsReadable)
-                    await _bookConversionService.ProcessAsync(bookFile.Id);
+                //await _bookConversionService.ProcessAsync(bookFile.Id);
+                {
+
+
+                    var result = await _converter.ConvertAsync(
+                        request.FileStream,
+                        bookId: bookFile.Id,
+                        options: new ConversionOptions { TargetPartSize = 80 }
+                      );
+
+                    await _bookFileRepository.SaveConversionResultAsync(bookFileId, result);
+
+                }  
 
                 return bookFile.Id;
             }

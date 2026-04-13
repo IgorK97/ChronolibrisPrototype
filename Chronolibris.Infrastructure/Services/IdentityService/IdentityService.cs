@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Users;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +64,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             await _userManager.AddToRoleAsync(user, role);
 
-            var refreshToken = GenerateRefreshToken();
+            //var refreshToken = GenerateRefreshToken();
             //user.RefreshToken = refreshToken;
             //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(365);
            
@@ -73,52 +74,52 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
                 Success = result.Succeeded,
                 UserId = user.Id,
                 Token = await GenerateJwtToken(user),
-                RefreshToken = refreshToken,
+                //RefreshToken = refreshToken,
                 Message = result.Succeeded ? null : result.Errors.Select(e => e.Description).FirstOrDefault()
             };
         
         }
 
-        public async Task<LoginResult> LoginUserByEmailAsync(string Email, string Password)
-        {
-            var user = await _userManager.FindByEmailAsync(Email);
-            if (user == null) 
-                return new LoginResult { Success = false,
-                    Token = string.Empty,
-                    Message = "User not found"
-                };
-            var result = await _signInManager
-                .CheckPasswordSignInAsync(user, Password, false);
+        //public async Task<LoginResult> LoginUserByEmailAsync(string Email, string Password)
+        //{
+        //    var user = await _userManager.FindByEmailAsync(Email);
+        //    if (user == null) 
+        //        return new LoginResult { Success = false,
+        //            Token = string.Empty,
+        //            Message = "User not found"
+        //        };
+        //    var result = await _signInManager
+        //        .CheckPasswordSignInAsync(user, Password, false);
 
-            if (!result.Succeeded) 
-                return new LoginResult 
-                { 
-                    Success = false,
-                    Token = string.Empty,
-                    Message = "Invalid credentials"
-                };
+        //    if (!result.Succeeded) 
+        //        return new LoginResult 
+        //        { 
+        //            Success = false,
+        //            Token = string.Empty,
+        //            Message = "Invalid credentials"
+        //        };
 
-            string jwt = await GenerateJwtToken(user);
-            string refresh = GenerateRefreshToken();
+        //    string jwt = await GenerateJwtToken(user);
+        //    string refresh = GenerateRefreshToken();
 
-            //user.RefreshToken = refresh;
-            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _userManager.UpdateAsync(user);
+        //    //user.RefreshToken = refresh;
+        //    //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        //    await _userManager.UpdateAsync(user);
 
-            return new LoginResult
-            {
-                Success = true,
-                Token = jwt,
-                RefreshToken = refresh,
-                Message = "Login successful"
-            };
-        }
+        //    return new LoginResult
+        //    {
+        //        Success = true,
+        //        Token = jwt,
+        //        RefreshToken = refresh,
+        //        Message = "Login successful"
+        //    };
+        //}
 
-        private string GenerateRefreshToken()
-        {
-            var randomBytes = RandomNumberGenerator.GetBytes(64);
-            return Convert.ToBase64String(randomBytes);
-        }
+        //private string GenerateRefreshToken()
+        //{
+        //    var randomBytes = RandomNumberGenerator.GetBytes(64);
+        //    return Convert.ToBase64String(randomBytes);
+        //}
 
 
         private async Task<string> GenerateJwtToken(User user)
@@ -174,24 +175,24 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             };
         }
 
-        public async Task<bool> IsUserNameUniqueAsync(string username)
-        {
-            // FindByNameAsync ищет по NormalizedUserName — регистронезависимо
-            return await _userManager.FindByNameAsync(username) is null;
-        }
+        //public async Task<bool> IsUserNameUniqueAsync(string username)
+        //{
+        //    // FindByNameAsync ищет по NormalizedUserName — регистронезависимо
+        //    return await _userManager.FindByNameAsync(username) is null;
+        //}
 
-        public async Task<bool> IsPhoneUniqueAsync(string phone)
-        {
-            var normalized = System.Text.RegularExpressions.Regex.Replace(phone, @"[\s\-\(\)]", "");
-            return !await _userManager.Users
-                                        .AnyAsync(u => u.PhoneNumber == normalized);
+        //public async Task<bool> IsPhoneUniqueAsync(string phone)
+        //{
+        //    var normalized = System.Text.RegularExpressions.Regex.Replace(phone, @"[\s\-\(\)]", "");
+        //    return !await _userManager.Users
+        //                                .AnyAsync(u => u.PhoneNumber == normalized);
 
-        }
+        //}
 
-        public async Task<bool> IsEmailUniqueAsync(string email)
-        {
-            return await _userManager.FindByEmailAsync(email) is null;
-        }
+        //public async Task<bool> IsEmailUniqueAsync(string email)
+        //{
+        //    return await _userManager.FindByEmailAsync(email) is null;
+        //}
 
         public async Task<LoginResult> LoginUserByUserNameAsync(string username, string password)
         {
@@ -205,19 +206,19 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
                 return new LoginResult { Success = false, Token = string.Empty, Message = "Неверный пароль" };
 
             string jwt = await GenerateJwtToken(user);
-            string refresh = GenerateRefreshToken();
+            //string refresh = GenerateRefreshToken();
 
             //user.RefreshToken = refresh;
             //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
-            return new LoginResult { Success = true, Token = jwt, RefreshToken = refresh };
+            return new LoginResult { Success = true, Token = jwt };
         }
         public async Task<UserProfileResponse> UpdateUserProfileAsync(UpdateUserProfileCommand request)
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
-                throw new ApplicationException("User not found.");
+                throw new ChronolibrisException("Пользователь не найден", ErrorType.NotFound);
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? string.Empty;
 
@@ -232,7 +233,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             var result = await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)
-                throw new ApplicationException($"Failed to update profile: {result.Errors.Select(e => e.Description).FirstOrDefault()}");
+                throw new ChronolibrisException($"Не удалось обновить профиль: {result.Errors.Select(e => e.Description).FirstOrDefault()}", ErrorType.Conflict);
 
             return new UserProfileResponse
             {
@@ -247,11 +248,11 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
         }
 
 
-        public async Task<bool> ChangePasswordAsync(ChangePasswordCommand request)
+        public async Task ChangePasswordAsync(ChangePasswordCommand request)
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
-                return false; 
+                throw new ChronolibrisException("Пользователь не найден или неправильный пароль", ErrorType.NotFound);
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(
                 user,
@@ -260,11 +261,9 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             if (!changePasswordResult.Succeeded)
             {
-            
-                throw new ApplicationException($"Password change failed: {changePasswordResult.Errors.Select(e => e.Description).FirstOrDefault()}");
+                throw new ChronolibrisException("Пользователь не найден или неправильный пароль", ErrorType.NotFound);
+                //throw new ChronolibrisException($"Ошибка: {changePasswordResult.Errors.Select(e => e.Description).FirstOrDefault()}", ErrorType.Conflict);
             }
-
-            return true;
         }
 
         public async Task<bool> IsUserActiveAsync(long userId)

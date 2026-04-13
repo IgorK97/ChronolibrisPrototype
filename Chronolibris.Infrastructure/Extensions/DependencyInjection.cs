@@ -27,18 +27,8 @@ using Npgsql.NameTranslation;
 namespace Chronolibris.Infrastructure.DependencyInjection
 {
 
-    /// <summary>
-    /// Статический класс для регистрации всех зависимостей инфраструктурного уровня 
-    /// в контейнере служб <see cref="IServiceCollection"/>.
-    /// </summary>
     public static class DependencyInjection
     {
-        /// <summary>
-        /// Регистрирует контекст базы данных PostgreSQL и все репозитории приложения.
-        /// </summary>
-        /// <param name="services">Коллекция служб для расширения.</param>
-        /// <param name="configuration">Конфигурация приложения для получения строки подключения.</param>
-        /// <returns>Обновленная коллекция служб.</returns>
         public static IServiceCollection AddDatabaseInfrastructure(this IServiceCollection services, 
             IConfiguration configuration)
         {
@@ -117,16 +107,10 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
         public static IServiceCollection AddFileServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // 1. Привязываем настройки из JSON к классу MinioOptions
-            //var minioOptions = configuration.GetSection("MinioOptions").Get<MinioOptions>();
-            //services.Configure<MinioOptions>(configuration.GetSection("MinioOptions"));
-
             services.Configure<BookStorageOptions>(
                 configuration.GetSection("BookStorageOptions"));
-
             services.Configure<UploadStorageOptions>(
                 configuration.GetSection("UploadStorageOptions"));
-
             var minioOpts = configuration
                 .GetSection("MinioOptions")
                 .Get<MinioOptions>()!;
@@ -137,33 +121,10 @@ namespace Chronolibris.Infrastructure.DependencyInjection
                     .WithCredentials(minioOpts.AccessKey, minioOpts.SecretKey)
                     .WithSSL(minioOpts.UseSSL)
                     .Build());
-
-            //// 2. Регистрируем IMinioClient как Singleton или Scoped
-            //services.AddScoped<IMinioClient>(sp =>
-            //{
-            //    var client = new MinioClient()
-            //        .WithEndpoint(minioOptions!.Endpoint)
-            //        .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey);
-
-            //    if (minioOptions.UseSSL) client.WithSSL();
-
-            //    return client.Build();
-            //});
-
-            // 3. Регистрируем твой сервис для работы с файлами
-            //services.AddScoped<IFileService, MinioFileService>();
-            //services.AddScoped<IMinioService, MinioService>();
             services.AddScoped<IStorageService, StorageService>();
-
             return services;
         }
 
-        /// <summary>
-        /// Регистрирует службы, связанные с системой аутентификации и идентификации (ASP.NET Core Identity).
-        /// </summary>
-        /// <param name="services">Коллекция служб для расширения.</param>
-        /// <param name="configuration">Конфигурация приложения (не используется явно в теле метода).</param>
-        /// <returns>Обновленная коллекция служб.</returns>
         public static IServiceCollection AddIdentityRealization(this IServiceCollection services, 
             IConfiguration configuration)
         {
@@ -184,27 +145,12 @@ namespace Chronolibris.Infrastructure.DependencyInjection
                 //.AddDefaultTokenProviders();
 
             //services.AddHostedService<TokenCleanupService>();
-
             return services;
         }
 
-        public static IServiceCollection AddJobs(this IServiceCollection services,
-    IConfiguration configuration)
-        {
-
-            services.AddScoped<IBookConversionService, BookConversionService>();
-
-
-
-            return services;
-        }
-
-        public static IServiceCollection AddFb2Converter(
-    this IServiceCollection services,
-    IConfiguration configuration)
+        public static IServiceCollection AddFb2Converter(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IFb2Converter, Fb2ConverterXReader>();
-
             return services;
         }
 

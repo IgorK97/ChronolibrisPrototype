@@ -64,7 +64,7 @@ namespace ChronolibrisWeb.Controllers
             return Ok(result);
         }
 
-        [HttpGet("targets/{targetTypeId:long}/{targetId:long}")]
+        [HttpGet("targets/{targetTypeId}/{targetId}")] //Что могла бы дать валидация типа здесь?
         [Authorize(Roles = "admin, moderator")]
         public async Task<ActionResult<GetTargetInfoResponse>>
             GetTargetInfo(long targetTypeId, long targetId)

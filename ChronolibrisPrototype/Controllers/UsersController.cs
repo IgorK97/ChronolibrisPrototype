@@ -71,9 +71,9 @@ namespace ChronolibrisWeb.Controllers
 
             //long parsedUserId = long.Parse(userId);
 
-                var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
-                
-                return result !=null ? Ok(result): NotFound();
+            var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
+
+            return result != null ? Ok(result) : NotFound();
 
 
         }

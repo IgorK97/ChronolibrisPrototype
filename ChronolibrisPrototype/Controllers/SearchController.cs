@@ -140,7 +140,7 @@ namespace ChronolibrisWeb.Controllers
 
             return await _mediator.Send(new SearchTagsQuery(name, limit), ct);
         }
-
+        //Валидацию потом подправить везде здесь
         [HttpGet("persons-batch")]
         public async Task<ActionResult<List<PersonSuggestionDto>>> GetPersonsByIds(
             [FromQuery] string ids,

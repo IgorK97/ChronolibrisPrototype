@@ -51,13 +51,13 @@ namespace ChronolibrisWeb.Controllers
             return Ok(theme);
         }
 
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<long>> Create([FromBody] CreateThemeRequest request, CancellationToken cancellationToken)
         {
 
-                var command = new CreateThemeCommand(request.Name, request.ParentThemeId);
-                var id = await _mediator.Send(command, cancellationToken);
+            var command = new CreateThemeCommand(request.Name, request.ParentThemeId);
+            var id = await _mediator.Send(command, cancellationToken);
             return Ok(id);
 
         }
