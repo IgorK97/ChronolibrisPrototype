@@ -63,7 +63,6 @@ namespace ChronolibrisWeb.Controllers
                 request.IsAvailable,
                 request.IsReviewable,
                 request.PublisherId,
-                request.SeriesId,
                 request.PersonFilters,
                 request.ThemeIds
             );
@@ -77,11 +76,9 @@ namespace ChronolibrisWeb.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBook(
             long id,
-            [FromBody] Chronolibris.Application.Handlers.Books.UpdateBookRequest request,
+            [FromBody] UpdateBookRequest request,
             CancellationToken cancellationToken)
         {
-            if (id != request.Id)
-                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
             var command = new UpdateBookCommand
             (id,

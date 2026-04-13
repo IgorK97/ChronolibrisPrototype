@@ -24,7 +24,6 @@ namespace Chronolibris.Application.Handlers.Books
         bool IsAvailable,
         bool IsReviewable,
         int? PublisherId,
-        int? SeriesId,
         List<PersonRoleFilter>? PersonFilters,
         List<int>? ThemeIds
     ) : IRequest<long>;

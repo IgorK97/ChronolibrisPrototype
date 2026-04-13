@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers.Books
@@ -6,8 +7,12 @@ namespace Chronolibris.Application.Handlers.Books
 
     public class CreateBookRequest
     {
+        [Required(ErrorMessage = "Название книги отсутствует")]
+        [MaxLength(500)]
         public string Title { get; set; } = string.Empty;
-        public string Description { get; set; }
+        [Required(ErrorMessage = "Описание книги отсутствует")]
+        [MaxLength(2000)]
+        public string Description { get; set; } = string.Empty;
         public int CountryId { get; set; }
         public int LanguageId { get; set; }
         public int? Year { get; set; }
@@ -21,16 +26,18 @@ namespace Chronolibris.Application.Handlers.Books
         public bool IsAvailable { get; set; } = true;
         public bool IsReviewable { get; set; }
         public int? PublisherId { get; set; }
-        public int? SeriesId { get; set; }
         public List<PersonRoleFilter>? PersonFilters { get; set; }
         public List<int>? ThemeIds { get; set; }
     }
     public class UpdateBookRequest
     {
         public long Id { get; set; }
-
+        [Required(ErrorMessage = "Название книги отсутствует")]
+        [MaxLength(500)]
         public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
+        [Required(ErrorMessage = "Описание книги отсутствует")]
+        [MaxLength(2000)]
+        public string Description { get; set; } = string.Empty;
         public int? CountryId { get; set; }
         public int? LanguageId { get; set; }
         public bool IsAvailable { get; set; }
@@ -54,9 +61,6 @@ namespace Chronolibris.Application.Handlers.Books
 
         public int? PublisherId { get; set; }
         public bool PublisherIdProvided { get; set; }
-
-        public int? SeriesId { get; set; }
-        public bool SeriesIdProvided { get; set; }
 
         public string? CoverBase64 { get; set; }
         public string? CoverContentType { get; set; }

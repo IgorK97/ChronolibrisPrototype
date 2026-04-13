@@ -1,4 +1,5 @@
 ﻿using Chronolibris.Application.Requests;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 
 //using Chronolibris.Domain.Interfaces.Repositories;
@@ -46,10 +47,7 @@ namespace Chronolibris.Application.Handlers.Books
         public async Task Handle(UpdateBookCommand cmd, CancellationToken ct)
         {
             var book = await _bookRepository.GetByIdAsync(cmd.Id, ct)
-                ?? throw new KeyNotFoundException($"Книга с ID {cmd.Id} не найдена.");
-
-            if (string.IsNullOrWhiteSpace(cmd.Title))
-                throw new ArgumentException("Название книги не может быть пустым.");
+                ?? throw new ChronolibrisException($"Такая книга не найдена", ErrorType.NotFound);
 
 
             book.Title = cmd.Title.Trim();
@@ -79,7 +77,6 @@ namespace Chronolibris.Application.Handlers.Books
                 var newExt = Path.GetExtension(cmd.CoverFileName ?? "cover.jpg").ToLowerInvariant();
                 var fileName = $"cover{newExt}";
 
-                // Если расширение изменилось — удаляем старый файл и обновляем путь в БД
                 var existingExt = book.CoverPath is not null
                     ? Path.GetExtension(book.CoverPath).ToLowerInvariant()
                     : newExt;
