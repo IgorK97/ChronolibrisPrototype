@@ -68,13 +68,15 @@ namespace Chronolibris.Application.Handlers.Books
 
             try
             {
-                var imageBytes = DecodeCover(cmd.CoverBase64);
+                //var imageBytes = DecodeCover(cmd.CoverBase64);
                 var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant();
                 var fileName = $"cover{extension}";
                 var coverPath = $"covers/{bookId}/{fileName}";
-
-                await _storageService.SaveCoverAsync(
-                    bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
+                using (var imageStream = DecodeCover(cmd.CoverBase64))
+                {
+                    await _storageService.SaveCoverAsync(
+                    bookId.ToString(), fileName, imageStream, cmd.CoverContentType, ct);
+                }
 
             //    await _storageService.SavePublicBookImageAsync(
             //bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
@@ -89,13 +91,22 @@ namespace Chronolibris.Application.Handlers.Books
 
             return bookId;
         }
-        private static byte[] DecodeCover(string base64)
+        private static Stream DecodeCover(string base64)
         {
-            var data = base64.Contains(',')
-                ? base64[(base64.IndexOf(',') + 1)..]
-                : base64;
+            //var data = base64.Contains(',')
+            //    ? base64[(base64.IndexOf(',') + 1)..]
+            //    : base64;
 
-            return Convert.FromBase64String(data);
+            //return Convert.FromBase64String(data);
+            var data = base64.Contains(',')
+        ? base64[(base64.IndexOf(',') + 1)..]
+        : base64;
+
+            var bytes = Convert.FromBase64String(data);
+
+            // Возвращаем поток. 
+            // Мы не используем здесь using, так как поток должен "жить" до конца сохранения.
+            return new MemoryStream(bytes);
         }
     }
 }

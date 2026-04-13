@@ -107,13 +107,9 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
         public static IServiceCollection AddFileServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<BookStorageOptions>(
-                configuration.GetSection("BookStorageOptions"));
-            services.Configure<UploadStorageOptions>(
-                configuration.GetSection("UploadStorageOptions"));
-            var minioOpts = configuration
-                .GetSection("MinioOptions")
-                .Get<MinioOptions>()!;
+
+            services.Configure<BookStorageOptions>(configuration.GetSection("BookStorageOptions"));
+            var minioOpts = configuration.GetSection("MinioOptions").Get<MinioOptions>()!;
 
             services.AddScoped<IMinioClient>(_ =>
                 new MinioClient()

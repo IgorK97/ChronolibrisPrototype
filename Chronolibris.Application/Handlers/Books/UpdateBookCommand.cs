@@ -54,21 +54,22 @@ namespace Chronolibris.Application.Handlers.Books
 
             if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
             {
-                var imageBytes = DecodeCover(cmd.CoverBase64);
+               
                 var newExt = Path.GetExtension(cmd.CoverFileName ?? ".jpg").ToLowerInvariant();
                 var fileName = $"cover{newExt}";
                 var newCoverPath = $"covers/{cmd.Id}/{fileName}";
 
                 try
                 {
-                    await _storageService.SavePublicBookImageAsync(
+                    using var imageBytes = DecodeCover(cmd.CoverBase64);
+                    await _storageService.SaveCoverAsync(
                     cmd.Id.ToString(), fileName, imageBytes, cmd.CoverContentType ?? "image/jpeg", ct);
                     var oldPath = book.CoverPath;
                     book.CoverPath = newCoverPath;
 
                     if (oldPath != null && !oldPath.EndsWith(newExt))
                     {
-                        await _storageService.DeleteAsync(_storageService.PublicCoversBucket, oldPath, ct);
+                        await _storageService.DeleteFileAsync("images", oldPath, ct);
                     }
 
                 }
@@ -157,13 +158,15 @@ namespace Chronolibris.Application.Handlers.Books
         //    }
         //}
 
-        private static byte[] DecodeCover(string base64)
+        private static Stream DecodeCover(string base64)
         {
             var data = base64.Contains(',')
                 ? base64[(base64.IndexOf(',') + 1)..]
                 : base64;
 
-            return Convert.FromBase64String(data);
+            var bytes = Convert.FromBase64String(data);
+
+            return new MemoryStream(bytes);
         }
     }
 }

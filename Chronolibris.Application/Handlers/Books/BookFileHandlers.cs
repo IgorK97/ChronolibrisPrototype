@@ -95,7 +95,7 @@ namespace Chronolibris.Application.Handlers.Books
             var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
             if (bookFile == null || string.IsNullOrEmpty(bookFile.StorageUrl)) return null;
 
-            return await _bookStorage.ReadByStorageUrlAsync(bookFile.StorageUrl, cancellationToken);
+            return await _bookStorage.ReadBookSourceAsync(bookFile.Id.ToString(), ".fb2", cancellationToken);
         }
     }
 
@@ -226,7 +226,7 @@ namespace Chronolibris.Application.Handlers.Books
 
             _bookFileRepository.Delete(bookFile);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await _bookStorage.DeleteFileAsync(bookFile.StorageUrl, cancellationToken);
+            await _bookStorage.DeleteFileAsync("books", bookFile.StorageUrl, cancellationToken);
 
             return Unit.Value;
         }

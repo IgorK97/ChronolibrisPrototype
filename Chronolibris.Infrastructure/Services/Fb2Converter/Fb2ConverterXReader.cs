@@ -88,7 +88,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             // toc.json
             var tocJson = JsonSerializer.Serialize(tocDoc, JsonOpts);
             var tocBytes = Encoding.UTF8.GetByteCount(tocJson);
-            await _storage.SaveChunkAsync(resolvedBookId, "toc.json", tocJson, "toc", ct);
+            await _storage.SaveChunkAsync(resolvedBookId, "toc.json", tocJson, true, ct);
 
             return new ConversionResult
             {
@@ -234,9 +234,16 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             {
                                 try
                                 {
+                                    //var bytes = Convert.FromBase64String(base64);
+                                    //await _storage.SaveCoverAsync(
+                                    //    tempBookId, fileName, bytes, contentType, ct);
                                     var bytes = Convert.FromBase64String(base64);
-                                    await _storage.SavePublicBookImageAsync(
-                                        tempBookId, fileName, bytes, contentType, ct);
+
+                                    using (var coverStream = new MemoryStream(bytes))
+                                    {
+                                        await _storage.SaveImageAsync(
+                                            tempBookId, fileName, coverStream, contentType, ct);
+                                    }
 
                                     imageMap[binaryId] = fileName;
                                     imageIndex++;
@@ -695,7 +702,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             var json = JsonSerializer.Serialize(items, JsonOpts);
             var bytes = Encoding.UTF8.GetByteCount(json);
 
-            await _storage.SaveChunkAsync(bookId, fileName, json, "chunk", ct);
+            await _storage.SaveChunkAsync(bookId, fileName, json, false, ct);
 
             tocParts.Add(new TocPartEntry
             {
