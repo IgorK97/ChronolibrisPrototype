@@ -101,7 +101,6 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IReviewRepository,  ReviewRepository>();
             services.AddScoped<ISelectionsRepository, SelectionsRepository>();
             services.AddScoped<IShelfRepository, ShelvesRepository>();
-            services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<IThemeRepository, ThemeRepository>();
             services.AddScoped<IContentRepository, ContentRepository>();
@@ -109,8 +108,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<ITagsRepository, TagsRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
             services.AddScoped<IModerationTasksRepository, ModerationTasksRepository>();
-            services.AddScoped<IBookSearchRepository, SearchRepository>();
-            services.AddScoped<IReferenceSearchRepository, ReferenceSearchRepository>();
+            services.AddScoped<ISearchRepository, SearchRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

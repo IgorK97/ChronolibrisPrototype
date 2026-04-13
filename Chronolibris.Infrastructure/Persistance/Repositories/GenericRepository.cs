@@ -39,18 +39,18 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             _set.Update(entity);
         public void Delete(TEntity entity) =>
             _set.Remove(entity);
-        public void Detach(TEntity entity)
-        {
-            // Получаем объект Entry (запись отслеживания) для данной сущности
-            var entityEntry = _context.Entry(entity);
+        //public void Detach(TEntity entity)
+        //{
+        //    // Получаем объект Entry (запись отслеживания) для данной сущности
+        //    var entityEntry = _context.Entry(entity);
 
-            // Если сущность отслеживается (ее состояние не Detached), 
-            // принудительно устанавливаем ее состояние в Detached.
-            if (entityEntry.State != EntityState.Detached)
-            {
-                entityEntry.State = EntityState.Detached;
-            }
-        }
+        //    // Если сущность отслеживается (ее состояние не Detached), 
+        //    // принудительно устанавливаем ее состояние в Detached.
+        //    if (entityEntry.State != EntityState.Detached)
+        //    {
+        //        entityEntry.State = EntityState.Detached;
+        //    }
+        //}
 
         public async Task SaveChangesAsync()
         {

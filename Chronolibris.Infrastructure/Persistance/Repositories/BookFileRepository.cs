@@ -37,9 +37,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .Where(f => f.FileType == StoredFileType.Part)
                 .Select((part, index) => new BookFragment
                 {
-                    // Id генерируется БД — если Id в сущности required,
-                    // убедись что в конфигурации EF стоит ValueGeneratedOnAdd.
-                    // Временное значение 0 будет заменено БД при SaveChanges.
                     Id = 0,
                     BookFileId = bookFileId,
                     Position = index,
@@ -59,33 +56,32 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             await _context.SaveChangesAsync(ct);
         }
 
-        public async Task SetErrorAsync(
-            long bookFileId,
-            string errorMessage,
-            CancellationToken ct = default)
-        {
-            // ExecuteUpdateAsync — без загрузки сущности в память,
-            // один UPDATE-запрос к БД.
-            var updated = await _context.BookFiles
-                .Where(f => f.Id == bookFileId)
-                .ExecuteUpdateAsync(
-                    setters => setters
-                        .SetProperty(f => f.BookFileStatusId, BookFileStatuses.FAILED),
-                    ct);
-        }
+        //public async Task SetErrorAsync(
+        //    long bookFileId,
+        //    string errorMessage,
+        //    CancellationToken ct = default)
+        //{
 
-        public async Task SetStatusAsync(
-            long bookFileId,
-            int status,
-            CancellationToken ct = default)
-        {
-            await _context.BookFiles
-                .Where(f => f.Id == bookFileId)
-                .ExecuteUpdateAsync(
-                    setters => setters
-                        .SetProperty(f => f.BookFileStatusId, status),
-                    ct);
-        }
+        //    var updated = await _context.BookFiles
+        //        .Where(f => f.Id == bookFileId)
+        //        .ExecuteUpdateAsync(
+        //            setters => setters
+        //                .SetProperty(f => f.BookFileStatusId, BookFileStatuses.FAILED),
+        //            ct);
+        //}
+
+        //public async Task SetStatusAsync(
+        //    long bookFileId,
+        //    int status,
+        //    CancellationToken ct = default)
+        //{
+        //    await _context.BookFiles
+        //        .Where(f => f.Id == bookFileId)
+        //        .ExecuteUpdateAsync(
+        //            setters => setters
+        //                .SetProperty(f => f.BookFileStatusId, status),
+        //            ct);
+        //}
 
         public async Task<List<BookFile>> GetByBookIdAsync(long bookId, CancellationToken cancellationToken = default)
         {

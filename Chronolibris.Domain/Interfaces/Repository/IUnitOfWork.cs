@@ -28,7 +28,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         IGenericRepository<Content> Contents { get; }
         IGenericRepository<Publisher> Publishers { get; }
         IGenericRepository<PersonRole> PersonRoles { get; }
-        IReadingProgressRepository ReadingProgresses { get; }
+        //IReadingProgressRepository ReadingProgresses { get; }
         Task<int> SaveChangesAsync(CancellationToken token = default);
         Task<ITransaction> BeginTransactionAsync(CancellationToken token = default);
     }

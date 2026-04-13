@@ -8,9 +8,9 @@ namespace Chronolibris.Application.Handlers.Search
     public class SimpleSearchKeysetQueryHandler
         : IRequestHandler<SimpleSearchKeysetQuery, PagedBooks<BookSearchResult>>
     {
-        private readonly IBookSearchRepository _searchRepository;
+        private readonly ISearchRepository _searchRepository;
 
-        public SimpleSearchKeysetQueryHandler(IBookSearchRepository searchRepository)
+        public SimpleSearchKeysetQueryHandler(ISearchRepository searchRepository)
         {
             _searchRepository = searchRepository;
         }
@@ -35,9 +35,9 @@ namespace Chronolibris.Application.Handlers.Search
     public class AdvancedSearchKeysetQueryHandler
         : IRequestHandler<AdvancedSearchKeysetQuery, PagedBooks<BookSearchResult>>
     {
-        private readonly IBookSearchRepository _searchRepository;
+        private readonly ISearchRepository _searchRepository;
 
-        public AdvancedSearchKeysetQueryHandler(IBookSearchRepository searchRepository)
+        public AdvancedSearchKeysetQueryHandler(ISearchRepository searchRepository)
         {
             _searchRepository = searchRepository;
         }

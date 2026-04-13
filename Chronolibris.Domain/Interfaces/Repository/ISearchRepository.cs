@@ -7,8 +7,14 @@ using Chronolibris.Domain.Models.Search;
 
 namespace Chronolibris.Domain.Interfaces.Repository
 {
-    public interface IReferenceSearchRepository
+    public interface ISearchRepository
     {
+        Task<PagedBooks<BookSearchResult>> SearchKeysetAsync(
+           SimpleSearchKeysetRequest request, CancellationToken token);
+
+        Task<PagedBooks<BookSearchResult>> AdvancedSearchKeysetAsync(
+            AdvancedSearchKeysetRequest request, CancellationToken token);
+
         Task<List<LanguageDto>> GetAllLanguagesAsync(CancellationToken ct = default);
 
         Task<List<CountryDto>> GetAllCountriesAsync(CancellationToken ct = default);
@@ -22,5 +28,4 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task<List<PersonSuggestionDto>> GetPersonsByIdsAsync(List<long> ids, CancellationToken ct = default);
         Task<List<TagSuggestionDto>> GetTagsByIdsAsync(List<long> ids, CancellationToken ct = default);
     }
-
 }

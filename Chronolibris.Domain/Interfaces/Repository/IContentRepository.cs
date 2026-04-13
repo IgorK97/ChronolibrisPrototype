@@ -6,7 +6,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
     public interface IContentRepository
     {
         Task<Content?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
-        Task<List<Content>> GetAllAsync(CancellationToken cancellationToken = default);
+        //Task<List<Content>> GetAllAsync(CancellationToken cancellationToken = default);
         //Task<(List<Content> Items, int TotalCount, long? NextCursor, long? PrevCursor)> GetWithFilterAsync(
         //    ContentFilterRequest filter, CancellationToken cancellationToken = default);
         Task<ContentDto?> GetDtoByIdAsync(long id, CancellationToken cancellationToken = default);
@@ -18,11 +18,11 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task<PagedResult<ContentDto>> GetWithFilterAsync(ContentFilterRequest filter, CancellationToken ct = default);
 
         Task AddAsync(Content content, CancellationToken cancellationToken = default);
-        void Update(Content content);
+        //void Update(Content content);
         void Delete(Content content);
         //Task SyncThemesAsync(long contentId, List<long> newThemeIds, CancellationToken cancellationToken = default);
         //Task SyncPersonsAsync(long contentId, List<PersonRoleFilter> newPersons, CancellationToken cancellationToken = default);
-        Task SyncTagsAsync(long contentId, List<long> TagIds, CancellationToken cancellationToken);
+        //Task SyncTagsAsync(long contentId, List<long> TagIds, CancellationToken cancellationToken);
         //Task<int> GetBooksCountAsync(long contentId, CancellationToken cancellationToken = default);
         //Task<List<Book>> GetBooksByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
         Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default);

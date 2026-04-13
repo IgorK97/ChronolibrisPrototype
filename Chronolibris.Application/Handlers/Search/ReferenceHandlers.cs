@@ -12,24 +12,24 @@ namespace Chronolibris.Application.Handlers.Search
 {
     public class GetLanguagesHandler : IRequestHandler<GetLanguagesQuery, List<LanguageDto>>
     {
-        private readonly IReferenceSearchRepository _repo;
-        public GetLanguagesHandler(IReferenceSearchRepository repo) => _repo = repo;
+        private readonly ISearchRepository _repo;
+        public GetLanguagesHandler(ISearchRepository repo) => _repo = repo;
         public Task<List<LanguageDto>> Handle(GetLanguagesQuery _, CancellationToken ct)
             => _repo.GetAllLanguagesAsync(ct);
     }
 
     public class GetCountriesHandler : IRequestHandler<GetCountriesQuery, List<CountryDto>>
     {
-        private readonly IReferenceSearchRepository _repo;
-        public GetCountriesHandler(IReferenceSearchRepository repo) => _repo = repo;
+        private readonly ISearchRepository _repo;
+        public GetCountriesHandler(ISearchRepository repo) => _repo = repo;
         public Task<List<CountryDto>> Handle(GetCountriesQuery _, CancellationToken ct)
             => _repo.GetAllCountriesAsync(ct);
     }
 
     public class GetPersonRolesHandler : IRequestHandler<GetPersonRolesQuery, List<PersonRoleDto>>
     {
-        private readonly IReferenceSearchRepository _repo;
-        public GetPersonRolesHandler(IReferenceSearchRepository repo) => _repo = repo;
+        private readonly ISearchRepository _repo;
+        public GetPersonRolesHandler(ISearchRepository repo) => _repo = repo;
         public Task<List<PersonRoleDto>> Handle(GetPersonRolesQuery _, CancellationToken ct)
             => _repo.GetAllPersonRolesAsync(ct);
     }
@@ -37,8 +37,8 @@ namespace Chronolibris.Application.Handlers.Search
     public class SearchPersonsHandler
         : IRequestHandler<SearchPersonsQuery, List<PersonSuggestionDto>>
     {
-        private readonly IReferenceSearchRepository _repo;
-        public SearchPersonsHandler(IReferenceSearchRepository repo) => _repo = repo;
+        private readonly ISearchRepository _repo;
+        public SearchPersonsHandler(ISearchRepository repo) => _repo = repo;
         public Task<List<PersonSuggestionDto>> Handle(
             SearchPersonsQuery request, CancellationToken ct)
             => _repo.SearchPersonsAsync(request.Name, request.Limit, ct);
@@ -47,8 +47,8 @@ namespace Chronolibris.Application.Handlers.Search
     public class SearchTagsHandler
         : IRequestHandler<SearchTagsQuery, List<TagSuggestionDto>>
     {
-        private readonly IReferenceSearchRepository _repo;
-        public SearchTagsHandler(IReferenceSearchRepository repo) => _repo = repo;
+        private readonly ISearchRepository _repo;
+        public SearchTagsHandler(ISearchRepository repo) => _repo = repo;
         public Task<List<TagSuggestionDto>> Handle(
             SearchTagsQuery request, CancellationToken ct)
             => _repo.SearchTagsAsync(request.Name, request.Limit, ct);
@@ -57,8 +57,8 @@ namespace Chronolibris.Application.Handlers.Search
     public class GetPersonsByIdsHandler : IRequestHandler<GetPersonsByIdsQuery,
         List<PersonSuggestionDto>>
     {
-        private readonly IReferenceSearchRepository _repo;
-        public GetPersonsByIdsHandler(IReferenceSearchRepository repository) => _repo = repository;
+        private readonly ISearchRepository _repo;
+        public GetPersonsByIdsHandler(ISearchRepository repository) => _repo = repository;
 
         public Task<List<PersonSuggestionDto>> Handle(
             GetPersonsByIdsQuery request, CancellationToken ct)
@@ -67,8 +67,8 @@ namespace Chronolibris.Application.Handlers.Search
 
     public class GetTagsByIdsHandler : IRequestHandler<GetTagsByIdsQuery, List<TagSuggestionDto>>
     {
-        private readonly IReferenceSearchRepository _repo;
-        public GetTagsByIdsHandler(IReferenceSearchRepository repo) => _repo = repo;
+        private readonly ISearchRepository _repo;
+        public GetTagsByIdsHandler(ISearchRepository repo) => _repo = repo;
 
         public Task<List<TagSuggestionDto>> Handle(
             GetTagsByIdsQuery request, CancellationToken ct)

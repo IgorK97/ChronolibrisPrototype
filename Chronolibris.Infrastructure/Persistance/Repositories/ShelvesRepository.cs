@@ -18,7 +18,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
         public ShelvesRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<Shelf?> GetByIdAsync(long shelfId, CancellationToken ct)
+        public override async Task<Shelf?> GetByIdAsync(long shelfId, CancellationToken ct)
         {
             return await _context.Shelves
                 .Include(s => s.Books)
@@ -101,23 +101,23 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 shelf.Books.Remove(book);
         }
 
-        public async Task<bool> IsInFavorite(long userId, long bookId)
-        {
-            return await _context.Shelves
-                .AnyAsync(s =>
-                    s.UserId == userId &&
-                    s.ShelfType.Code == ShelfTypes.FAVORITES &&
-                    s.Books.Any(b => b.Id == bookId));
-        }
+        //public async Task<bool> IsInFavorite(long userId, long bookId)
+        //{
+        //    return await _context.Shelves
+        //        .AnyAsync(s =>
+        //            s.UserId == userId &&
+        //            s.ShelfType.Code == ShelfTypes.FAVORITES &&
+        //            s.Books.Any(b => b.Id == bookId));
+        //}
 
-        public async Task<bool> IsRead(long userId, long bookId)
-        {
-            return await _context.Shelves
-                .AnyAsync(s =>
-                    s.UserId == userId &&
-                    s.ShelfType.Code == ShelfTypes.READ &&
-                    s.Books.Any(b => b.Id == bookId));
-        }
+        //public async Task<bool> IsRead(long userId, long bookId)
+        //{
+        //    return await _context.Shelves
+        //        .AnyAsync(s =>
+        //            s.UserId == userId &&
+        //            s.ShelfType.Code == ShelfTypes.READ &&
+        //            s.Books.Any(b => b.Id == bookId));
+        //}
 
         public async Task<bool> IsInShelf(long bookId, long shelfId)
         {

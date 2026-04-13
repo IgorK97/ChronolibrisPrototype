@@ -42,12 +42,9 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 return;
             }
 
-            try
-            {
-                // Получаем поток через абстракцию — IMinioClient нигде не виден
-                //var fb2Stream = await _storage.ReadStreamAsync(bookFile.StorageUrl)
-                //    ?? throw new InvalidOperationException(
-                //        $"Объект {bookFile.StorageUrl} не найден в хранилище");
+            //try
+            //{
+
 
                 var fb2Stream = await _storage.ReadByStorageUrlAsync(bookFile.StorageUrl)
     ?? throw new InvalidOperationException(
@@ -64,14 +61,13 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     await _bookFiles.SaveConversionResultAsync(bookFileId, result);
                 }
 
-                //_log.LogInformation("Конвертация завершена bookFileId={Id}", bookFileId);
-            }
-            catch (Exception ex)
-            {
-                //_log.LogError(ex, "Ошибка конвертации bookFileId={Id}", bookFileId);
-                await _bookFiles.SetErrorAsync(bookFileId, ex.Message);
-                throw;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    //_log.LogError(ex, "Ошибка конвертации bookFileId={Id}", bookFileId);
+            //    await _bookFiles.SetErrorAsync(bookFileId, ex.Message);
+            //    throw;
+            //}
         }
     }
 }

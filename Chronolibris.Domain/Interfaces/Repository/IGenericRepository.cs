@@ -19,7 +19,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         void Update(TEntity entity);
         void Delete(TEntity entity);
 
-        void Detach(TEntity entity);
+        //void Detach(TEntity entity);
         Task SaveChangesAsync();
     }
 }

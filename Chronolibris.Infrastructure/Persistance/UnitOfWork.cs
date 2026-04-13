@@ -32,7 +32,6 @@ namespace Chronolibris.Infrastructure.Persistance
         public IGenericRepository<Format> Formats { get; }
         public IGenericRepository<Publisher> Publishers { get; }
         public IGenericRepository<PersonRole> PersonRoles { get; }
-        public IReadingProgressRepository ReadingProgresses { get; }
         public IModerationTasksRepository ModerationTasks { get; }
 
         public UnitOfWork(ApplicationDbContext context, IBookRepository bookRepository,
@@ -42,7 +41,7 @@ namespace Chronolibris.Infrastructure.Persistance
             IReviewReactionsRepository reviewsRatings,
             IReviewRepository reviewRepository,
             ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
-            IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
+            IGenericRepository<PersonRole> personRoles,
             ICommentReactionsRepository commentReactions, IGenericRepository<Language> languages,
             IGenericRepository<Country> countries, IGenericRepository<Format> formats,
             IModerationTasksRepository moderationTasks,
@@ -60,7 +59,6 @@ namespace Chronolibris.Infrastructure.Persistance
             Selections = selections;
             Shelves = shelves;
             PersonRoles = personRoles;
-            ReadingProgresses = readingProgresses;
             Comments = comments;
             CommentReactions = commentReactions;
             Languages = languages;

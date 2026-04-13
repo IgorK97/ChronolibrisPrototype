@@ -66,39 +66,39 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             return content;
         }
 
-        public async Task<List<TagDetails>> SearchTagsAsync(
-            string searchTerm,
-            long? tagTypeId,
-            int limit,
-            CancellationToken ct)
-        {
-            IQueryable<Tag> query = _context.Tags.AsNoTracking()
-                .Include(t => t.TagType);
+        //public async Task<List<TagDetails>> SearchTagsAsync(
+        //    string searchTerm,
+        //    long? tagTypeId,
+        //    int limit,
+        //    CancellationToken ct)
+        //{
+        //    IQueryable<Tag> query = _context.Tags.AsNoTracking()
+        //        .Include(t => t.TagType);
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                query = query.Where(t => EF.Functions.Like(t.Name, $"%{searchTerm}%"));
-            }
+        //    if (!string.IsNullOrWhiteSpace(searchTerm))
+        //    {
+        //        query = query.Where(t => EF.Functions.Like(t.Name, $"%{searchTerm}%"));
+        //    }
 
-            if (tagTypeId.HasValue)
-            {
-                query = query.Where(t => t.TagTypeId == tagTypeId.Value);
-            }
+        //    if (tagTypeId.HasValue)
+        //    {
+        //        query = query.Where(t => t.TagTypeId == tagTypeId.Value);
+        //    }
 
-            var tags = await query
-                .OrderBy(t => t.Name)
-                .Take(limit)
-                .Select(t => new TagDetails
-                {
-                    Id = t.Id,
-                    Name = t.Name,
-                    TagTypeId = t.TagTypeId,
-                    TagTypeName = t.TagType.Name
-                })
-                .ToListAsync(ct);
+        //    var tags = await query
+        //        .OrderBy(t => t.Name)
+        //        .Take(limit)
+        //        .Select(t => new TagDetails
+        //        {
+        //            Id = t.Id,
+        //            Name = t.Name,
+        //            TagTypeId = t.TagTypeId,
+        //            TagTypeName = t.TagType.Name
+        //        })
+        //        .ToListAsync(ct);
 
-            return tags;
-        }
+        //    return tags;
+        //}
 
         public async Task<bool> AddTagAsync(long contentId, long tagId, CancellationToken ct)
         {
@@ -143,10 +143,10 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<List<Content>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            return await _context.Contents.ToListAsync(cancellationToken);
-        }
+        //public async Task<List<Content>> GetAllAsync(CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.Contents.ToListAsync(cancellationToken);
+        //}
 
         public async Task<List<BookDto>> GetBooksDtoByContentIdAsync(long contentId, CancellationToken cancellationToken)
         {
@@ -314,42 +314,42 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             await _context.Contents.AddAsync(content, cancellationToken);
         }
 
-        public void Update(Content content)
-        {
-            _context.Contents.Update(content);
-        }
+        //public void Update(Content content)
+        //{
+        //    _context.Contents.Update(content);
+        //}
 
         public void Delete(Content content)
         {
             _context.Contents.Remove(content);
         }
 
-        public async Task<int> GetBooksCountAsync(long contentId, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<BookContent>()
-                .CountAsync(bc => bc.ContentId == contentId, cancellationToken);
-        }
+        //public async Task<int> GetBooksCountAsync(long contentId, CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.Set<BookContent>()
+        //        .CountAsync(bc => bc.ContentId == contentId, cancellationToken);
+        //}
 
-        public async Task<List<Book>> GetBooksByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<BookContent>()
-                .Include(bc => bc.Book)
-                    .ThenInclude(b => b.Country)
-                .Include(bc => bc.Book)
-                    .ThenInclude(b => b.Language)
-                .Include(bc => bc.Book)
-                    .ThenInclude(b => b.Publisher)
-                //.Include(bc => bc.Book)
-                    //.ThenInclude(b => b.Series)
-                .Include(bc => bc.Book)
-                    .ThenInclude(b => b.Participations)
-                        .ThenInclude(p => p.Person)
+        //public async Task<List<Book>> GetBooksByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.Set<BookContent>()
+        //        .Include(bc => bc.Book)
+        //            .ThenInclude(b => b.Country)
+        //        .Include(bc => bc.Book)
+        //            .ThenInclude(b => b.Language)
+        //        .Include(bc => bc.Book)
+        //            .ThenInclude(b => b.Publisher)
+        //        //.Include(bc => bc.Book)
+        //            //.ThenInclude(b => b.Series)
+        //        .Include(bc => bc.Book)
+        //            .ThenInclude(b => b.Participations)
+        //                .ThenInclude(p => p.Person)
 
-                .Where(bc => bc.ContentId == contentId)
-                //.OrderBy(bc => bc.Order)
-                .Select(bc => bc.Book)
-                .ToListAsync(cancellationToken);
-        }
+        //        .Where(bc => bc.ContentId == contentId)
+        //        //.OrderBy(bc => bc.Order)
+        //        .Select(bc => bc.Book)
+        //        .ToListAsync(cancellationToken);
+        //}
 
         public async Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default)
         {
@@ -374,22 +374,22 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<List<string>> GetAuthorNamesByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<ContentParticipation>()
-                .Include(cp => cp.Person)
-                .Where(cp => cp.ContentId == contentId)
-                .Select(cp => cp.Person.Name)
-                .ToListAsync(cancellationToken);
-        }
+        //public async Task<List<string>> GetAuthorNamesByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.Set<ContentParticipation>()
+        //        .Include(cp => cp.Person)
+        //        .Where(cp => cp.ContentId == contentId)
+        //        .Select(cp => cp.Person.Name)
+        //        .ToListAsync(cancellationToken);
+        //}
 
-        public async Task<List<Theme>> GetThemesByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
-        {
-            return await _context.Contents
-                .Where(c => c.Id == contentId)
-                .SelectMany(c => c.Themes)
-                .ToListAsync(cancellationToken);
-        }
+        //public async Task<List<Theme>> GetThemesByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.Contents
+        //        .Where(c => c.Id == contentId)
+        //        .SelectMany(c => c.Themes)
+        //        .ToListAsync(cancellationToken);
+        //}
 
         public void SyncThemes(Content content, List<long> newThemeIds)
         {
@@ -513,27 +513,27 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
 
         //}
 
-        public async Task SyncTagsAsync(long contentId, List<long> TagIds, CancellationToken cancellationToken)
-        {
-            var content = await _context.Contents.Include(c => c.Tags)
-               .FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
-               throw new KeyNotFoundException($"Not found");
+        //public async Task SyncTagsAsync(long contentId, List<long> TagIds, CancellationToken cancellationToken)
+        //{
+        //    var content = await _context.Contents.Include(c => c.Tags)
+        //       .FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
+        //       throw new KeyNotFoundException($"Not found");
 
-            var currentIds = content.Tags.Select(t => t.Id).ToHashSet();
-            var desiredIds = TagIds.ToHashSet();
+        //    var currentIds = content.Tags.Select(t => t.Id).ToHashSet();
+        //    var desiredIds = TagIds.ToHashSet();
 
-            var toRemove = content.Tags.Where(t => !desiredIds.Contains(t.Id)).ToList();
-            foreach (var tag in toRemove)
-                content.Tags.Remove(tag);
+        //    var toRemove = content.Tags.Where(t => !desiredIds.Contains(t.Id)).ToList();
+        //    foreach (var tag in toRemove)
+        //        content.Tags.Remove(tag);
 
-            var toAddIds = desiredIds.Except(currentIds).ToList();
-            if (toAddIds.Count > 0)
-            {
-                var tagsToAdd = await _context.Tags.Where(t => toAddIds.Contains(t.Id))
-                    .ToListAsync(cancellationToken);
-                foreach (var tag in tagsToAdd)
-                    content.Tags.Add(tag);
-            }
-        }
+        //    var toAddIds = desiredIds.Except(currentIds).ToList();
+        //    if (toAddIds.Count > 0)
+        //    {
+        //        var tagsToAdd = await _context.Tags.Where(t => toAddIds.Contains(t.Id))
+        //            .ToListAsync(cancellationToken);
+        //        foreach (var tag in tagsToAdd)
+        //            content.Tags.Add(tag);
+        //    }
+        //}
     }
 }
