@@ -7,6 +7,7 @@ using Chronolibris.Application.Models;
 using MediatR;
 using Chronolibris.Application.Requests.Reviews;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers.Reviews
 {

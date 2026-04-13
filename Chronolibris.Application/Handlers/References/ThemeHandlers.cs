@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Exceptions;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers.References
 {

@@ -15,17 +15,15 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
     public class ContentRepository : IContentRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly DbSet<Content> _set;
 
         public ContentRepository(ApplicationDbContext context)
         {
             _context = context;
-            _set = context.Set<Content>();
         }
 
         public async Task<Content?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
-            return await _set
+            return await _context.Contents
                 .Include(c => c.Country)
                 .Include(c => c.Language)
                 .Include(c => c.ContentType)
@@ -132,66 +130,69 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<IReadOnlyList<Content>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Content>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _set.ToListAsync(cancellationToken);
+            return await _context.Contents.ToListAsync(cancellationToken);
         }
-        //Simplify this!!!
 
-        public async Task<(List<Content> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
+        public async Task<PagedResult<ContentDto>> GetWithFilterAsync(
             ContentFilterRequest filter, CancellationToken cancellationToken = default)
         {
-            var query = _set
-                .Include(c => c.Country)
-                .Include(c => c.Language)
-                .Include(c => c.ContentType)
-                .Include(c => c.Themes)
-                .Include(c => c.Participations)
-                    .ThenInclude(p => p.Person)
-                .AsQueryable();
+            var query = _context.Contents
+                .AsNoTracking();
+                //.Include(c => c.Country)
+                //.Include(c => c.Language)
+                //.Include(c => c.ContentType)
+                //.Include(c => c.Themes)
+                //.Include(c => c.Participations)
+                //    .ThenInclude(p => p.Person)
+                //.Include(c => c.Tags)
+                //.AsQueryable();
 
-            // Поиск по названию
             if (!string.IsNullOrWhiteSpace(filter.SearchQuery))
             {
                 query = query.Where(c => c.Title.Contains(filter.SearchQuery));
             }
 
-            // Фильтр по автору
-            if (!string.IsNullOrWhiteSpace(filter.AuthorName))
+
+            if (filter.LastId != null)
             {
-                query = query.Where(c => c.Participations.Any(p =>
-                    p.Person.Name.Contains(filter.AuthorName)));
-            }
-            if (filter.PersonFilters != null)
-            {
-                foreach (var filt in filter.PersonFilters)
-                {
-                    var roleId = filt.RoleId;
-                    var personIds = filt.PersonIds;
 
-                    if (personIds != null && personIds.Count>0)
-                    {
-                        query = query.Where(c => c.Participations.Any(p => p.PersonRoleId == roleId && personIds.Contains(p.PersonId)));
-                    }
-                }
-            }
+                query = query.Where(c => c.Id > filter.LastId);
 
-
-            // Получаем общее количество
-            var totalCount = await query.CountAsync(cancellationToken);
-
-            // Курсорная пагинация
-            if (!string.IsNullOrWhiteSpace(filter.Cursor))
-            {
-                if (long.TryParse(filter.Cursor, out var cursorId))
-                {
-                    query = query.Where(c => c.Id > cursorId);
-                }
             }
 
             query = query.OrderBy(c => c.Id);
 
-            var items = await query.Take(filter.Limit + 1).ToListAsync(cancellationToken);
+            var projectedQuery = query.Select(c => new ContentDto
+            {
+                Id = c.Id,
+                Title = c.Title,
+                Description = c.Description,
+                CountryId = c.CountryId,
+                CountryName = c.Country.Name,
+                ContentTypeId = c.ContentTypeId,
+                ContentType = c.ContentType.Name,
+                LanguageId = c.LanguageId,
+                LanguageName = c.Language.Name,
+                Year = c.Year,
+                CreatedAt = c.CreatedAt,
+                Authors = c.Participations.Select(p => p.Person.Name)
+                .ToList(),
+
+                Themes = c.Themes.Select(t => new ThemeDto
+                {
+                    Id = t.Id,
+                    Name = t.Name
+                }).ToList(),
+
+                BooksCount = c.BookContents.Count(),
+               
+
+                //BooksCount = _context.Books.Count(b => b.BookContents.Any(bc=> bc.ContentId == c.Id)),
+            });
+
+            var items = await projectedQuery.Take(filter.Limit + 1).ToListAsync(cancellationToken);
 
             var hasMore = items.Count > filter.Limit;
             if (hasMore)
@@ -199,25 +200,28 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 items.RemoveAt(items.Count - 1);
             }
 
-            var nextCursor = hasMore ? items.Last().Id.ToString() : null;
-            var prevCursor = filter.Cursor != null ? filter.Cursor : null;
-
-            return (items, totalCount, nextCursor, prevCursor);
+            return new PagedResult<ContentDto>
+            {
+                HasNext = hasMore,
+                Items = items,
+                LastId = items.LastOrDefault()?.Id ?? filter.LastId,
+                Limit = filter.Limit
+            };
         }
 
         public async Task AddAsync(Content content, CancellationToken cancellationToken = default)
         {
-            await _set.AddAsync(content, cancellationToken);
+            await _context.Contents.AddAsync(content, cancellationToken);
         }
 
         public void Update(Content content)
         {
-            _set.Update(content);
+            _context.Contents.Update(content);
         }
 
         public void Delete(Content content)
         {
-            _set.Remove(content);
+            _context.Contents.Remove(content);
         }
 
         public async Task<int> GetBooksCountAsync(long contentId, CancellationToken cancellationToken = default)
@@ -281,7 +285,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
 
         public async Task<List<Theme>> GetThemesByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
         {
-            return await _context.Set<Content>()
+            return await _context.Contents
                 .Where(c => c.Id == contentId)
                 .SelectMany(c => c.Themes)
                 .ToListAsync(cancellationToken);

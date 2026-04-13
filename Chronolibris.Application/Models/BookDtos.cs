@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Models
 {

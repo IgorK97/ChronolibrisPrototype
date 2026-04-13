@@ -1,17 +1,17 @@
 ﻿using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Models;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Interfaces.Repository
 {
     public interface IContentRepository
     {
         Task<Content?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
-        Task<IReadOnlyList<Content>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<(List<Content> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
-            ContentFilterRequest filter, CancellationToken cancellationToken = default);
+        Task<List<Content>> GetAllAsync(CancellationToken cancellationToken = default);
+        //Task<(List<Content> Items, int TotalCount, long? NextCursor, long? PrevCursor)> GetWithFilterAsync(
+        //    ContentFilterRequest filter, CancellationToken cancellationToken = default);
+
+        Task<PagedResult<ContentDto>> GetWithFilterAsync(ContentFilterRequest filter, CancellationToken ct = default);
+
         Task AddAsync(Content content, CancellationToken cancellationToken = default);
         void Update(Content content);
         void Delete(Content content);

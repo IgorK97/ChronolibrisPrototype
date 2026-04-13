@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Selections;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Models;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers.Selections

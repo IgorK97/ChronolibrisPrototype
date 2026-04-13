@@ -5,7 +5,7 @@ using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Requests.Contents
 {
-    public record GetContentsQuery(ContentFilterRequest Filter) : IRequest<ContentListResponse>;
+    public record GetContentsQuery(ContentFilterRequest Filter) : IRequest<PagedResult<ContentDto>>;
 
     public record GetContentByIdQuery(long Id) : IRequest<ContentDto?>;
 

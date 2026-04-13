@@ -21,12 +21,12 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ContentListResponse>> GetContents(
+        public async Task<PagedResult<ContentDto>> GetContents(
             [FromQuery] ContentFilterRequest filter, CancellationToken cancellationToken)
         {
             var query = new GetContentsQuery(filter);
             var result = await _mediator.Send(query, cancellationToken);
-            return Ok(result);
+            return result;
         }
 
         [HttpGet("{id}")]
@@ -34,9 +34,6 @@ namespace ChronolibrisWeb.Controllers
         {
             var query = new GetContentByIdQuery(id);
             var content = await _mediator.Send(query, cancellationToken);
-
-            //if (content == null)
-            //    return NotFound(new { message = $"Контент с ID {id} не найден" });
 
             return Ok(content);
         }
@@ -76,9 +73,6 @@ namespace ChronolibrisWeb.Controllers
             var command = new AddTagToContentCommand(contentId, tagId);
             var result = await _mediator.Send(command, cancellationToken);
 
-            //if (!result)
-            //    return NotFound(new { message = "Контент или тег не найден" });
-
             return NoContent();
         }
 
@@ -88,9 +82,6 @@ namespace ChronolibrisWeb.Controllers
         {
             var command = new RemoveTagFromContentCommand(contentId, tagId);
             var result = await _mediator.Send(command, cancellationToken);
-
-            //if (!result)
-            //    return NotFound(new { message = "Связь не найдена" });
 
             return NoContent();
         }

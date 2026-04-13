@@ -12,7 +12,7 @@ using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.Contents
 {
-    public class GetContentsHandler : IRequestHandler<GetContentsQuery, ContentListResponse>
+    public class GetContentsHandler : IRequestHandler<GetContentsQuery, PagedResult<ContentDto>>
     {
         private readonly IContentRepository _contentRepository;
 
@@ -21,52 +21,11 @@ namespace Chronolibris.Application.Handlers.Contents
             _contentRepository = contentRepository;
         }
 
-        public async Task<ContentListResponse> Handle(GetContentsQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<ContentDto>> Handle(GetContentsQuery request, CancellationToken cancellationToken)
         {
-            var (items, totalCount, nextCursor, prevCursor) = await _contentRepository.GetWithFilterAsync(
+            return await _contentRepository.GetWithFilterAsync(
                 request.Filter, cancellationToken);
 
-            var contentDtos = new List<ContentDto>();
-            foreach (var content in items)
-            {
-                var authors = await _contentRepository.GetAuthorNamesByContentIdAsync(content.Id, cancellationToken);
-                var themes = await _contentRepository.GetThemesByContentIdAsync(content.Id, cancellationToken);
-                var booksCount = await _contentRepository.GetBooksCountAsync(content.Id, cancellationToken);
-
-                contentDtos.Add(new ContentDto
-                {
-                    Id = content.Id,
-                    Title = content.Title,
-                    Description = content.Description,
-                    CountryId = content.CountryId,
-                    CountryName = content.Country?.Name,
-                    ContentTypeId = content.ContentTypeId,
-                    ContentType = content.ContentType?.Name,
-                    LanguageId = content.LanguageId,
-                    LanguageName = content.Language?.Name,
-                    Year = content.Year,
-                    //ParentContentId = content.ParentContentId,
-                    //Position = content.Position,
-                    CreatedAt = content.CreatedAt,
-                    //UpdatedAt = content.UpdatedAt,
-                    Authors = authors,
-                    Themes = themes.Select(t => new ThemeDto
-                    {
-                        Id = t.Id,
-                        Name = t.Name
-                    }).ToList(),
-                    BooksCount = booksCount
-                });
-            }
-
-            return new ContentListResponse
-            {
-                Items = contentDtos,
-                NextCursor = nextCursor,
-                PrevCursor = prevCursor,
-                TotalCount = totalCount,
-                HasMore = nextCursor != null
-            };
         }
     }
 
@@ -285,7 +244,8 @@ namespace Chronolibris.Application.Handlers.Contents
         public async Task<Unit> Handle(DeleteContentCommand request, CancellationToken cancellationToken)
         {
             var content = await _contentRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (content == null) throw new KeyNotFoundException($"Content with ID {request.Id} not found");
+            if (content == null)
+                return Unit.Value;
 
             _contentRepository.Delete(content);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

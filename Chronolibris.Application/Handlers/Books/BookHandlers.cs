@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Chronolibris.Application.Requests.Books;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers.Books
 {
