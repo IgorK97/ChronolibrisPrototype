@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml;
+using System.Threading.Tasks;using System.Xml;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Chronolibris.Infrastructure.Services.Fb2Converter
 {
@@ -78,7 +73,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 await FirstPassAsync(stream, bookId, options, ct);
 
             var resolvedBookId = bookId ?? rawMeta.Uuid ?? Guid.NewGuid().ToString("D");
-            var meta = rawMeta with { Uuid = resolvedBookId, Version = options.FormatVersion };
+            var meta = rawMeta with { Uuid = resolvedBookId };
 
             // ПРОХОД 2
             stream.Position = 0;
@@ -268,7 +263,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             {
                 Created = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz"),
                 Updated = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz"),
-                Version = options.FormatVersion
             };
 
             return (meta, notes, imageMap);
@@ -807,7 +801,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 Uuid = uuid,
                 Created = now,
                 Updated = now,
-                Version = "1.1"
             };
         }
 

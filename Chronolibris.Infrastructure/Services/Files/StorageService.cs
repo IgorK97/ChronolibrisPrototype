@@ -161,7 +161,5 @@ namespace Chronolibris.Infrastructure.Services.Files
             ".fb2" => "application/xml", //на что это влияет?
             _ => "application/octet-stream"
         };
-
-       
     }
 }

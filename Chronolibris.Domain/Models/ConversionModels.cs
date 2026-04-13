@@ -78,9 +78,6 @@ namespace Chronolibris.Domain.Models
 
         [JsonPropertyName("UUID")]
         public string? Uuid { get; init; }
-
-        [JsonPropertyName("version")]
-        public string? Version { get; init; }
     }
 
 

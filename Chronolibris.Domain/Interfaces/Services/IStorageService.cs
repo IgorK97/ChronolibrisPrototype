@@ -25,11 +25,8 @@ namespace Chronolibris.Domain.Interfaces.Services
 
         Task<bool> ChunkExistsAsync(string bookId, string fileName, bool isToc = false, CancellationToken ct = default);
 
-        //Общие операции
+        //Общие операции (удаление)
         Task DeleteFileAsync(string bucket, string objectKey, CancellationToken ct = default);
-
-        Task DeleteBookDataAsync(string bookId, CancellationToken ct = default);
-
-        
+        Task DeleteBookDataAsync(string bookId, CancellationToken ct = default);   
     }
 }
