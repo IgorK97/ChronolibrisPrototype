@@ -272,7 +272,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return (meta, notes, imageMap);
         }
 
-        // ПРОХОД 2: основной body → элементы + фрагменты
+        //метод второго прохода
 
         private async Task<(int totalElements, TocDocument toc)> SecondPassAsync(
             Stream stream,
@@ -283,31 +283,32 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             ConversionOptions options,
             CancellationToken ct)
         {
-            // Накапливаем элементы текущего фрагмента
+            //список элементов текущего накапливаемого фрагмента
             var currentPart = new List<ParsedElement>();
-            var allChapters = new List<TocChapter>();
-            var tocParts = new List<TocPart>();
+            //списки метаданных фрагментов
+            var allChapters = new List<TocChapter>(); //список всех глав для оглавления
+            var tocParts = new List<TocPart>(); //список всех сохраненных фрагментов для TOC
 
-            int globalIdx = 0;   // сквозной счётчик элементов
-            int bodyIdx = 0;   // индекс текущего основного body
-            int bodyCount = 0;
-            int sectionIdx = 0;   // сквозной счётчик секций
-            int elemIdx = 0;   // счётчик элементов внутри текущей секции
+            int globalIdx = 0;   //сквозной индекс элемента по всей книге
+            int bodyIdx = 0;   //порядковый номер текущего основного боди
+            int bodyCount = 0; //количество боди
+            int sectionIdx = 0;   //сквозной счетчик секций
+            int elemIdx = 0;   // счетчик элементов внутри текущей секции
             int partIndex = 0;   // индекс текущего файла-фрагмента
 
-            int totalElements = 0;
-            int fullLength = 0;
+            int totalElements = 0; //количество всех фрагментов
+            int fullLength = 0; //длина книги
 
-            // Стек для отслеживания глубины вложенности секций
+            //стек секций - при входе в секцию сохраняется sectionIdx, elemIdx
             var sectionStack = new Stack<(int SectionIdx, int ElemIdx)>();
 
-            bool inMainBody = false;
-            bool inSection = false;
+            bool inMainBody = false; //внутри основного боди
+            //bool inSection = false;
 
-            int? firstPartGlobal = null;
-            int[]? firstPartXp = null;
+            int? firstPartGlobal = null; //индекс первого элемента книги для оглавления ток
+            int[]? firstPartXp = null; //xp-иднекс [bodyIdx, sectionIdx, elemIdx] первого элемента книги
 
-            // Буфер для незавершённого фрагмента
+            //Последний фрагмент - чтобы корректно его обработать
             ParsedElement? lastElement = null;
 
             using var reader = CreateXmlReader(stream);
@@ -318,11 +319,11 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                 var nodeType = reader.NodeType;
                 var localName = reader.LocalName;
-                var nsUri = reader.NamespaceURI;
+                //var nsUri = reader.NamespaceURI;
 
                 if (nodeType == XmlNodeType.Element)
                 {
-                    // Пропускаем notes-body и description
+                    //пропуск описания - в читалке не нужно
                     if (localName == "description")
                     { await reader.SkipAsync(); continue; }
 
@@ -330,43 +331,45 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     {
                         bodyCount++;
                         var nameAttr = reader.GetAttribute("name");
-                        if (nameAttr == "notes")
+                        if (nameAttr == "notes") //пропуск сносок (они уже обработаны ранее)
                         { await reader.SkipAsync(); continue; }
-                        // Это основной body
+                        // Это основной боди
                         bodyIdx = bodyCount;
                         inMainBody = true;
                         continue;
                     }
 
-                    if (localName == "binary")
+                    if (localName == "binary") //картинки тоже уже обработаны
                     { await reader.SkipAsync(); continue; }
 
-                    if (!inMainBody) continue;
+                    if (!inMainBody) continue; // если иной элемент (типа секции) - но не в главном боди,
+                    //то тоже нужно пропустить - не нужно либо уже обработано
 
-                    // section
+                    //глава или раздел
                     if (localName == "section")
                     {
                         sectionIdx++;
                         sectionStack.Push((sectionIdx, elemIdx));
-                        elemIdx = 0;
+                        elemIdx = 0; //нумерация внутри секции новой началась
                         continue;
                     }
 
-                    if(localName == "a")
+                    if(localName == "a") //номер страницы (сейчас только номер)
                     {
                         var anchorId = reader.GetAttribute("id");
-                        var pageNum = TryParsePageNumber(anchorId);
-
+                        var pageNum = TryParsePageNumber(anchorId); //сам номер страницы
+                        //если номер был указан корректно, то его нужно обработать
                         if (pageNum.HasValue)
                         {
                             var mySectionIdx = sectionStack.Count > 0 ? sectionStack.Peek().SectionIdx : 0;
-                            elemIdx++;
-                            var pe = new ParsedElement
+                            elemIdx++; //это тоже элемент
+                            var pe = new ParsedElement //новый элемент
                             {
                                 Type = "pn",
                                 Content = pageNum,
                                 Text = null,
-                                BodyIndex = bodyIdx,
+                                BodyIndex = bodyIdx, //потом, если нужно, можно просто использовать массив индексов
+                                //вместо трех номеров
                                 SectionIndex = mySectionIdx,
                                 ElemIndex = elemIdx,
                                 GlobalIndex = globalIdx
@@ -382,7 +385,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                                 firstPartXp = [pe.BodyIndex, pe.SectionIndex, pe.ElemIndex];
                             }
-
+                            //если накоплено достаточно фрагментов, то нужно их сбросить
+                            //в хранилище и очистить
                             if(currentPart.Count>= options.TargetPartSize)
                             {
                                 partIndex = await FlushPartAsync(bookId, currentPart,
@@ -390,13 +394,13 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                 currentPart.Clear();
                             }
                         }
-
+                        //содержимое не нужно (даже если есть)
                         if (!reader.IsEmptyElement)
                             await reader.SkipAsync();
                         continue;
                     }
 
-                    // Текстовые элементы
+                    //разные возможные текстовые элементы  (или image)
                     if (localName is "p" or "title" or "subtitle" or "empty-line"
                         or "image")
                     {
@@ -420,6 +424,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             };
                             if (!reader.IsEmptyElement) await reader.SkipAsync();
                         }
+                        //ссылка на картинку в тексте - сама картинка указывается ссылкой
+                        //в href на тот тег binary, который расположен в конце файла
                         else if (localName == "image")
                         {
                             var href = reader.GetAttribute("href")?.TrimStart('#');
@@ -440,17 +446,20 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         }
                         else
                         {
-                            // p / title / subtitle — читаем внутреннее XML
-                            var outerXml = await reader.ReadOuterXmlAsync();
-                            var (content, flatText) = ParseMixedXml(outerXml, notes, imageMap);
+                            //все остальное - уже текстовое
+                            var outerXml = await reader.ReadOuterXmlAsync(); //тег целиком
+                            var (content, flatText) = ParseMixedXml(outerXml, notes, imageMap); //он могу быть смешанным
+                            //(с другими сносками и картинками и т.д.) - в общем, рекурсивная структура гипотетически
 
-                            if (content != null || localName != "p")
+                            if (content != null || localName != "p") //контента может не быть, 
+                                //но это может быть заголовок и т.д. - в таком случае, тоже сохранить (потом можно проверить
+                                //и дополнить, если что)
                             {
                                 pe = new ParsedElement
                                 {
-                                    Type = localName == "empty-line" ? "br" : localName,
-                                    Content = content,
-                                    Text = flatText,
+                                    Type = localName,
+                                    Content = content, //сегменты текста, ссылки и т.д.
+                                    Text = flatText, //мог быть и текст просто
                                     BodyIndex = bodyIdx,
                                     SectionIndex = mySectionIdx,
                                     ElemIndex = elemIdx,
@@ -459,13 +468,16 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             }
                         }
 
-                        if (pe == null) continue;
+                        if (pe == null) continue; //непонятно какой тег - пропустить
 
-                        // Обновляем TOC: ищем заголовки глав
+                        //Заголовок верхнего уровня (это стек,
+                        //если там до одного элемента, значит, заголовок верхнего уровня)
+                        //Если потребуется составить оглавление многоуровневое - 
+                        //подправить потом здесь
                         if (pe.Type == "title" && sectionStack.Count <= 1)
                             UpdateChapters(allChapters, pe, globalIdx);
 
-                        fullLength += pe.Text?.Length ?? 0;
+                        fullLength += pe.Text?.Length ?? 0; //добавление длины текста
                         lastElement = pe;
                         currentPart.Add(pe);
                         globalIdx++;
@@ -477,7 +489,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             firstPartXp = [pe.BodyIndex, pe.SectionIndex, pe.ElemIndex];
                         }
 
-                        // Сохраняем фрагмент при достижении целевого размера
+                        //Накоплено достаточно - сбросить и очистить
                         if (currentPart.Count >= options.TargetPartSize)
                         {
                             partIndex = await FlushPartAsync(
@@ -491,37 +503,43 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     if (localName == "body")
                         inMainBody = false;
 
+                    //если это была секция, то нужно восстановить последний
+                    //номер элемента уровня секции
                     if (localName == "section" && sectionStack.Count > 0)
                     {
-                        var (_, savedElem) = sectionStack.Pop();
+                        var (_, savedElem) = sectionStack.Pop(); //используется дискард (выброс0 - мне он не нужен
                         elemIdx = savedElem;
                     }
                 }
             }
 
-            // Сохраняем последний незавершённый фрагмент
+            //Если не сбросили содержимое послежнего фрагмента,
+            //при этом это содержимое есть - то сброс принудительно
             if (currentPart.Count > 0)
                 partIndex = await FlushPartAsync(bookId, currentPart, tocParts, partIndex, ct);
 
-            // Закрываем последнюю главу
+            //При этом нужно не забыть про главу
             if (allChapters.Count > 0 && lastElement != null)
             {
-                var last = allChapters[^1];
-                allChapters[^1] = new TocChapter
-                {
-                    S = last.S,
-                    E = lastElement.GlobalIndex,
-                    T = last.T
-                };
+                //var last = allChapters[^1]; //индекс от конца - самый послежний элемент
+                //allChapters[^1] = new TocChapter
+                //{
+                //    S = last.S,
+                //    E = lastElement.GlobalIndex,
+                //    T = last.T
+                //};
+                allChapters[^1].E = lastElement.GlobalIndex; //раньше был тип record, 
+                //зачем мне он нужен вообще? Пусть класс будет!
             }
 
-            var bookTitle = allChapters.FirstOrDefault(c => c.T != null)?.T
-                ?? meta.Title ?? string.Empty;
+            var bookTitle = meta.Title ?? allChapters.FirstOrDefault(c => c.T != null)?.T //title
+                ?? string.Empty; //заголовок книги - алгоритм мог найти его еще
+            //в секции описания, либо просто взять самую первую секцию из боди
 
             var tocDoc = new TocDocument
             {
                 Meta = meta,
-                FullLength = fullLength,
+                FullLength = fullLength, //длина текста целиком
                 Body = totalElements > 0
                     ? [new TocBody
                     {
@@ -530,49 +548,48 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         T = bookTitle,
                         C = allChapters
                     }]
-                    : [],
-                Parts = tocParts
+                    : [], //в файле fb2 один боди, но потом можно либо сохранять просто фрагменты,
+                //либо несколько боди - если будет иной формат, типа fb3 или epub (там их уже несколько)
+                Parts = tocParts //список фрагментов нужен обязательно - для быстрого перехода по оглавлению к нужному фрагменту
             };
 
             return (totalElements, tocDoc);
         }
 
-        /// <summary>
-        /// Парсит смешанный XML-фрагмент (outerXml одного &lt;p&gt; / &lt;title&gt;)
-        /// в объект Content (string или List&lt;object&gt;) и plain-text.
-        /// Использует легковесный XmlReader — не создаёт полный DOM.
-        /// </summary>
+        // Парсит смешанный XML-фрагмент
+        // в объект Content (string или List или object) и plain-text
+        // Использует легковесный XmlReader — не создаёт полный DOM
         private static (object? content, string? flatText) ParseMixedXml(
             string outerXml,
             Dictionary<string, ParsedNote> notes,
             Dictionary<string, string> imageMap)
         {
-            var mixed = new List<object>();
+            var mixed = new List<object>(); //это может быть большой список из разного содержимого, по идее
             var buf = new StringBuilder();
 
-            void FlushBuf()
+            void FlushBuf() //сбросить накопленную строку
             {
-                var s = CollapseWhitespace(buf.ToString());
+                var s = CollapseWhitespace(buf.ToString()); //удалить лишние пробелы
                 if (s.Length > 0) mixed.Add(s);
                 buf.Clear();
             }
 
-            using var r = XmlReader.Create(
+            using var r = XmlReader.Create( //напрямую в констурктор, как оказалось, не принимает строку, поэтому использовал stringReader
                 new StringReader(outerXml),
-                new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore });
+                new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore }); //по умолчанию prohibit
 
-            // Пропускаем корневой тег (p / title / subtitle)
+            //Здесь корневой тег, его нужно пропустить
             r.Read();
-            int rootDepth = r.Depth;
+            int rootDepth = r.Depth; //абсолютная глубина
 
             while (r.Read())
             {
-                if (r.Depth == rootDepth) break; // вышли из корня
+                if (r.Depth == rootDepth) break; //на всякий случай выход сразу по окончании корневого тега
 
                 switch (r.NodeType)
                 {
                     case XmlNodeType.Text:
-                    case XmlNodeType.SignificantWhitespace:
+                    case XmlNodeType.SignificantWhitespace: //например, в теге p с xml:space=preserve пробелы с переносами или иным содержимым могут стать именно этим
                         buf.Append(r.Value);
                         break;
 
@@ -581,23 +598,22 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         {
                             case "strong":
                                 {
-                                    // Читаем текст ДО вызова ReadElementContentAsString,
-                                    // иначе позиция курсора уже сдвинется
-                                    FlushBuf();
+
+                                    FlushBuf(); //сброс уже накопленного текста
                                     var inner = r.ReadElementContentAsString().Trim();
-                                    if (inner.Length > 0) mixed.Add(new StSegment { C = inner });
+                                    if (inner.Length > 0) mixed.Add(new StSegment { C = inner }); //сегмент жирного текста
                                 }
                                 break;
 
-                            case "emphasis":
+                            case "emphasis": //курсив - аналогично
                                 {
-                                    var inner = r.ReadElementContentAsString().Trim();
                                     FlushBuf();
+                                    var inner = r.ReadElementContentAsString().Trim();
                                     if (inner.Length > 0) mixed.Add(new EmSegment { C = inner });
                                 }
                                 break;
 
-                            case "a":
+                            case "a": //пока только якоря (для номеров страниц) или ссылки для сносок
                                 {
                                     var noteType = r.GetAttribute("type");
                                     var href = r.GetAttribute("href")?.TrimStart('#');
@@ -652,7 +668,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                 }
 
                             default:
-                                // Прочие теги — берём текст
+                                //прочие теги - только текст
                                 buf.Append(r.ReadElementContentAsString());
                                 break;
                         }
@@ -665,22 +681,20 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             if (mixed.Count == 0)
                 return (null, null);
 
-            // Если всё — строки, склеиваем в одну
+            //если все строки, то можно склеить в одну
             if (mixed.All(x => x is string))
             {
-                var plain = string.Concat(mixed.Cast<string>()).Trim();
+                var plain = string.Concat(mixed.Cast<string>()).Trim(); //приведение типа к строке
                 return plain.Length > 0 ? (plain, plain) : (null, null);
             }
 
             var flatText = string.Concat(mixed.OfType<string>()).Trim();
-            var s = string.IsNullOrEmpty(flatText) ? null : flatText;
+            var s = string.IsNullOrEmpty(flatText) ? null : flatText; //если все строки были только пробелами
             return (mixed, s);
         }
 
-        /// <summary>
-        /// Сериализует накопленный фрагмент, сохраняет в хранилище,
-        /// добавляет запись в список tocParts.
-        /// </summary>
+        // Сериализует накопленный фрагмент, сохраняет в хранилище,
+        // добавляет запись в список tocParts
         private async Task<int> FlushPartAsync(
             string bookId,
             List<ParsedElement> part,
