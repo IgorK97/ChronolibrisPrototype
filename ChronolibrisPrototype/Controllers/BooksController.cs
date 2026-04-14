@@ -20,24 +20,6 @@ namespace ChronolibrisWeb.Controllers
             _mediator = mediator;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<BookListResponse>> GetBooks(
-        //    [FromQuery] BookFilterRequest filter, CancellationToken cancellationToken)
-        //{
-        //    var query = new GetBooksQuery(filter);
-        //    var result = await _mediator.Send(query, cancellationToken);
-        //    return Ok(result);
-        //}
-
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<BookDto?>> GetBookById(long id, CancellationToken cancellationToken)
-        //{
-        //    var query = new GetBookByIdQuery(id);
-        //    var book = await _mediator.Send(query, cancellationToken);
-
-        //    return Ok(book);
-        //}
-
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<long>> CreateBook(
@@ -143,40 +125,13 @@ namespace ChronolibrisWeb.Controllers
             return Ok(contents);
         }
 
-        //[Authorize(Roles = "admin")]
-        //[HttpPost("{bookId}/contents/{contentId}")]
-
-        //public async Task<ActionResult> LinkContentToBook(long bookId, long contentId,
-        //    [FromBody] BookContentLinkInputModel request, CancellationToken cancellationToken)
-        //{
-        //    if (request.BookId != bookId || request.ContentId != contentId)
-        //        return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
-
-        //    var command = new LinkContentToBookCommand(bookId, contentId);
-        //    await _mediator.Send(command, cancellationToken);
-        //    return NoContent();
-
-        //}
-
-        //[Authorize(Roles = "admin")]
-        //[HttpDelete("{bookId}/contents/{contentId}")]
-        //public async Task<ActionResult> UnlinkContentFromBook(long bookId, long contentId,
-        //    CancellationToken cancellationToken)
-        //{
-
-        //    var command = new UnlinkContentFromBookCommand(bookId, contentId);
-        //    await _mediator.Send(command, cancellationToken);
-        //    return NoContent();
-
-        //}
-
         [HttpGet("files/{bookFileId}/toc")]
         public async Task<ActionResult> GetToc(long bookFileId)
         {
 
             var json = await _mediator.Send(new GetTocQuery(bookFileId));
             if (json is null)
-                return NotFound(new { message = "TOC не найден" });
+                return NotFound();
 
             return Content(json, "application/json; charset=utf-8");
 

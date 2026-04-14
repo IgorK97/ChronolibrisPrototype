@@ -50,12 +50,4 @@ namespace Chronolibris.Application.Models
         public List<long>? ThemeIds { get; set; }
         public List<long>? TagIds { get; set; }
     }
-    public class ContentListResponse
-    {
-        public List<ContentDto> Items { get; set; } = new();
-        public string? NextCursor { get; set; }
-        public string? PrevCursor { get; set; }
-        public int TotalCount { get; set; }
-        public bool HasMore { get; set; }
-    }
 }

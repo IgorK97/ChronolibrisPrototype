@@ -34,7 +34,7 @@ namespace Chronolibris.Domain.Models
         Part
     }
 
-    //У всех файлов одинаковые названия, пожтому внутрь поместил BookMeta
+    //У всех файлов одинаковые названия, поэтому внутрь поместил BookMeta
     public sealed record BookMeta
     {
         [JsonPropertyName("Title")]

@@ -135,7 +135,9 @@ namespace Chronolibris.Infrastructure.Services.Files
                 ms.Position = 0;
                 return ms;
             }
-            catch (ObjectNotFoundException) { return null; }
+            catch (ObjectNotFoundException) { 
+                return null; 
+            }
         }
 
         private async Task RecursiveDeleteAsync(string bucket, string prefix, CancellationToken ct = default)

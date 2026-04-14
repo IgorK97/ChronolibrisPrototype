@@ -12,7 +12,7 @@ namespace Chronolibris.Application.Interfaces
     {
         Task<ConversionResult> ConvertAsync(
             Stream fb2Stream,
-            long? bookId = null,
+            long bookId,
             ConversionOptions? options = null,
             CancellationToken cancellationToken = default);
     }

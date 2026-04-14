@@ -4,8 +4,6 @@ using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Interfaces
 {
-
-
     // Настройки процесса конвертации
     public class ConversionOptions
     {

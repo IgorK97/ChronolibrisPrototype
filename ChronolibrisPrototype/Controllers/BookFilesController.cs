@@ -26,19 +26,6 @@ namespace ChronolibrisWeb.Controllers
             return Ok(files);
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<BookFileDto>> GetBookFile(long id, CancellationToken cancellationToken)
-        //{
-        //    var query = new GetBookFileDtoQuery(id);
-        //    var file = await _mediator.Send(query, cancellationToken);
-
-        //    //if (file == null)
-        //    //    return NotFound(new { message = $"Файл с ID {id} не найден" });
-
-        //    return Ok(file);
-        //}
-
-
         [HttpGet("{id}/download")]
         public async Task<ActionResult> DownloadBookFile(long id, CancellationToken cancellationToken)
         {
@@ -46,7 +33,7 @@ namespace ChronolibrisWeb.Controllers
             var stream = await _mediator.Send(query, cancellationToken);
 
             if (stream == null)
-                return NotFound(new { message = $"Файл с ID {id} не найден" });
+                return NotFound();
 
             return File(stream, "application/octet-stream", $"book_file_{id}");
         }
@@ -65,7 +52,7 @@ namespace ChronolibrisWeb.Controllers
                 return BadRequest(new { message = "Файл не предоставлен" });
 
             if (!TryGetUserId(out var userId))
-                return Unauthorized(new { message = "Пользователь не авторизован" });
+                return Unauthorized();
 
 
             var command = new UploadBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
@@ -73,31 +60,6 @@ namespace ChronolibrisWeb.Controllers
             return Ok(id);
 
         }
-
-
-        //[Authorize(Roles = "admin, moderator")]
-        //[HttpPut("book/{bookId}/format/{formatId}")]
-        //[RequestSizeLimit(100 * 1024 * 1024)]
-        //public async Task<ActionResult> UpdateBookFile(
-        //    long bookId,
-        //    int formatId,
-        //    [FromForm] bool isReadable,
-        //    IFormFile file,
-        //    CancellationToken cancellationToken)
-        //{
-        //    if (file == null || file.Length == 0)
-        //        return BadRequest(new { message = "Файл не предоставлен" });
-
-        //    if (!TryGetUserId(out var userId))
-        //        return Unauthorized(new { message = "Пользователь не авторизован" });
-
-
-        //    var command = new UpdateBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
-        //    var id = await _mediator.Send(command, cancellationToken);
-        //    return Ok(new { id = id });
-
-        //}
-
 
         [Authorize(Roles = "admin, moderator")]
         [HttpDelete("{id}")]

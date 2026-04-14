@@ -11,14 +11,12 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 {
     public class Fb2ConverterXReader : IFb2Converter
     {
-        private const string Fb2Ns = "http://www.gribuser.ru/xml/fictionbook/2.0";
-        private const string XlinkNs = "http://www.w3.org/1999/xlink";
-
         private static readonly JsonSerializerOptions JsonOpts = new()
         {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            WriteIndented = true, //отступы
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, //не записывать поля со значением null
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping //допускание записи специальных символов в их исходном виде без unicode-послежовательностей типа \u003c
+            //читабельность, уменьшение размера. Проблем со скриптами точно НЕ будет!!! React потому что
         };
 
         private readonly IStorageService _storage;
@@ -28,17 +26,16 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
         public async Task<ConversionResult> ConvertAsync(
             Stream fb2Stream,
-            long? bookId = null,
+            long bookId,
             ConversionOptions? options = null,
             CancellationToken ct = default)
         {
-            options ??= new ConversionOptions();
-
-            // Буферируем поток: нужно два прохода, а исходный поток может быть
-            // не seekable (например, HttpResponseStream из MinIO).
-            // seekable FileStream или MemoryStream напрямую.
+            //Алгоритм двупроходный, поэтому поток должен быть атким, чтобы
+            //можно было дважды по нему пройтись.
+            //на всякий случай проверка, вдруг httpResponseStream
             Stream workStream;
             bool ownStream = false;
+            options ??= new ConversionOptions();
 
             if (fb2Stream.CanSeek)
             {
@@ -156,10 +153,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     var localName = reader.LocalName;
-                    var ns = reader.NamespaceURI;
+                    //var ns = reader.NamespaceURI;
 
                     // в description могут быть нужные метаданные
-                    if (localName == "description" && ns == Fb2Ns)
+                    if (localName == "description")
                     {
                         inDescription = true;
                         var descXml = await reader.ReadOuterXmlAsync();
@@ -168,7 +165,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     }
 
                     // body — считаем номер, ищем notes
-                    if (localName == "body" && ns == Fb2Ns)
+                    if (localName == "body")
                     {
                         bodyCount++;
                         var nameAttr = reader.GetAttribute("name");
@@ -181,7 +178,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     }
 
                     // notes body → section
-                    if (inNotesBody && localName == "section" && ns == Fb2Ns)
+                    if (inNotesBody && localName == "section")
                     {
                         inNoteSection = true;
                         noteSectionIdx++;
@@ -190,7 +187,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     }
 
                     // notes body → <p id="nX">
-                    if (inNotesBody && inNoteSection && localName == "p" && ns == Fb2Ns)
+                    if (inNotesBody && inNoteSection && localName == "p")
                     {
                         var id = reader.GetAttribute("id");
                         noteElemIdx++;
@@ -218,7 +215,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     }
 
                     // <binary id="..." content-type="...">
-                    if (localName == "binary" && ns == Fb2Ns)
+                    if (localName == "binary")
                     {
                         var binaryId = reader.GetAttribute("id") ?? "";
                         var contentType = reader.GetAttribute("content-type") ?? "image/jpeg";
@@ -256,9 +253,9 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                 if (reader.NodeType == XmlNodeType.EndElement)
                 {
-                    if (reader.LocalName == "body" && reader.NamespaceURI == Fb2Ns)
+                    if (reader.LocalName == "body")
                         inNotesBody = false;
-                    if (reader.LocalName == "section" && reader.NamespaceURI == Fb2Ns)
+                    if (reader.LocalName == "section")
                         inNoteSection = false;
                 }
             }
@@ -317,10 +314,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 if (nodeType == XmlNodeType.Element)
                 {
                     // Пропускаем notes-body и description
-                    if (localName == "description" && nsUri == Fb2Ns)
+                    if (localName == "description")
                     { await reader.SkipAsync(); continue; }
 
-                    if (localName == "body" && nsUri == Fb2Ns)
+                    if (localName == "body")
                     {
                         bodyCount++;
                         var nameAttr = reader.GetAttribute("name");
@@ -332,13 +329,13 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         continue;
                     }
 
-                    if (localName == "binary" && nsUri == Fb2Ns)
+                    if (localName == "binary")
                     { await reader.SkipAsync(); continue; }
 
                     if (!inMainBody) continue;
 
                     // section
-                    if (localName == "section" && nsUri == Fb2Ns)
+                    if (localName == "section")
                     {
                         sectionIdx++;
                         sectionStack.Push((sectionIdx, elemIdx));
@@ -346,7 +343,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         continue;
                     }
 
-                    if(localName == "a" && nsUri == Fb2Ns)
+                    if(localName == "a")
                     {
                         var anchorId = reader.GetAttribute("id");
                         var pageNum = TryParsePageNumber(anchorId);
@@ -392,7 +389,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                     // Текстовые элементы
                     if (localName is "p" or "title" or "subtitle" or "empty-line"
-                        or "image" && nsUri == Fb2Ns)
+                        or "image")
                     {
                         elemIdx++;
                         var mySectionIdx = sectionStack.Count > 0
@@ -416,8 +413,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         }
                         else if (localName == "image")
                         {
-                            var href = (reader.GetAttribute("href", XlinkNs)
-                                    ?? reader.GetAttribute("href"))?.TrimStart('#');
+                            var href = reader.GetAttribute("href")?.TrimStart('#');
                             if (href != null && imageMap.TryGetValue(href, out var imgFile))
                             {
                                 pe = new ParsedElement
@@ -483,10 +479,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 }
                 else if (nodeType == XmlNodeType.EndElement)
                 {
-                    if (localName == "body" && nsUri == Fb2Ns)
+                    if (localName == "body")
                         inMainBody = false;
 
-                    if (localName == "section" && nsUri == Fb2Ns && sectionStack.Count > 0)
+                    if (localName == "section" && sectionStack.Count > 0)
                     {
                         var (_, savedElem) = sectionStack.Pop();
                         elemIdx = savedElem;
@@ -595,8 +591,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             case "a":
                                 {
                                     var noteType = r.GetAttribute("type");
-                                    var href = (r.GetAttribute("href", XlinkNs)
-                                                 ?? r.GetAttribute("href"))?.TrimStart('#');
+                                    var href = r.GetAttribute("href")?.TrimStart('#');
 
                                     var anchorId = r.GetAttribute("id");
                                     var pageNumber = TryParsePageNumber(anchorId);
@@ -637,8 +632,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                             case "image":
                                 {
-                                    var href = (r.GetAttribute("href", XlinkNs)
-                                             ?? r.GetAttribute("href"))?.TrimStart('#');
+                                    var href = r.GetAttribute("href")?.TrimStart('#');
                                     if (href != null && imageMap.TryGetValue(href, out var imgFile))
                                     {
                                         FlushBuf();

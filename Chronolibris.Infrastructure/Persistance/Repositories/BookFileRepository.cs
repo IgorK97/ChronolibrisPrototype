@@ -72,6 +72,5 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             return await _context.BookFiles
                 .FirstOrDefaultAsync(bf => bf.BookId == bookId && bf.FormatId == formatId, cancellationToken);
         }
-
     }
 }
