@@ -35,6 +35,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public virtual async Task<bool> AnyAsync(Expression<Func<TEntity, bool>>
             predicate, CancellationToken token = default)
             => await _set.AnyAsync(predicate, token);
+
+        public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>>
+            predicate, CancellationToken cancellationToken = default)
+        {
+            return await _set.CountAsync(predicate, cancellationToken);
+        }
         public void Update(TEntity entity) =>
             _set.Update(entity);
         public void Delete(TEntity entity) =>

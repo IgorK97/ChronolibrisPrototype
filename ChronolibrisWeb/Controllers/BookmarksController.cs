@@ -2,7 +2,9 @@
 using Chronolibris.Application.Requests.Bookmarks;
 using ChronolibrisWeb.InputModels;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Controllers
 {
@@ -18,6 +20,8 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="reader")]
+        [EnableRateLimiting("bookmarks")]
         public async Task<IActionResult> Add([FromBody] AddBookmarkInputModel command)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);

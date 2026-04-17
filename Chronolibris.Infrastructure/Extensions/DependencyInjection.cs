@@ -52,7 +52,8 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             // Регистрация DbContext для PostgreSQL
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(dataSource).UseExceptionProcessor();
+                options.UseNpgsql(dataSource);
+                //.UseExceptionProcessor();
 
                 options.LogTo(Console.WriteLine, LogLevel.Error);
 

@@ -23,23 +23,26 @@ namespace Chronolibris.Application.Handlers.Bookmarks
         }
         public async Task<AddBookmarkResult> Handle(AddBookmarkCommand request, CancellationToken cancellationToken)
         {
-            var availableBookFile = await _unitOfWork.BookFiles.GetByIdAsync(request.BookFileId);
-            if(availableBookFile == null)
-            {
-                throw new ChronolibrisException("Такой книги нет или она недоступна", ErrorType.Forbidden);
-            }
-
             bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
             if (!userExists)
             {
                 throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
             }
+            var availableBookFile = await _unitOfWork.BookFiles.GetByIdAsync(request.BookFileId);
+            if(availableBookFile == null || !availableBookFile.Book.IsAvailable)
+            {
+                throw new ChronolibrisException("Такой книги нет или она недоступна", ErrorType.Forbidden);
+            }
+            if (request.ParaIndex < 0 || request.ParaIndex > availableBookFile.MaxParaIndex)
+                throw new ChronolibrisException("Некорректная позиция закладки", ErrorType.Validation);
 
-            var oldBookmark = await _unitOfWork.Bookmarks.GetConcreteBookmark(request.BookFileId, request.UserId,
-                request.ParaIndex, cancellationToken);
+            var currentCount = await _unitOfWork.Bookmarks.CountAsync(b => b.UserId == request.UserId && b.BookFileId == request.BookFileId, cancellationToken);
+            if (currentCount >= 500)
+            {
+                throw new ChronolibrisException("Достигнут лимит закладок для этой книги", ErrorType.Validation);
+            }
 
-            if (oldBookmark != null)
-                throw new ChronolibrisException("Закладка с такой позицией уже существует", ErrorType.Conflict);
+
 
             var bookmark = new Bookmark
             {
@@ -52,7 +55,7 @@ namespace Chronolibris.Application.Handlers.Bookmarks
             };
             await _unitOfWork.Bookmarks.AddAsync(bookmark, cancellationToken);
             
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            //await _unitOfWork.SaveChangesAsync(cancellationToken); //в репозитории при добавлении уже делается - атомарная операция
            
             return new AddBookmarkResult(bookmark.Id, bookmark.CreatedAt);
         }

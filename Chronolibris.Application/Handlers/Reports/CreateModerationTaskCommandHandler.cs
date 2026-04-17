@@ -24,6 +24,9 @@ namespace Chronolibris.Application.Handlers.Reports
             CreateModerationTaskCommand request, CancellationToken token)
         {
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
+            //IAsyncDisposable - как оказалось, можно трай не делать, так как
+            //технически при использовании юзинг само откатит назад
+            //но я оставлю - так нагляднее и надежнее
             try
             {
                 var lastTask = await _unitOfWork.ModerationTasks.GetLastTaskAsync(request.TargetId, request.TargetTypeId, token);
@@ -47,8 +50,11 @@ namespace Chronolibris.Application.Handlers.Reports
                     ReasonTypeId = request.ReportTypeId,
                 };
 
-                await _unitOfWork.ModerationTasks.AddAsync(newTask, token);
-                await _unitOfWork.SaveChangesAsync(token);
+                var newTaskId = await _unitOfWork.ModerationTasks.TryCreateActiveTaskAsync(newTask, token);
+                if (newTaskId == null || newTaskId == 0)
+                    throw new ChronolibrisException("Для данного контента уже существует активная задача модерации",
+                        ErrorType.Conflict);
+                //await _unitOfWork.SaveChangesAsync(token);
 
                 await _unitOfWork.Reports.AttachReportsToTaskAsync(
                     newTask.Id,
@@ -56,7 +62,7 @@ namespace Chronolibris.Application.Handlers.Reports
                     request.TargetTypeId,
                     request.ReportTypeId,
                     token);
-
+                await _unitOfWork.SaveChangesAsync(token);
                 await transaction.CommitAsync(token);
 
                 return new CreateModerationTaskResponse
@@ -65,24 +71,6 @@ namespace Chronolibris.Application.Handlers.Reports
                     TaskCreatedAt = newTask.StartedAt,
                     TaskStatusId = newTask.StatusId,
                 };
-
-
-
-
-                //var task = await _unitOfWork.Reports.CreateModerationTaskWithReportsAsync(
-                //    request.TargetId,
-                //    request.TargetTypeId,
-                //    request.ReportTypeId,
-                //    request.ModeratorId,
-                //    transaction);
-                //await _unitOfWork.SaveChangesAsync(token);
-                //await transaction.CommitAsync(token);
-                //return new CreateModerationTaskResponse
-                //{
-                //    Id = task.Id,
-                //    TaskCreatedAt = task.StartedAt,
-                //    TaskStatusId = task.StatusId,
-                //};
             }
             catch
             {

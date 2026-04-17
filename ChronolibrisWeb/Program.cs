@@ -12,6 +12,7 @@ using Chronolibris.Infrastructure.DatabaseChecker;
 using ChronolibrisWeb.Middleware.Hangfire;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
+using ChronolibrisWeb.Utils;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -117,6 +118,13 @@ builder.Services.AddAuthorization(options =>
 
 // Add services to the container.
 builder.Services.AddApplicationServices();
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddChronolibrisRateLimiter();
+});
+
+
+
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false; //автоматически прерывает выполнение при ошибке валидации
@@ -181,6 +189,7 @@ if(app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

@@ -6,6 +6,7 @@ using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Controllers
 {
@@ -37,6 +38,7 @@ namespace ChronolibrisWeb.Controllers
 
         [Authorize(Roles ="reader")]
         [HttpPost]
+        [EnableRateLimiting("comments")]
         public async Task<IActionResult> Create(CreateCommentInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
@@ -57,6 +59,7 @@ namespace ChronolibrisWeb.Controllers
 
         [Authorize(Roles = "reader")]
         [HttpPost("rate")]
+        [EnableRateLimiting("ratings")]
         public async Task<IActionResult> RateComment(RateCommentInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();

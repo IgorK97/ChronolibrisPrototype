@@ -24,23 +24,24 @@ namespace Chronolibris.Application.Handlers.Reports
         public async Task<TaskResolutionResponse> Handle(
             ResolveTaskCommand command, CancellationToken token)
         {
-            var task = await _unitOfWork.ModerationTasks
-                .GetByIdAsync(command.TaskId, token);
 
-            if (task is null)
-                throw new ChronolibrisException("Задача модерации не найдена", ErrorType.NotFound);
-
-            if (task.ModeratedBy != command.ModeratorId)
-                throw new ChronolibrisException("Эта задача назначена на другого модератора", ErrorType.Forbidden);
-
-            if (task.StatusId != 2)
-                throw new ChronolibrisException("Задача должна быть в статусе 'В работе'", ErrorType.Validation);
-
-            var now = DateTime.UtcNow;
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync(token);
             try
             {
+                var task = await _unitOfWork.ModerationTasks
+                .GetByIdAsync(command.TaskId, token);
+
+                if (task is null)
+                    throw new ChronolibrisException("Задача модерации не найдена", ErrorType.NotFound);
+
+                if (task.ModeratedBy != command.ModeratorId)
+                    throw new ChronolibrisException("Эта задача назначена на другого модератора", ErrorType.Forbidden);
+
+                if (task.StatusId != 2)
+                    throw new ChronolibrisException("Задача должна быть в статусе 'В работе'", ErrorType.Validation);
+
+                var now = DateTime.UtcNow;
                 task.Comment = command.Comment;
                 task.StatusId = command.Resolution ? 3 : 4;
                 task.ResolvedAt = now;

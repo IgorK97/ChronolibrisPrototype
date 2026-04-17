@@ -5,6 +5,7 @@ using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Controllers
 {
@@ -59,6 +60,7 @@ namespace ChronolibrisWeb.Controllers
 
         [Authorize(Roles ="reader")]
         [HttpPost]
+        [EnableRateLimiting("ratings")]
         public async Task<IActionResult> CreateReview(CreateReviewInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -92,6 +94,7 @@ namespace ChronolibrisWeb.Controllers
 
         [Authorize(Roles ="reader")]
         [HttpPost("rate")]
+        [EnableRateLimiting("ratings")]
         public async Task<IActionResult> RateReview(RateReviewInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();

@@ -26,6 +26,8 @@ namespace Chronolibris.Domain.Entities
         public required long CreatedBy { get; set; }
         //public required int Version { get; set; } = 0;
         public required long BookFileStatusId { get; set; }
+        [Required]
+        public long MaxParaIndex { get; set; }
 
         public Book Book { get; set; } = null!;
         public Format Format { get; set; } = null!;

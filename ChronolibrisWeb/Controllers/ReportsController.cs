@@ -5,6 +5,7 @@ using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Controllers
 {
@@ -22,6 +23,7 @@ namespace ChronolibrisWeb.Controllers
 
         [HttpPost]
         [Authorize(Roles = "reader")]
+        [EnableRateLimiting("reports")]
         public async Task<IActionResult> CreateReport([FromBody] CreateReportInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);

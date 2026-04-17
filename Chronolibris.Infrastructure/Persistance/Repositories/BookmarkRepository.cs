@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
@@ -15,6 +17,28 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
     {
         public BookmarkRepository(ApplicationDbContext context) : base(context)
         {
+        }
+
+        public override async Task AddAsync(Bookmark entity, CancellationToken token = default)
+        {
+            try
+            {
+                await _context.Bookmarks.AddAsync(entity, token);
+                await _context.SaveChangesAsync(); //потом вынести отсюда и сделать глобальный обработчик - но тогда потребуется глобальный обрабочтик ошибок сделать корректным,
+                //чтобы мог отделять по сущностям
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+            {
+                switch (pgEx.SqlState)
+                {
+                    case "23505": // Unique Violation
+                        throw new ChronolibrisException("Закладка с такой позицией уже существует", ErrorType.Conflict);
+                    case "23503": // Foreign Key Violation
+                        throw new ChronolibrisException("Файл книги был удален", ErrorType.NotFound);
+                    default:
+                        throw;
+                }
+            }
         }
         public async Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId, CancellationToken token = default)
         {
