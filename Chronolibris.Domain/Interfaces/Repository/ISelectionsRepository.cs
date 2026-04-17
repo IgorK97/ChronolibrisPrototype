@@ -23,7 +23,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task<bool> IsBookInSelection(long bookId, long selectionId, CancellationToken token = default);
         Task<long> CreateAsync(Selection selection, CancellationToken ct);
         Task<bool> UpdateAsync(long selectionId, string? name, string? description, bool? isActive, CancellationToken ct);
-        Task<bool> AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct);
+        Task AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct);
         Task<bool> RemoveBookFromSelectionAsync(long selectionId, long bookId, CancellationToken ct);
         //Task<bool> DeleteAsync(long selectionId, CancellationToken ct);
     }

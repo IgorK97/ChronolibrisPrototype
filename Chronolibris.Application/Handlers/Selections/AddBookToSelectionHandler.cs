@@ -21,22 +21,22 @@ namespace Chronolibris.Application.Handlers.Selections
 
         public async Task Handle(AddBookToSelectionRequest request, CancellationToken ct)
         {
-            var selectionExists = await _unitOfWork.Selections.AnyAsync(s => s.Id == request.SelectionId, ct);
-            if (!selectionExists)
-            {
-                throw new ChronolibrisException("Такая подборка не найдена", ErrorType.NotFound);
-            }
+            //var selectionExists = await _unitOfWork.Selections.AnyAsync(s => s.Id == request.SelectionId, ct);
+            //if (!selectionExists)
+            //{
+            //    throw new ChronolibrisException("Такая подборка не найдена", ErrorType.NotFound);
+            //}
 
-            var bookExists = await _unitOfWork.Books.AnyAsync(s => s.Id == request.SelectionId, ct);
-            if (!bookExists)
-            {
-                throw new ChronolibrisException("Такая книга не найдена", ErrorType.NotFound);
-            }
+            //var bookExists = await _unitOfWork.Books.AnyAsync(s => s.Id == request.SelectionId, ct);
+            //if (!bookExists)
+            //{
+            //    throw new ChronolibrisException("Такая книга не найдена", ErrorType.NotFound);
+            //}
 
-            var bookInSelection = await _unitOfWork.Selections.IsBookInSelection(request.BookId,
-                request.SelectionId, ct);
-            if (bookInSelection)
-                return;
+            //var bookInSelection = await _unitOfWork.Selections.IsBookInSelection(request.BookId,
+            //    request.SelectionId, ct);
+            //if (bookInSelection)
+            //    return;
 
             await _unitOfWork.Selections.AddBookToSelectionAsync(
                 request.SelectionId,

@@ -25,17 +25,16 @@ namespace Chronolibris.Application.Handlers.Comments
         }
         public async Task<long> Handle(CreateCommentCommand request, CancellationToken ct)
         {
-
-            var book = await _uow.Books.GetByIdAsync(request.BookId);
-
-            if (book == null || !book.IsAvailable)
-                throw new ChronolibrisException("Книга отсутствует или недоступна", ErrorType.NotFound);
-
             bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
             if (!userExists)
             {
                 throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
             }
+
+            var book = await _uow.Books.GetByIdAsync(request.BookId);
+
+            if (book == null || !book.IsAvailable)
+                throw new ChronolibrisException("Книга отсутствует или недоступна", ErrorType.NotFound);
 
             var comment = new Comment
             {
@@ -48,7 +47,6 @@ namespace Chronolibris.Application.Handlers.Comments
             };
             await _uow.Comments.AddAsync(comment, ct);
             await _uow.SaveChangesAsync();
-            // Предполагается, что UnitOfWork сохранит изменения
             return comment.Id;
         }
     }

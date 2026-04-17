@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Models;
+﻿using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Domain.Utils;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
@@ -164,24 +161,42 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             await _context.SaveChangesAsync(ct);
             return true;
         }
-        public async Task<bool> AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct)
+        public async Task AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct)
         {
-            var selection = await _context.Selections
-                .Include(s => s.Books)
-                .FirstOrDefaultAsync(s => s.Id == selectionId, ct);
+            //var selection = await _context.Selections
+            //    .Include(s => s.Books)
+            //    .FirstOrDefaultAsync(s => s.Id == selectionId, ct);
 
-            if (selection == null) return false;
+            //if (selection == null) return false;
 
-            var book = await _context.Books.FindAsync(new object[] { bookId }, ct);
-            if (book == null) return false;
+            //var book = await _context.Books.FindAsync(new object[] { bookId }, ct);
+            //if (book == null) return false;
 
-            if (!selection.Books.Any(b => b.Id == bookId))
+            //if (!selection.Books.Any(b => b.Id == bookId))
+            //{
+            //    selection.Books.Add(book);
+            //    await _context.SaveChangesAsync(ct);
+            //}
+
+            //return true;
+
+            try
             {
-                selection.Books.Add(book);
-                await _context.SaveChangesAsync(ct);
+                await _context.Database.ExecuteSqlRawAsync(
+                    @"INSERT INTO book_selection (selection_id, book_id) 
+              VALUES ({0}, {1}) ON CONFLICT DO NOTHING",
+                    selectionId, bookId, ct);
             }
-
-            return true;
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+            {
+                if (pgEx.SqlState == "23503")
+                {
+                    throw new ChronolibrisException("Книга или подборка не найдена", ErrorType.NotFound);
+                }
+                if (pgEx.SqlState == "23505")
+                    return;
+                throw;
+            }
         }
         public async Task<bool> RemoveBookFromSelectionAsync(long selectionId, long bookId, CancellationToken ct)
         {
@@ -201,16 +216,5 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
             return false;
         }
-
-        //public async Task<bool> DeleteAsync(long selectionId, CancellationToken ct)
-        //{
-        //    var selection = await _context.Selections.FindAsync(new object[] { selectionId }, ct);
-        //    if (selection == null) return false;
-
-        //    _context.Selections.Remove(selection);
-        //    await _context.SaveChangesAsync(ct);
-        //    return true;
-        //}
     }
-
 }

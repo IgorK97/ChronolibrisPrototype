@@ -19,15 +19,26 @@ namespace Chronolibris.Application.Handlers.Shelves
         }
         public async Task<Unit> Handle(UpdateShelfCommand request, CancellationToken ct)
         {
-            var shelf = await _uow.Shelves.GetByIdAsync(request.ShelfId, ct);
-            if (shelf == null)
-                throw new ChronolibrisException("Книжная полка не найдена", ErrorType.NotFound);
+            //var shelf = await _uow.Shelves.GetByIdAsync(request.ShelfId, ct);
+            //if (shelf == null)
+            //    throw new ChronolibrisException("Книжная полка не найдена", ErrorType.NotFound);
 
-            if (shelf.UserId != request.UserId)
-                throw new ChronolibrisException("Нет прав на совершение данной операции", ErrorType.Forbidden);
+            //if (shelf.UserId != request.UserId)
+            //    throw new ChronolibrisException("Нет прав на совершение данной операции", ErrorType.Forbidden);
 
-            shelf.Name = request.Name;
-            await _uow.SaveChangesAsync(ct);
+            //shelf.Name = request.Name;
+            //await _uow.SaveChangesAsync(ct);
+            //return Unit.Value;
+            int rowsAffected = await _uow.Shelves.UpdateNameByOwnerAsync(
+                                                    request.ShelfId,
+                                                    request.UserId,
+                                                    request.Name,
+                                                    ct);
+
+            if (rowsAffected == 0)
+            {
+                throw new ChronolibrisException("Полка не найдена", ErrorType.NotFound);
+            }
             return Unit.Value;
         }
     }

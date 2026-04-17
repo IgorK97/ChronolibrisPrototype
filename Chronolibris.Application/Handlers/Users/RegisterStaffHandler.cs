@@ -29,15 +29,6 @@ namespace Chronolibris.Application.Handlers.Users
             if (!AllowedRoles.Contains(request.Role))
                 throw new ChronolibrisException("Недопустимая роль", ErrorType.Validation);
 
-            //if (!await _identityService.IsUserNameUniqueAsync(request.UserName))
-            //    throw new ChronolibrisException("Такое имя пользователя уже используется", ErrorType.Conflict);
-
-            //if (!await _identityService.IsEmailUniqueAsync(request.Email))
-            //    throw new ChronolibrisException("Такой адрес электронной почты уже занят", ErrorType.Conflict);
-
-            //if (!await _identityService.IsPhoneUniqueAsync(request.PhoneNumber!))
-            //    throw new ChronolibrisException("Такой номер телефона уже занят", ErrorType.Conflict);
-
             return await _identityService.RegisterUserAsync(new RegisterRequest
             {
             

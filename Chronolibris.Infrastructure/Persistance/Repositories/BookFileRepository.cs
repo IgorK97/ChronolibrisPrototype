@@ -11,6 +11,7 @@ using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.Persistance.Repositories;
 using Hangfire.Processing;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 {
@@ -53,8 +54,24 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             bookFile.BookFileStatusId = BookFileStatuses.COMPLETED;
             bookFile.CompletedAt = result.CompletedAt;
+            bookFile.MaxParaIndex = result.TocFile.GlobalEnd;
 
             await _context.SaveChangesAsync(ct);
+        }
+
+        public override async Task AddAsync(BookFile entity, CancellationToken token)
+        {
+            try
+            {
+                await _context.BookFiles.AddAsync(entity, token);
+                await _context.SaveChangesAsync(token);
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg && pg.SqlState == "23505")
+            {
+                throw new ChronolibrisException(
+                    $"Файл формата {entity.FormatId} уже существует для этой книги",
+                    ErrorType.Conflict);
+            }
         }
 
         public async Task<List<BookFile>> GetByBookIdAsync(long bookId, CancellationToken cancellationToken = default)

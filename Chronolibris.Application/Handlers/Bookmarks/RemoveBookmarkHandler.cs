@@ -27,7 +27,7 @@ namespace Chronolibris.Application.Handlers.Bookmarks
             var existing = await _unitOfWork.Bookmarks.GetByIdAsync(request.BookmarkId, cancellationToken);
             if (existing == null)
             {
-                return; //Уже удалена, могу указать на идемпотентность и пример с двумя окнами браузера
+                return;
             }
 
             if(existing.UserId != request.UserId)

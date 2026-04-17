@@ -42,8 +42,6 @@ namespace Chronolibris.Application.Handlers.Bookmarks
                 throw new ChronolibrisException("Достигнут лимит закладок для этой книги", ErrorType.Validation);
             }
 
-
-
             var bookmark = new Bookmark
             {
                 BookFileId = request.BookFileId,
@@ -55,7 +53,7 @@ namespace Chronolibris.Application.Handlers.Bookmarks
             };
             await _unitOfWork.Bookmarks.AddAsync(bookmark, cancellationToken);
             
-            //await _unitOfWork.SaveChangesAsync(cancellationToken); //в репозитории при добавлении уже делается - атомарная операция
+            //await _unitOfWork.SaveChangesAsync(cancellationToken); //потом подправлю
            
             return new AddBookmarkResult(bookmark.Id, bookmark.CreatedAt);
         }

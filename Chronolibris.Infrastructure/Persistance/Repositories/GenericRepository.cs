@@ -45,6 +45,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             _set.Update(entity);
         public void Delete(TEntity entity) =>
             _set.Remove(entity);
+
+        public async Task<int> DeleteAsync(Expression<Func<TEntity, bool>>
+            predicate, CancellationToken cancellationToken = default)
+        {
+            return await _set.Where(predicate).ExecuteDeleteAsync(cancellationToken);
+        }
         //public void Detach(TEntity entity)
         //{
         //    // объект Entry (запись отслеживания) для данной сущности

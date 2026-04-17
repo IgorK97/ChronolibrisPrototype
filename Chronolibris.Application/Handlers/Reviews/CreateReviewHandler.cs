@@ -24,6 +24,11 @@ namespace Chronolibris.Application.Handlers.Reviews
         }
         public async Task<long> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
+            bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
+            if (!userExists)
+            {
+                throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
+            }
 
             var existing = await _unitOfWork.Reviews.GetActiveByUserAndBookAsync(request.UserId, request.BookId, cancellationToken);
             if (existing != null)
@@ -32,13 +37,6 @@ namespace Chronolibris.Application.Handlers.Reviews
             var book = await _unitOfWork.Books.GetByIdAsync(request.BookId, cancellationToken);
             if(book==null || !book.IsReviewable || !book.IsAvailable)
                 throw new ChronolibrisException("Этой книги нет или она не может быть оценена", ErrorType.NotFound);
-
-
-            bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
-            if (!userExists)
-            {
-                throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
-            }
 
             var review = new Review
             {

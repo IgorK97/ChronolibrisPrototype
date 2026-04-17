@@ -42,7 +42,7 @@ namespace Chronolibris.Application.Handlers.Reports
             //(в конце концов у меня еще клиент задержимает, поэтому технически будет сложно это сделать,
             //но если такое действительно будет случаться часть - тогда да, это проблема)
             if (isOnCooldown is not null && isOnCooldown.CreatedAt >= cooldownThreshold)
-                throw new ChronolibrisException($"Вы уже отправляли подобную жалобу. Жалобы можно отправлять" +
+                throw new ChronolibrisException($"Вы уже отправляли подобную жалобу. Жалобы одного типа можно отправлять" +
                     $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.", ErrorType.TooManyRequests);
 
             var activeTask = await _unitOfWork.ModerationTasks.GetActiveByTarget(request.TargetId,

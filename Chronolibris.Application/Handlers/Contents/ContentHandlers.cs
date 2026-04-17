@@ -90,21 +90,6 @@ namespace Chronolibris.Application.Handlers.Contents
                 Themes = new List<Theme>()
             };
 
-            //if (request.PersonFilters != null)
-            //{
-            //    foreach (var filter in request.PersonFilters)
-            //    {
-            //        foreach (var personId in filter.PersonIds)
-            //        {
-            //            content.Participations.Add(new ContentParticipation
-            //            {
-            //                PersonId = personId,
-            //                PersonRoleId = filter.RoleId
-            //            });
-            //        }
-            //    }
-            //}
-
             if (request.PersonFilters != null)
                 _contentRepository.SyncParticipations(content, request.PersonFilters);
 
@@ -136,7 +121,7 @@ namespace Chronolibris.Application.Handlers.Contents
         {
             var content = await _contentRepository.GetByIdAsync(request.Id, cancellationToken);
             if (content == null) 
-                throw new ChronolibrisException($"Такого контента нет", ErrorType.NotFound);
+                throw new ChronolibrisException("Такого контента нет", ErrorType.NotFound);
 
             if(request.Title!=null)
                 content.Title = request.Title;

@@ -18,6 +18,7 @@ namespace Chronolibris.Domain.Entities
         public required long CountryId { get; set; }
         public required long LanguageId { get; set; }
         public required DateTime CreatedAt { get; set; }
+        [ConcurrencyCheck]
         public DateTime? UpdatedAt { get; set; }
         public int? Year { get; set; }
         [MaxLength(150)]

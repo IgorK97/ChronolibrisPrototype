@@ -19,24 +19,20 @@ namespace Chronolibris.Application.Handlers.Shelves
         }
         public async Task Handle(AddBookToShelfCommand request, CancellationToken ct)
         {
-            var shelf = await _uow.Shelves.GetByIdAsync(request.ShelfId, ct);
-            if(shelf==null || shelf.UserId != request.UserId)
-                throw new ChronolibrisException
-                    ("Полка не найдена или доступ к ней ограничен", ErrorType.Forbidden);
+            var shelfOwnerValid = await _uow.Shelves.AnyAsync(s =>
+                    s.Id == request.ShelfId && s.UserId == request.UserId, ct);
 
-            var book = await _uow.Books.GetByIdAsync(request.BookId, ct);
-            if (book == null || !book.IsAvailable)
-                throw new ChronolibrisException
-                    ("Книга не найдена или доступ к ней ограничен", ErrorType.Forbidden);
+            if (!shelfOwnerValid)
+                throw new ChronolibrisException("Полка не найдена", ErrorType.Forbidden);
 
-            var alreadyOnShelf = await _uow.Shelves.IsInShelf(request.BookId, request.ShelfId);
-            if (alreadyOnShelf)
-                //throw new ChronolibrisException("Книга уже на полке", ErrorType.Conflict);
-                return;
+            var bookAvailable = await _uow.Books.AnyAsync(b =>
+                b.Id == request.BookId && b.IsAvailable, ct);
+
+            if (!bookAvailable)
+                throw new ChronolibrisException("Книга недоступна", ErrorType.Forbidden);
 
             await _uow.Shelves.AddBookToShelf(request.ShelfId, request.BookId, ct);
             await _uow.SaveChangesAsync(ct);
         }
     }
-
 }

@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Domain.Utils;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
@@ -23,6 +25,15 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             return await _context.Shelves
                 .Include(s => s.Books)
                 .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
+        }
+
+        public async Task<int> UpdateNameByOwnerAsync(long shelfId, long userId, string newName, CancellationToken ct)
+        {
+            return await _context.Shelves
+                .Where(s => s.Id == shelfId && s.UserId == userId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(s => s.Name, newName),
+                    ct);
         }
 
 
@@ -78,15 +89,35 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
         public async Task AddBookToShelf(long shelfId, long bookId, CancellationToken ct)
         {
-            var shelf = await _context.Shelves
-                .Include(s => s.Books)
-                .FirstAsync(s => s.Id == shelfId, ct);
+            //var shelf = await _context.Shelves
+            //    .Include(s => s.Books)
+            //    .FirstAsync(s => s.Id == shelfId, ct);
 
-            if (!shelf.Books.Any(b => b.Id == bookId))
+            //if (!shelf.Books.Any(b => b.Id == bookId))
+            //{
+            //    var book = await _context.Books.FindAsync(bookId);
+            //    if (book != null)
+            //        shelf.Books.Add(book);
+            //}
+            var link = new BookShelf
             {
-                var book = await _context.Books.FindAsync(bookId);
-                if (book != null)
-                    shelf.Books.Add(book);
+                ShelfId = shelfId,
+                BookId = bookId
+            };
+
+            try
+            {
+                await _context.Set<BookShelf>().AddAsync(link, ct);
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+            {
+                if (pgEx.SqlState == "23503")
+                {
+                    throw new ChronolibrisException("Книга или полка не найдена", ErrorType.NotFound);
+                }
+                if (pgEx.SqlState == "23505")
+                    return;
+                throw;
             }
         }
 

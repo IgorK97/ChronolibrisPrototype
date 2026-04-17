@@ -32,8 +32,7 @@ namespace Chronolibris.Application.Handlers.Comments
             if (comment == null || comment.IsDeleted)
                 throw new ChronolibrisException("Комментарий не найден", ErrorType.NotFound);
 
-            if (comment.UserId == request.UserId) //Само по себе не критично, если будут проблемы с производительностью,
-                //можно будет убрать
+            if (comment.UserId == request.UserId)
                 throw new ChronolibrisException("Недоступно", ErrorType.Unprocessable);
 
 
@@ -63,8 +62,5 @@ namespace Chronolibris.Application.Handlers.Comments
             return comment;
 
         }
-
-
-
     }
 }

@@ -30,34 +30,37 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             ConversionOptions? options = null,
             CancellationToken ct = default)
         {
+            options ??= new ConversionOptions();
+            return await ConvertSeekableAsync(fb2Stream, bookId.ToString(), options, ct);
+
             //Алгоритм двупроходный, поэтому поток должен быть таким, чтобы
             //можно было дважды по нему пройтись.
             //на всякий случай проверка, вдруг httpResponseStream
-            Stream workStream;
-            bool ownStream = false;
-            options ??= new ConversionOptions();
+            //Stream workStream;
+            //bool ownStream = false;
+            //options ??= new ConversionOptions();
 
-            if (fb2Stream.CanSeek)
-            {
-                workStream = fb2Stream;
-            }
-            else
-            {
-                var ms = new MemoryStream();
-                await fb2Stream.CopyToAsync(ms, ct);
-                ms.Position = 0;
-                workStream = ms;
-                ownStream = true;
-            }
+            //if (fb2Stream.CanSeek)
+            //{
+            //    workStream = fb2Stream;
+            //}
+            //else
+            //{
+            //    var ms = new MemoryStream();
+            //    await fb2Stream.CopyToAsync(ms, ct);
+            //    ms.Position = 0;
+            //    workStream = ms;
+            //    ownStream = true;
+            //}
 
-            try
-            {
-                return await ConvertSeekableAsync(workStream, bookId.ToString(), options, ct);
-            }
-            finally
-            {
-                if (ownStream) await workStream.DisposeAsync();
-            }
+            //try
+            //{
+            //    return await ConvertSeekableAsync(workStream, bookId.ToString(), options, ct);
+            //}
+            //finally
+            //{
+            //    if (ownStream) await workStream.DisposeAsync();
+            //}
         }
 
 

@@ -7,25 +7,25 @@ namespace ChronolibrisWeb.InputModels
     {
         [Required(ErrorMessage = "Название книги отсутствует")]
         [MaxLength(500)]
-        public string Title { get; set; } = string.Empty;
+        public string Title { get; init; } = string.Empty;
         [Required(ErrorMessage = "Описание книги отсутствует")]
         [MaxLength(2000)]
-        public string Description { get; set; } = string.Empty;
-        public int CountryId { get; set; }
-        public int LanguageId { get; set; }
-        public int? Year { get; set; }
-        public string? ISBN { get; set; }
-        public string? Bbk { get; set; }
-        public string? Udk { get; set; }
-        public string? Source { get; set; }
+        public string Description { get; init; } = string.Empty;
+        public int CountryId { get; init; }
+        public int LanguageId { get; init; }
+        public int? Year { get; init; }
+        public string? ISBN { get; init; }
+        public string? Bbk { get; init; }
+        public string? Udk { get; init; }
+        public string? Source { get; init; }
         [Required(ErrorMessage = "Обложка обязательна")]
-        public string? CoverBase64 { get; set; } = string.Empty;
-        public string? CoverContentType { get; set; } = "image/jpeg";
-        public string? CoverFileName { get; set; } = "cover";
-        public bool IsAvailable { get; set; } = true;
-        public bool IsReviewable { get; set; }
-        public int? PublisherId { get; set; }
-        public List<PersonRoleFilter>? PersonFilters { get; set; }
+        public string? CoverBase64 { get; init; } = string.Empty;
+        public string? CoverContentType { get; init; } = "image/jpeg";
+        public string? CoverFileName { get; init; } = "cover";
+        public bool IsAvailable { get; init; } = true;
+        public bool IsReviewable { get; init; }
+        public int? PublisherId { get; init; }
+        public List<PersonRoleFilter>? PersonFilters { get; init; }
     }
     public class UpdateBookInputModel
     {

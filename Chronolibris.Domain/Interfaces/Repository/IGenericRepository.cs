@@ -20,6 +20,8 @@ namespace Chronolibris.Domain.Interfaces.Repository
         void Update(TEntity entity);
         void Delete(TEntity entity);
 
+        Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate,  CancellationToken cancellationToken = default);
+
         //void Detach(TEntity entity);
         Task SaveChangesAsync();
     }

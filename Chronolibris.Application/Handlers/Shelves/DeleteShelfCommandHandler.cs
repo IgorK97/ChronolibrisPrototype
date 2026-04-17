@@ -19,15 +19,15 @@ namespace Chronolibris.Application.Handlers.Shelves
         }
         public async Task<Unit> Handle(DeleteShelfCommand request, CancellationToken ct)
         {
-            var shelf = await _uow.Shelves.GetByIdAsync(request.ShelfId, ct);
-            if (shelf == null)
-                return Unit.Value;
+            //var shelf = await _uow.Shelves.GetByIdAsync(request.ShelfId, ct);
+            //if (shelf == null)
+            //    return Unit.Value;
 
-            if (shelf.UserId != request.UserId)
-                throw new ChronolibrisException("Нет прав на совершение данной операции", ErrorType.Forbidden);
+            //if (shelf.UserId != request.UserId)
+            //    throw new ChronolibrisException("Нет прав на совершение данной операции", ErrorType.Forbidden);
 
-            _uow.Shelves.Delete(shelf);
-            await _uow.SaveChangesAsync(ct);
+            await _uow.Shelves.DeleteAsync(shelf => shelf.UserId == request.UserId && shelf.Id == request.ShelfId, ct);
+            //await _uow.SaveChangesAsync(ct);
             return Unit.Value;
         }
     }

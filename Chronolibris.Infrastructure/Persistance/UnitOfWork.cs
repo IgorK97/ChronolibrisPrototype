@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Handlers;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.Persistance.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Chronolibris.Infrastructure.Persistance
@@ -69,8 +71,17 @@ namespace Chronolibris.Infrastructure.Persistance
             Reports = reports;
             ModerationTasks = moderationTasks;
         }
-        public async Task<int> SaveChangesAsync(CancellationToken ct) =>
-        await _context.SaveChangesAsync(ct);
+        public async Task<int> SaveChangesAsync(CancellationToken ct)
+        {
+            try
+            {
+                return await _context.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new ChronolibrisException("Конфликт обновления данных - повторите попытке позднее", ErrorType.Conflict);
+            }
+        }
 
         public async Task<ITransaction> BeginTransactionAsync(
             CancellationToken token = default)
