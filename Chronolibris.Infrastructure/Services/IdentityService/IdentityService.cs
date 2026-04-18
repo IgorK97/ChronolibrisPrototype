@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Users;
+using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -26,14 +27,17 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
+        private readonly ApplicationDbContext dbContext;
 
         public IdentityService(UserManager<User> userManager, 
             SignInManager<User> signInManager,
-            IConfiguration config)
+            IConfiguration config,
+            ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
+            dbContext = applicationDbContext;
         }
         public async Task<RegistrationResult> RegisterUserAsync(RegisterRequest request)
         {
@@ -220,7 +224,11 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
         public async Task<bool> IsUserActiveAsync(long userId)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await dbContext.Users
+            .FromSqlRaw("SELECT * FROM users WHERE id = {0} FOR UPDATE", userId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+            //var user = await _userManager.FindByIdAsync(userId.ToString());
             return user != null && !user.IsDeleted;
         }
     }

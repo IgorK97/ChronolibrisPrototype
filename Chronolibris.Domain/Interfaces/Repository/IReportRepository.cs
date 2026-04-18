@@ -22,7 +22,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
 
         Task<Report?> GetLastUserReport(long UserId,
             long TargetTypeId, long TargetId,
-            long ReasonTypeId);
+            long ReasonTypeId, CancellationToken token = default);
 
         Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, long reportTypeId, CancellationToken token);
 

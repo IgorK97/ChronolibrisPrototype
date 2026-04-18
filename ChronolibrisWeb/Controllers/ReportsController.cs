@@ -4,6 +4,7 @@ using Chronolibris.Domain.Models;
 using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -24,7 +25,8 @@ namespace ChronolibrisWeb.Controllers
         [HttpPost]
         [Authorize(Roles = "reader")]
         [EnableRateLimiting("reports")]
-        public async Task<IActionResult> CreateReport([FromBody] CreateReportInputModel request)
+        [RequestTimeout(milliseconds:5000)]
+        public async Task<IActionResult> CreateReport([FromBody] CreateReportInputModel request, CancellationToken ct)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
@@ -35,7 +37,7 @@ namespace ChronolibrisWeb.Controllers
                 request.TargetTypeId,
                 request.ReasonTypeId,
                 request.Description,
-                userId));
+                userId), ct);
 
            
 

@@ -23,6 +23,7 @@ namespace Chronolibris.Application.Handlers.Bookmarks
         }
         public async Task<AddBookmarkResult> Handle(AddBookmarkCommand request, CancellationToken cancellationToken)
         {
+            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
             if (!userExists)
             {
@@ -52,9 +53,9 @@ namespace Chronolibris.Application.Handlers.Bookmarks
                 Id = 0,
             };
             await _unitOfWork.Bookmarks.AddAsync(bookmark, cancellationToken);
-            
+
             //await _unitOfWork.SaveChangesAsync(cancellationToken); //потом подправлю
-           
+            await transaction.CommitAsync(cancellationToken);
             return new AddBookmarkResult(bookmark.Id, bookmark.CreatedAt);
         }
     }

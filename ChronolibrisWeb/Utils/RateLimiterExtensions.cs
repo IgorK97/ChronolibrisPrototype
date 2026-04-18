@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Utils
 {
+
+
+
+
     public static class RateLimiterExtensions
     {
         public static void AddChronolibrisRateLimiter(this RateLimiterOptions
@@ -17,7 +21,20 @@ namespace ChronolibrisWeb.Utils
                     WriteAsync("Слишком много запросов. Попробуйте позже",
                     token);
             };
-            AddUserPolicy(options, "bookmarks", permitLimit: 1, 1);
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+            {
+                var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+                return RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: ipAddress,
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 20,           // 20 запросов
+                        Window = TimeSpan.FromSeconds(1), // в секунду
+                        QueueLimit = 0              // без очереди (сразу блокировать)
+                    });
+            });
+            AddUserPolicy(options, "bookmarks", 1, 0);
             AddUserPolicy(options, "comments", 5, 60);
             AddUserPolicy(options, "ratings", 10, 60);
             AddUserPolicy(options, "reports", 1, 60);
@@ -31,7 +48,16 @@ namespace ChronolibrisWeb.Utils
                 var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var key = userId != null ? $"{name}:user:{userId}"
                 : $"{name}:ip:{httpContext.Connection.RemoteIpAddress}";
+                if (secondsCount <= 0)
+                {
+                    return RateLimitPartition.GetConcurrencyLimiter
+                    (key, _ => new ConcurrencyLimiterOptions
+                    {
+                        PermitLimit = permitLimit,
+                        QueueLimit = 0,
 
+                    });
+                }
                 return RateLimitPartition.GetSlidingWindowLimiter
                 (key, _ => new SlidingWindowRateLimiterOptions
                 {

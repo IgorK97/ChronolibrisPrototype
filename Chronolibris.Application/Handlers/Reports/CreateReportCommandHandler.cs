@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
@@ -18,24 +19,32 @@ namespace Chronolibris.Application.Handlers.Reports
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ReportingOptions _options;
+        private readonly IIdentityService _identityService;
 
         public CreateReportCommandHandler(
             IUnitOfWork unitOfWork,
-            ReportingOptions options)
+            ReportingOptions options, IIdentityService identityService)
         {
             _unitOfWork = unitOfWork;
             _options = options;
+            _identityService = identityService;
         }
 
         public async Task<CreateReportResult> Handle(
             CreateReportCommand request, CancellationToken cancellationToken)
         {
+            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
+            if (!userExists)
+            {
+                throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
+            }
             var now = DateTime.UtcNow;
 
             var cooldownThreshold = now - _options.ReportCooldown;
 
             var isOnCooldown = await _unitOfWork.Reports.GetLastUserReport(request.UserId,
-                request.TargetTypeId, request.TargetId, request.ReasonTypeId);
+                request.TargetTypeId, request.TargetId, request.ReasonTypeId, cancellationToken);
             //можно добавить atomic cooldown insert,
             //если окажется, что среднее количество ожидаемых получаемых жалоб
             //будет слишком высоко, а так можно пока так оставить
@@ -46,7 +55,7 @@ namespace Chronolibris.Application.Handlers.Reports
                     $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.", ErrorType.TooManyRequests);
 
             var activeTask = await _unitOfWork.ModerationTasks.GetActiveByTarget(request.TargetId,
-                request.TargetTypeId);
+                request.TargetTypeId, cancellationToken);
 
             var report = new Report
             {
@@ -59,8 +68,9 @@ namespace Chronolibris.Application.Handlers.Reports
                 ModerationTaskId = activeTask?.Id ?? null,
             };
 
-            await _unitOfWork.Reports.AddAsync(report);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.Reports.AddAsync(report, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
             return new CreateReportResult(true, null);
         }
     }
