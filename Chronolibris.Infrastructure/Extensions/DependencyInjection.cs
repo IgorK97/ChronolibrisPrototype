@@ -5,10 +5,7 @@ using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Options;
 using Chronolibris.Infrastructure.Data;
-//using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
-using Chronolibris.Infrastructure.DataAccess.Persistance;
 using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
-//using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Persistance;
 using Chronolibris.Infrastructure.Persistance.Repositories;
 using Chronolibris.Infrastructure.Persistence.Repositories;
@@ -16,7 +13,6 @@ using Chronolibris.Infrastructure.Services.Fb2Converter;
 using Chronolibris.Infrastructure.Services.Files;
 using Chronolibris.Infrastructure.Services.IdentityService;
 using Chronolibris.Infrastructure.Utils;
-using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +36,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             IConfiguration configuration)
         {
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration
-                .GetConnectionString("DefaultConnection"));
+                .GetConnectionString("Connection"));
 
             var translator = new NpgsqlSnakeCaseNameTranslator();
 

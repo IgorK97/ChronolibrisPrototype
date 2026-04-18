@@ -17,10 +17,12 @@ namespace ChronolibrisWeb.InputModels
         [MaxLength(5000, ErrorMessage = "Максимальная длина описания - 5000 символов")]
         [MinLength(120, ErrorMessage = "Минимальная длина описания - 120 символов")]
         public string Description { get; init; } = string.Empty;
-        [Required(ErrorMessage = "Указание страны обязательно")]
-        public int CountryId { get; init; }
-        [Required(ErrorMessage = "Название языка обязательно")]
-        public int LanguageId { get; init; }
+        //[Required(ErrorMessage = "Указание страны обязательно")]
+        [Range(1, long.MaxValue, ErrorMessage = "Указание страны обязательно")]
+        public long CountryId { get; init; }
+        //[Required(ErrorMessage = "Название языка обязательно")]
+        [Range(1, long.MaxValue, ErrorMessage = "Указание языка обязательно")]
+        public long LanguageId { get; init; }
         [YearRange(-10000, ErrorMessage = "Год в пределах от {1} до {2}")]
         public int? Year { get; init; }
         [RegularExpression(@"(?:(?=(?:[^0-9]*[0-9]){10}(?:(?:[^0-9]*[0-9]){3})?$)[\d-]+)?$",
@@ -37,11 +39,11 @@ namespace ChronolibrisWeb.InputModels
         public string? Source { get; init; }
         [Required(ErrorMessage = "Обложка обязательна")]
         public string? CoverBase64 { get; init; } = string.Empty;
-        public string? CoverContentType { get; init; } = "image/jpeg";
-        public string? CoverFileName { get; init; } = "cover";
+        //public string? CoverContentType { get; init; } = "image/jpeg";
+        //public string? CoverFileName { get; init; } = "cover";
         public bool IsAvailable { get; init; } = true;
-        public bool IsReviewable { get; init; }
-        public int? PublisherId { get; init; }
+        public bool IsReviewable { get; init; } = true;
+        public long? PublisherId { get; init; }
         public List<PersonRoleFilter>? PersonFilters { get; init; }
     }
     public class UpdateBookInputModel
@@ -54,10 +56,11 @@ namespace ChronolibrisWeb.InputModels
         [MaxLength(5000, ErrorMessage = "Максимальная длина описания - 5000 символов")]
         [MinLength(120, ErrorMessage = "Минимальная длина описания - 120 символов")]
         public string Description { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Указание страны обязательно")]
-        public int? CountryId { get; set; }
+        //[Required(ErrorMessage = "Указание страны обязательно")]
+        //[Range(1, int.MaxValue, ErrorMessage = "Указание страны обязательно")]
+        public long? CountryId { get; set; }
         [Required(ErrorMessage = "Название языка обязательно")]
-        public int? LanguageId { get; set; }
+        public long? LanguageId { get; set; }
         public bool IsAvailable { get; set; } //протестировать без рекуиред,
         //с ним, с атрибутом рекуиред, с атрибутом джисон рекуиред, а также с нуллабле типом
         //(то же самое)
@@ -82,12 +85,12 @@ namespace ChronolibrisWeb.InputModels
         public string? Source { get; set; }
         public bool SourceProvided { get; set; }
 
-        public int? PublisherId { get; set; }
+        public long? PublisherId { get; set; }
         public bool PublisherIdProvided { get; set; }
 
         public string? CoverBase64 { get; set; }
-        public string? CoverContentType { get; set; }
-        public string? CoverFileName { get; set; }
+        //public string? CoverContentType { get; set; }
+        //public string? CoverFileName { get; set; }
 
         public List<PersonRoleFilter>? PersonFilters { get; set; }
         public List<int>? ThemeIds { get; set; }

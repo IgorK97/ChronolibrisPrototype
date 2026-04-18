@@ -1,4 +1,5 @@
-﻿using Chronolibris.Application.Requests;
+﻿using System.Net;
+using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
@@ -14,19 +15,17 @@ namespace Chronolibris.Application.Handlers.Books
         long Id,
         string Title,
         string Description,
-        int? CountryId,
-        int? LanguageId,
+        long? CountryId,
+        long? LanguageId,
         int? Year, bool YearProvided,
         string? ISBN, bool IsbnProvided,
         string? Bbk, bool BbkProvided,
         string? Udk, bool UdkProvided,
         string? Source, bool SourceProvided,
         string? CoverBase64,
-        string? CoverContentType,
-        string? CoverFileName,
         bool IsAvailable,
         bool IsReviewable,
-        int? PublisherId, bool PublisherIdProvided,
+        long? PublisherId, bool PublisherIdProvided,
         //int? SeriesId, bool SeriesIdProvided,
         List<PersonRoleFilter>? PersonFilters,
         List<int>? ThemeIds
@@ -62,20 +61,29 @@ namespace Chronolibris.Application.Handlers.Books
 
             if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
             {
-               
-                var newExt = Path.GetExtension(cmd.CoverFileName ?? ".jpg").ToLowerInvariant();
-                var fileName = $"cover{newExt}";
-                var newCoverPath = $"covers/{cmd.Id}/{fileName}";
+
+                //var newExt = Path.GetExtension(cmd.CoverFileName ?? ".jpg").ToLowerInvariant();
+                //var fileName = $"cover{newExt}";
+                //var newCoverPath = $"covers/{cmd.Id}/{fileName}";
+                var imageBytes = GetBytesFromBase64(cmd.CoverBase64);
+
+                var (extension, contentType) = GetFileInfo(imageBytes);
 
                 try
                 {
-                    using var imageBytes = DecodeCover(cmd.CoverBase64);
-                    await _storageService.SaveCoverAsync(
-                    cmd.Id.ToString(), fileName, imageBytes, cmd.CoverContentType ?? "image/jpeg", ct);
+                    //using var imageBytes = DecodeCover(cmd.CoverBase64);
+                    var fileName = $"cover{extension}";
+                    var coverPath = $"covers/{cmd.Id}/{fileName}";
+                    using (var imageStream = new MemoryStream(imageBytes))
+                    {
+                        await _storageService.SaveCoverAsync(
+                        cmd.Id.ToString(), fileName, imageStream, contentType ?? "image/jpeg", ct);
+                    }
+                        
                     var oldPath = book.CoverPath;
-                    book.CoverPath = newCoverPath;
+                    book.CoverPath = coverPath;
 
-                    if (oldPath != null && !oldPath.EndsWith(newExt))
+                    if (oldPath != null && !oldPath.EndsWith(extension))
                     {
                         await _storageService.DeleteFileAsync("images", oldPath, ct);
                     }
@@ -92,6 +100,46 @@ namespace Chronolibris.Application.Handlers.Books
             }
 
             await _unitOfWork.SaveChangesAsync(ct);
+        }
+
+        private static byte[] GetBytesFromBase64(string base64)
+        {
+            try
+            {
+                var data = base64.Contains(',')
+                ? base64[(base64.IndexOf(',') + 1)..]
+                : base64;
+
+                return Convert.FromBase64String(data);
+            }
+            catch (Exception ex)
+            {
+                throw new ChronolibrisException("Невалидная строка base64", ErrorType.Validation);
+            }
+        }
+
+        private static (string Extension, string ContentType) GetFileInfo(byte[] bytes)
+        {
+            if (bytes.Length < 4)
+                throw new ChronolibrisException("Некорректное изображение", ErrorType.Validation);
+
+            // PNG
+            if (bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47)
+                return (".png", "image/png");
+
+            // JPEG
+            if (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
+                return (".jpg", "image/jpeg");
+
+            // WebP
+            if (bytes.Length >= 12 &&
+                bytes[0] == 0x52 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x46 &&
+                bytes[8] == 0x57 && bytes[9] == 0x45 && bytes[10] == 0x42 && bytes[11] == 0x50)
+            {
+                return (".webp", "image/webp");
+            }
+
+            throw new ChronolibrisException("Некорректное изображение", ErrorType.Validation);
         }
 
         private void UpdateBookFields(Book book, UpdateBookCommand cmd)

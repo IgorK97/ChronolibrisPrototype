@@ -41,7 +41,7 @@ namespace Chronolibris.Infrastructure.Services.Files
 
         public async Task SaveCoverAsync(string bookId, string fileName, Stream data, string contentType, CancellationToken ct = default)
         {
-            await UploadAsync(_bookOpts.PublicImagesBucket, $"{bookId}/{fileName}", data, contentType, ct);
+            await UploadAsync(_bookOpts.CoversBucket, $"{bookId}/{fileName}", data, contentType, ct);
         }
 
         public async Task SaveImageAsync(string bookId, string fileName, Stream data, string contentType, CancellationToken ct = default)

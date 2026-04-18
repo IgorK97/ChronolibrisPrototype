@@ -66,7 +66,7 @@ namespace ChronolibrisWeb.Controllers
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
-            var command = new CreateReviewCommand(request.BookId, userId, request.ReviewText, request.Score);
+            var command = new CreateReviewCommand(request.BookId, userId, request.ReviewText, (short)request.Score);
             var reviewId = await _mediator.Send(command);
             return Ok(reviewId);
         }
